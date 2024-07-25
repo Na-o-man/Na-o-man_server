@@ -4,6 +4,7 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +32,7 @@ public class DeviceToken extends BaseTimeEntity {
     private Long id;
     @Column(name = "fcm_token", nullable = false)
     private String fcmToken;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 }
