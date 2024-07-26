@@ -38,4 +38,10 @@ public class Member extends BaseTimeEntity {
     private SocialType socialType;
     @Column(name = "marketing_agreed")
     private boolean marketingAgreed;
+
+    public Member update(String name, String image) {
+        this.name = name;
+        this.image = image;
+        return this;
+    }
 }
