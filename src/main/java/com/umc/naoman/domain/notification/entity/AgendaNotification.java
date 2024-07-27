@@ -1,6 +1,7 @@
 package com.umc.naoman.domain.notification.entity;
 
 import com.umc.naoman.domain.agenda.entity.Agenda;
+import com.umc.naoman.domain.notification.service.JosamoaSingleton;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -24,4 +25,20 @@ public class AgendaNotification extends Notification {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agenda_id")
     private Agenda agenda;
+
+
+    /*
+    *[그룹명]의 [유저명]이 [안경명] 투표를 열었습니다.
+     */
+    @Override
+    public void setMessage(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(agenda.getTitle());
+        sb.append("의 ");
+        sb.append(JosamoaSingleton.setJosa(getActor().getName(),"이가"));
+        sb.append(" ");
+        sb.append(agenda.getTitle());
+        sb.append(" 투표를 열었습니다.");
+        message =  sb.toString();
+    }
 }

@@ -1,16 +1,8 @@
 package com.umc.naoman.domain.notification.entity;
 
-import com.umc.naoman.domain.member.entity.Member;
+import com.umc.naoman.domain.notification.service.JosamoaSingleton;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,32 +11,32 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
-@Table(name = "photos_notifications")
+@Table(name = "delete_photo_notifications")
 @SQLRestriction("deleted_at is NULL")
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class PhotoNotification extends Notification {
+public class DeletePhotoNotification  extends Notification {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "share_group_id")
     private ShareGroup shareGroup;
     @Column(name = "photo_count", nullable = false)
     private int photoCount;
 
-
     /*
-     *[그룹명]에 [유저명]님이 n장의 사진을 업로드 했습니다.
+    *[유저명]이 [그룹명]의 사진 [삭제 장수]장을 삭제했습니다.
      */
     @Override
     public void setMessage(){
         StringBuilder sb = new StringBuilder();
+        sb.append(JosamoaSingleton.setJosa(getActor().getName(),"이가"));
+        sb.append(" ");
         sb.append(shareGroup.getName());
-        sb.append("에");
-        sb.append(getActor().getName());
-        sb.append("님이 ");
+        sb.append("의 사진 ");
         sb.append(photoCount);
-        sb.append("장의 사진을 업로드 했습니다.");
+        sb.append("장을 삭제했습니다.");
         message =  sb.toString();
     }
+
 }
