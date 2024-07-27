@@ -41,7 +41,7 @@ public class Notification {
     @Column(name = "notification_id")
     private Long id;
     @Column(nullable = false)
-    private String message;
+    protected String message;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -52,8 +52,17 @@ public class Notification {
     private LocalDateTime createdAt;
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "actor_id")
+    private Member actor;
 
     public void delete() {
         this.deletedAt = LocalDateTime.now();
+    }
+    public void setMessage(){
+        message =  "기본 메시지 입니다.";
+    }
+    public void setIsChecked(boolean isChecked){
+        this.isChecked = isChecked;
     }
 }
