@@ -1,7 +1,9 @@
 package com.umc.naoman.global.error;
 
+import com.umc.naoman.domain.shareGroup.dto.validation.exception.ShareGroupException;
 import com.umc.naoman.global.error.ErrorResponse.ValidationError;
 import com.umc.naoman.global.error.code.GlobalErrorCode;
+import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -33,6 +35,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode);
     }
+
 
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
         return ResponseEntity
