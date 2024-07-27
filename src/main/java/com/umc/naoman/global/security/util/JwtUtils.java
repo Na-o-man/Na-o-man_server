@@ -1,7 +1,9 @@
 package com.umc.naoman.global.security.util;
 
+import com.umc.naoman.global.security.attribute.OAuthAttribute;
 import com.umc.naoman.global.security.model.MemberDetails;
 import com.umc.naoman.global.security.service.MemberDetailsService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +20,7 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class JwtUtils {
@@ -44,6 +47,14 @@ public class JwtUtils {
                 .get(PAYLOAD_EMAIL_KEY, String.class);
     }
 
+    public Claims getPayload(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
     public Boolean isExpired(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
@@ -61,6 +72,22 @@ public class JwtUtils {
         return Jwts.builder()
                 .claim(PAYLOAD_EMAIL_KEY, email)
                 .claim(PAYLOAD_ROLE_KEY, role)
+                .issuedAt(issuedDate)
+                .expiration(expiredDate)
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String createJwt(OAuthAttribute oAuthAttribute, Long seconds) {
+        final LocalDateTime now = LocalDateTime.now();
+        final Date issuedDate = localDateTimeToDate(now);
+        final Date expiredDate = localDateTimeToDate(now.plusSeconds(seconds));
+
+        return Jwts.builder()
+                .claim(PAYLOAD_EMAIL_KEY, oAuthAttribute.getEmail())
+                .claim("name", oAuthAttribute.getName())
+                .claim("image", oAuthAttribute.getImage())
+                .claim("socialType", oAuthAttribute.getProvider())
                 .issuedAt(issuedDate)
                 .expiration(expiredDate)
                 .signWith(secretKey)
