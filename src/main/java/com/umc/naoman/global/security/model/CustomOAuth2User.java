@@ -16,7 +16,7 @@ public class CustomOAuth2User extends DefaultOAuth2User {
         this.oAuthAttribute = oAuthAttribute;
     }
 
-    public OAuthAttribute getoAuthAttribute() {
+    public OAuthAttribute getOAuthAttribute() {
         return oAuthAttribute;
     }
 
