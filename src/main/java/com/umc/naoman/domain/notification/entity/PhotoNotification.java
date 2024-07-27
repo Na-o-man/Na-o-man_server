@@ -37,7 +37,7 @@ public class PhotoNotification extends Notification {
      *[그룹명]에 [유저명]님이 n장의 사진을 업로드 했습니다.
      */
     @Override
-    public void setMessage(){
+    public void postMessage(){
         StringBuilder sb = new StringBuilder();
         sb.append(shareGroup.getName());
         sb.append("에");
@@ -46,5 +46,19 @@ public class PhotoNotification extends Notification {
         sb.append(photoCount);
         sb.append("장의 사진을 업로드 했습니다.");
         message =  sb.toString();
+    }
+
+    @Override
+    public Notification makeOtherNotification(Member member){
+        return PhotoNotification.builder()
+                .id(this.getId())
+                .message(this.getMessage())
+                .member(member)
+                .isChecked(false)
+                .createdAt(this.getCreatedAt())
+                .actor(this.getActor())
+                .shareGroup(getShareGroup())
+                .photoCount(getPhotoCount())
+                .build();
     }
 }

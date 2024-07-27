@@ -11,5 +11,5 @@ public interface NotificationService {
     List<Notification>  setMyNotificationRead(Long memberId);
     int deleteNotification(Long memberId);
     int deleteNotification(Long memberId, Long notificationId);
-
+    void makeNewNotificationSameShareGroup(Notification notification);
 }

@@ -35,7 +35,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Notification {
+public abstract class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id")
@@ -59,10 +59,9 @@ public class Notification {
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
-    public void setMessage(){
-        message =  "기본 메시지 입니다.";
-    }
-    public void setIsChecked(boolean isChecked){
+    public abstract void postMessage();
+    public abstract Notification makeOtherNotification(Member member);
+    public void postIsChecked(boolean isChecked){
         this.isChecked = isChecked;
     }
 }

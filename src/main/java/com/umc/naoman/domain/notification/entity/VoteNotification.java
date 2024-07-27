@@ -1,6 +1,7 @@
 package com.umc.naoman.domain.notification.entity;
 
 import com.umc.naoman.domain.agenda.entity.Agenda;
+import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.notification.service.JosamoaSingleton;
 import com.umc.naoman.domain.vote.entity.Vote;
 import jakarta.persistence.Entity;
@@ -31,11 +32,23 @@ public class VoteNotification extends Notification {
      *[유저명]이 [안경명]에 투표했습니다.
      */
     @Override
-    public void setMessage(){
+    public void postMessage(){
         StringBuilder sb = new StringBuilder();
         sb.append(JosamoaSingleton.setJosa(getActor().getName(), "이가"));
         sb.append(agenda.getTitle());
         sb.append("에 투표했습니다.");
         message =  sb.toString();
+    }
+
+    public Notification makeOtherNotification(Member member){
+        return VoteNotification.builder()
+                .id(this.getId())
+                .message(this.getMessage())
+                .member(member)
+                .isChecked(false)
+                .createdAt(this.getCreatedAt())
+                .actor(this.getActor())
+                .agenda(getAgenda())
+                .build();
     }
 }

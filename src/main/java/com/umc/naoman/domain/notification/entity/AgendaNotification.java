@@ -1,6 +1,7 @@
 package com.umc.naoman.domain.notification.entity;
 
 import com.umc.naoman.domain.agenda.entity.Agenda;
+import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.notification.service.JosamoaSingleton;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,7 +32,7 @@ public class AgendaNotification extends Notification {
     *[그룹명]의 [유저명]이 [안경명] 투표를 열었습니다.
      */
     @Override
-    public void setMessage(){
+    public void postMessage(){
         StringBuilder sb = new StringBuilder();
         sb.append(agenda.getTitle());
         sb.append("의 ");
@@ -40,5 +41,18 @@ public class AgendaNotification extends Notification {
         sb.append(agenda.getTitle());
         sb.append(" 투표를 열었습니다.");
         message =  sb.toString();
+    }
+
+    @Override
+    public Notification makeOtherNotification(Member member){
+        return AgendaNotification.builder()
+                .id(this.getId())
+                .message(this.getMessage())
+                .member(member)
+                .isChecked(false)
+                .createdAt(this.getCreatedAt())
+                .actor(this.getActor())
+                .agenda(this.getAgenda())
+                .build();
     }
 }
