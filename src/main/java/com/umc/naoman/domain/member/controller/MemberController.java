@@ -1,6 +1,9 @@
 package com.umc.naoman.domain.member.controller;
 
+import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.service.MemberService;
+import com.umc.naoman.global.result.ResultResponse;
+import com.umc.naoman.global.security.annotation.LoginMember;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
