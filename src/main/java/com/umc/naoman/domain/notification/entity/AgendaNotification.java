@@ -34,7 +34,7 @@ public class AgendaNotification extends Notification {
     @Override
     public void postMessage(){
         StringBuilder sb = new StringBuilder();
-        sb.append(agenda.getTitle());
+        sb.append(agenda.getShareGroup().getName());
         sb.append("의 ");
         sb.append(JosamoaSingleton.setJosa(getActor().getName(),"이가"));
         sb.append(" ");
@@ -50,7 +50,6 @@ public class AgendaNotification extends Notification {
                 .message(this.getMessage())
                 .member(member)
                 .isChecked(false)
-                .createdAt(this.getCreatedAt())
                 .actor(this.getActor())
                 .agenda(this.getAgenda())
                 .build();

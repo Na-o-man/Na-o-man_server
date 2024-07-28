@@ -21,14 +21,14 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @PostMapping("/token")
-    public ResultResponse<Void> registrationFcmToken(@RequestBody NotificationRequest.FcmTokenDTO fcmTokenDTO){
+    public ResultResponse<Void> registerFcmToken(@RequestBody NotificationRequest.FcmTokenDTO fcmTokenDTO){
 
         return ResultResponse.of(NotificationResultCode.REGISTER_FCM_TOKEN,null);
     }
 
     @GetMapping("/my")
-    public ResultResponse<NotificationResponse.NotificationInfoListDTO> getNotifications(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                                         @RequestParam("size") Integer size){
+    public ResultResponse<NotificationResponse.PagedNotificationInfo> getNotifications(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                       @RequestParam("size") Integer size){
         //로그인 처리 후 id 가져와야 됨
         Page<Notification> notificationPage =  notificationService.getNotificationList(null, page,size);
         return ResultResponse.of(NotificationResultCode.GET_MY_NOTIFICATION,
@@ -44,7 +44,7 @@ public class NotificationController {
     }
 
     @PostMapping("/acknowledgements")
-    public ResultResponse<NotificationResponse.NotificationUpdateCountDTO> readNotification(){
+    public ResultResponse<NotificationResponse.NotificationUpdateCountDTO> setMyNotificationRead(){
         //로그인 처리 후 id 가져와야 됨
         List<Notification> notificationList = notificationService.setMyNotificationRead(null);
         return ResultResponse.of(NotificationResultCode.READ_ALL_MY_NOTIFICATION,
@@ -59,7 +59,7 @@ public class NotificationController {
                 NotificationConverter.toNotificationUpdateCountDTO(deletedCount));
     }
     @DeleteMapping
-    public ResultResponse<NotificationResponse.NotificationUpdateCountDTO> deleteAllNotification(@PathVariable Long notificationId){
+    public ResultResponse<NotificationResponse.NotificationUpdateCountDTO> deleteAllNotification(){
         //로그인 처리 후 id 가져와야 됨
         int deletedCount = notificationService.deleteNotification(null);
         return ResultResponse.of(NotificationResultCode.DELETE_MY_NOTIFICATION,

@@ -15,7 +15,10 @@ public class FcmServiceImpl implements FcmService{
     @Override
     public void saveFcmToken(Long memberId, String fcmToken) {
         //멤버 리파지토리 개발 후 수정해야됨
-        DeviceToken deviceToken = DeviceToken.builder().member(null).fcmToken(fcmToken).build();
+        DeviceToken deviceToken = DeviceToken.builder()
+                                    .member(null)
+                                    .fcmToken(fcmToken)
+                                    .build();
         fcmTokenRepository.save(deviceToken);
     }
 }

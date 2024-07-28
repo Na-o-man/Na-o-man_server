@@ -12,20 +12,20 @@ import java.util.stream.Collectors;
 
 public class NotificationConverter {
 
-    public static NotificationResponse.NotificationDTO notificationInfo(Notification notification){
-        return NotificationResponse.NotificationDTO.builder()
+    public static NotificationResponse.NotificationInfo notificationInfo(Notification notification){
+        return NotificationResponse.NotificationInfo.builder()
                 .body(notification.getMessage())
                 .createdAt(notification.getCreatedAt())
                 .isChecked(notification.isChecked())
                 .url("Todo") //아직 프론트에서 어떤 정보를 필요로 하는지 모름... url이 될 수도 있고, 다른 정보가 될 수도 있음
                 .build();
     }
-    public static NotificationResponse.NotificationInfoListDTO toNotificationInfoDTO(
+    public static NotificationResponse.PagedNotificationInfo toNotificationInfoDTO(
             Page<Notification> notificationList){
-        List<NotificationResponse.NotificationDTO> notificationDTOList
+        List<NotificationResponse.NotificationInfo> notificationDTOList
                 = notificationList.stream().map(NotificationConverter::notificationInfo).collect(Collectors.toList());
 
-        return NotificationResponse.NotificationInfoListDTO.builder()
+        return NotificationResponse.PagedNotificationInfo.builder()
                 .isLast(notificationList.isLast())
                 .isFirst(notificationList.isFirst())
                 .totalPage(notificationList.getTotalPages())

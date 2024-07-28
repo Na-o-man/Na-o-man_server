@@ -13,8 +13,8 @@ public class NotificationResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class NotificationInfoListDTO {
-        List<NotificationDTO> notificationInfoList;
+    public static class PagedNotificationInfo {
+        List<NotificationInfo> notificationInfoList;
         Integer totalPage;
         Long totalElements;
         Boolean isFirst;
@@ -24,7 +24,7 @@ public class NotificationResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class NotificationDTO {
+    public static class NotificationInfo {
         String body;
         Boolean isChecked;
         LocalDateTime createdAt;

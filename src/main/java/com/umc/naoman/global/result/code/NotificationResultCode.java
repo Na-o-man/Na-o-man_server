@@ -12,7 +12,7 @@ public enum NotificationResultCode implements ResultCode {
     CHECK_MY_UNREAD_NOTIFICATION(200,"SN002", " 읽지 않은 알림 유무를 성공적으로 확인하였습니다"),
     READ_ALL_MY_NOTIFICATION(200,"SN003", "모든 알림을 성공적으로 읽었습니다"),
     DELETE_MY_NOTIFICATION(200,"SN003", "알람을 성공적으로 삭제했습니다"),
-    REGISTER_FCM_TOKEN(200,"SD001", "FCM 토큰을 성공적으로 등록했습니다")
+    REGISTER_FCM_TOKEN(200,"SN004", "FCM 토큰을 성공적으로 등록했습니다")
     ;
 
 

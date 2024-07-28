@@ -46,7 +46,6 @@ public class DeletePhotoNotification  extends Notification {
                 .message(this.getMessage())
                 .member(member)
                 .isChecked(false)
-                .createdAt(this.getCreatedAt())
                 .actor(this.getActor())
                 .shareGroup(getShareGroup())
                 .photoCount(getPhotoCount())
