@@ -4,7 +4,6 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
 import lombok.Builder;
 import lombok.Getter;
-import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Map;
 

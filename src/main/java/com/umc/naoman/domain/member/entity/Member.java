@@ -33,6 +33,8 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
     private String image;
+    @Column(name = "auth_id", nullable = false)
+    private Long authId;
     @Enumerated(EnumType.STRING)
     @Column(name = "social_type", nullable = false)
     private SocialType socialType;
