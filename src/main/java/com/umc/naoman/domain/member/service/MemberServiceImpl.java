@@ -1,9 +1,9 @@
 package com.umc.naoman.domain.member.service;
 
 import com.umc.naoman.domain.member.converter.MemberConverter;
-import com.umc.naoman.domain.member.dto.MemberRequest.AndroidLoginRequest;
-import com.umc.naoman.domain.member.dto.MemberRequest.AndroidSignupRequest;
-import com.umc.naoman.domain.member.dto.MemberRequest.WebSignupRequest;
+import com.umc.naoman.domain.member.dto.MemberRequest.LoginRequest;
+import com.umc.naoman.domain.member.dto.MemberRequest.MarketingAgreedRequest;
+import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
 import com.umc.naoman.domain.member.entity.Member;
@@ -46,7 +46,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member findMember(Long authId, SocialType socialType) {
+    public Member findMember(String authId, SocialType socialType) {
         return memberRepository.findByAuthIdAndSocialType(authId, socialType)
                 .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_AUTH_ID_AND_SOCIAL_TYPE));
     }
@@ -59,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public LoginInfo signup(AndroidSignupRequest request) {
+    public LoginInfo signup(SignupRequest request) {
         if (memberRepository.existsByEmail(request.getEmail())) {
             throw new BusinessException(MEMBER_ALREADY_SIGNUP);
         }
@@ -70,30 +70,25 @@ public class MemberServiceImpl implements MemberService {
         // 회원가입 완료 후 로그인 처리를 위해 access token, refresh token 발급
         // 별도 권한 정책이 없으므로 default 처리
         String role = "ROLE_DEFAULT";
-        String accessToken = jwtUtils.createJwt(member.getEmail(), role, ACCESS_TOKEN_VALIDITY_IN_SECONDS);
-        String refreshToken = jwtUtils.createJwt(member.getEmail(), role, REFRESH_TOKEN_VALIDITY_IN_SECONDS);
-        refreshTokenService.saveRefreshToken(member.getId(), refreshToken);
-        return memberConverter.toLoginInfo(member.getId(), accessToken, refreshToken);
+        String email = member.getEmail();
+        Long memberId = member.getId();
+        String accessToken = jwtUtils.createJwt(email, role, ACCESS_TOKEN_VALIDITY_IN_SECONDS);
+        String refreshToken = jwtUtils.createJwt(email, role, REFRESH_TOKEN_VALIDITY_IN_SECONDS);
+        refreshTokenService.saveRefreshToken(memberId, refreshToken);
+        return memberConverter.toLoginInfo(memberId, accessToken, refreshToken);
     }
 
     @Override
     @Transactional
-    public LoginInfo signup(String tempMemberInfo, WebSignupRequest request) {
+    public LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request) {
         Claims payload = jwtUtils.getPayload(tempMemberInfo);
-        AndroidSignupRequest androidSignupRequest = AndroidSignupRequest.builder()
-                .email(payload.get("email", String.class))
-                .name(payload.get("name", String.class))
-                .image(payload.get("image", String.class))
-                .socialType(SocialType.valueOf(payload.get("socialType", String.class)))
-                .authId(payload.get("authId", Long.class))
-                .marketingAgreed(request.getMarketingAgreed())
-                .build();
+        SignupRequest signupRequest = memberConverter.toSignupRequest(payload, request.getMarketingAgreed());
 
-        return signup(androidSignupRequest);
+        return signup(signupRequest);
     }
 
     @Override
-    public LoginInfo login(AndroidLoginRequest request) {
+    public LoginInfo login(LoginRequest request) {
         Member member = findMember(request.getAuthId(), request.getSocialType());
 
         Long memberId = member.getId();

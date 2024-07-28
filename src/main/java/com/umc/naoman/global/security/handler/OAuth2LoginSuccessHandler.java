@@ -38,8 +38,10 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Value("${jwt.temp-member-info-validity-in-seconds}")
     private Long TEMP_MEMBER_INFO_VALIDITY_IN_SECONDS;
     private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String REFRESH_TOKEN_KEY = "refresh_token";
-    private static final String TEMP_MEMBER_INFO_KEY = "temp_member_info";
+    private static final String REFRESH_TOKEN_KEY = "refresh-token";
+    private static final String TEMP_MEMBER_INFO_KEY = "temp-member-info";
+    private static final String FRONTEND_BASE_URL = "http://localhost:3000";
+    private static final String FRONTEND_AGREEMENT_PATH = "/enter/login/clause";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -77,7 +79,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         clearAuthenticationAttributes(request, response);
         // 프론트엔드 홈 화면으로 리다이렉션
-        response.sendRedirect("http://localhost:3000");
+        response.sendRedirect(FRONTEND_BASE_URL);
     }
 
     private void handleMemberSignup(HttpServletRequest request, HttpServletResponse response, OAuthAttribute oAuthAttribute)
@@ -88,7 +90,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         clearAuthenticationAttributes(request, response);
         // 약관 동의 화면으로 리다이렉션
-        response.sendRedirect("http://localhost:3000/terms");
+        response.sendRedirect(FRONTEND_BASE_URL + FRONTEND_AGREEMENT_PATH);
     }
 
     private void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {

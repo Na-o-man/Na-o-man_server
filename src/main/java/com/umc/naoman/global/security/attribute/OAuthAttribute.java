@@ -14,7 +14,7 @@ public class OAuthAttribute {
     private final String name;
     private final String image;
     private final SocialType provider;
-    private final Long authId;
+    private final String authId;
     private final String usernameAttributeKey;
     private final Map<String, Object> attributes;
 
@@ -30,7 +30,7 @@ public class OAuthAttribute {
 
     private static OAuthAttribute ofKakao(Map<String, Object> attributes) {
         // 카카오의 경우 사용자 정보 데이터의 형태가 이중 Map이므로, 이를 풀어서 사용한다.
-        Long authId = (Long) attributes.get("id");
+        String authId = String.valueOf(attributes.get(SocialType.KAKAO.getUsernameAttributeKey()));
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
@@ -51,7 +51,7 @@ public class OAuthAttribute {
                 .name(String.valueOf(attributes.get("name")))
                 .image(String.valueOf(attributes.get("picture")))
                 .provider(SocialType.GOOGLE)
-                .authId((Long) attributes.get("id"))
+                .authId(String.valueOf(attributes.get(SocialType.GOOGLE.getUsernameAttributeKey())))
                 .usernameAttributeKey(SocialType.GOOGLE.getUsernameAttributeKey())
                 .attributes(attributes)
                 .build();

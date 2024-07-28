@@ -1,8 +1,8 @@
 package com.umc.naoman.domain.member.service;
 
-import com.umc.naoman.domain.member.dto.MemberRequest.AndroidLoginRequest;
-import com.umc.naoman.domain.member.dto.MemberRequest.AndroidSignupRequest;
-import com.umc.naoman.domain.member.dto.MemberRequest.WebSignupRequest;
+import com.umc.naoman.domain.member.dto.MemberRequest.LoginRequest;
+import com.umc.naoman.domain.member.dto.MemberRequest.MarketingAgreedRequest;
+import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
 import com.umc.naoman.domain.member.entity.Member;
@@ -11,10 +11,10 @@ import com.umc.naoman.domain.member.entity.SocialType;
 public interface MemberService {
     Member findMember(Long memberId);
     Member findMember(String email);
-    Member findMember(Long authId, SocialType socialType);
+    Member findMember(String authId, SocialType socialType);
     CheckMemberRegistration checkRegistration(String email);
-    LoginInfo signup(AndroidSignupRequest request);
-    LoginInfo signup(String tempMemberInfo, WebSignupRequest request);
-    LoginInfo login(AndroidLoginRequest request);
+    LoginInfo signup(SignupRequest request);
+    LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request);
+    LoginInfo login(LoginRequest request);
     // MyPageInfo getMyPageInfo(Member member);
 }

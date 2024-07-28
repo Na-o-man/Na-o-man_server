@@ -1,8 +1,9 @@
 package com.umc.naoman.domain.member.controller;
 
-import com.umc.naoman.domain.member.dto.MemberRequest.AndroidLoginRequest;
-import com.umc.naoman.domain.member.dto.MemberRequest.AndroidSignupRequest;
-import com.umc.naoman.domain.member.dto.MemberRequest.WebSignupRequest;
+import com.umc.naoman.domain.member.dto.MemberRequest;
+import com.umc.naoman.domain.member.dto.MemberRequest.LoginRequest;
+import com.umc.naoman.domain.member.dto.MemberRequest.MarketingAgreedRequest;
+import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
 import com.umc.naoman.domain.member.service.MemberService;
@@ -32,6 +33,29 @@ import static com.umc.naoman.global.result.code.MemberResultCode.*;
 public class AuthController {
     private final MemberService memberService;
 
+    @PostMapping("/signup/web")
+    @Operation(summary = "회원가입 API(웹)", description = "웹 클라이언트가 사용하는 회원가입 요청 API입니다.")
+    @Parameters(value = {
+            @Parameter(name = "temp-member-info", description = "리다이렉션 시에 쿠키로 넘겨준 사용자 정보가 담긴 jwt를 헤더로 넘겨주세요.",
+                    in = ParameterIn.HEADER)
+    })
+    public ResultResponse<LoginInfo> signup(@RequestHeader("temp-member-info") String tempMemberInfo,
+                                            @Valid @RequestBody MarketingAgreedRequest request) {
+        return ResultResponse.of(SIGNUP, memberService.signup(tempMemberInfo, request));
+    }
+
+    @PostMapping("/signup/android")
+    @Operation(summary = "회원가입 API(안드로이드)", description = "안드로이드 클라이언트가 사용하는 회원가입 API입니다.")
+    public ResultResponse<LoginInfo> signup(@Valid @RequestBody SignupRequest request) {
+        return ResultResponse.of(SIGNUP, memberService.signup(request));
+    }
+
+    @PostMapping("/login/android")
+    @Operation(summary = "로그인 API", description = "안드로이드 클라이언트가 로그인하는 API입니다.")
+    public ResultResponse<LoginInfo> login(@Valid @RequestBody LoginRequest request) {
+        return ResultResponse.of(LOGIN, memberService.login(request));
+    }
+
     @GetMapping("/check-registration")
     @Operation(summary = "회원가입 여부 조회 API", description = "이메일을 통해, 해당 이메일을 가진 회원의 가입 여부를 조회하는 API입니다.")
     @Parameters(value = {
@@ -39,28 +63,5 @@ public class AuthController {
     })
     public ResultResponse<CheckMemberRegistration> checkSignup(@RequestParam("email") @Valid @Email String email) {
         return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.checkRegistration(email));
-    }
-
-    @PostMapping("/signup/android")
-    @Operation(summary = "회원가입 API", description = "안드로이드 클라이언트가 사용하는 회원가입 API입니다.")
-    public ResultResponse<LoginInfo> signup(@Valid @RequestBody AndroidSignupRequest request) {
-        return ResultResponse.of(SIGNUP, memberService.signup(request));
-    }
-
-    @PostMapping("/signup/web")
-    @Operation(summary = "회원가입 요청 API", description = "웹 클라이언트가 사용하는 회원가입 요청 API입니다.")
-    @Parameters(value = {
-            @Parameter(name = "temp-member-info", description = "리다이렉션 시에 쿠키로 넘겨준 사용자 정보가 담긴 jwt를 헤더로 넘겨주세요.",
-                    in = ParameterIn.HEADER)
-    })
-    public ResultResponse<LoginInfo> signup(@RequestHeader("temp-member-info") String tempMemberInfo,
-                                                 @Valid @RequestBody WebSignupRequest request) {
-        return ResultResponse.of(SIGNUP, memberService.signup(tempMemberInfo, request));
-    }
-
-    @PostMapping("/login/android")
-    @Operation(summary = "로그인 API", description = "안드로이드 클라이언트가 로그인하는 API입니다.")
-    public ResultResponse<LoginInfo> login(@Valid @RequestBody AndroidLoginRequest request) {
-        return ResultResponse.of(LOGIN, memberService.login(request));
     }
 }

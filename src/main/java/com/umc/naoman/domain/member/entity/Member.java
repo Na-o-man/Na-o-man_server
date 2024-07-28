@@ -34,7 +34,7 @@ public class Member extends BaseTimeEntity {
     private String name;
     private String image;
     @Column(name = "auth_id", nullable = false)
-    private Long authId;
+    private String authId;
     @Enumerated(EnumType.STRING)
     @Column(name = "social_type", nullable = false)
     private SocialType socialType;
