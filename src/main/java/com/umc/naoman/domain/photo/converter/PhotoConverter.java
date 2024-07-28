@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 @Component
 public class PhotoConverter {
 
-    public PhotoResponse.PreSignedUrlListInfo toPreSignedUrlListInfo(List<PhotoResponse.PreSignedUrlInfo> preSignedUrlInfoList) {
-        List<PhotoResponse.PreSignedUrlInfo> preSignedUrlResponseList = preSignedUrlInfoList.stream()
+    public PhotoResponse.PreSignedUrlListInfo toPreSignedUrlListInfo(List<PhotoResponse.PreSignedUrlInfo> preSignedUrlList) {
+        List<PhotoResponse.PreSignedUrlInfo> preSignedUrlInfoList = preSignedUrlList.stream()
                 .map(preSignedUrlInfo -> toPreSignedUrlInfo(
                         preSignedUrlInfo.getPreSignedUrl(),
                         preSignedUrlInfo.getImageUrl(),
@@ -19,7 +19,7 @@ public class PhotoConverter {
                 .collect(Collectors.toList());
 
         return PhotoResponse.PreSignedUrlListInfo.builder()
-                .preSignedUrlInfoList(preSignedUrlResponseList)
+                .preSignedUrlInfoList(preSignedUrlInfoList)
                 .build();
     }
 
