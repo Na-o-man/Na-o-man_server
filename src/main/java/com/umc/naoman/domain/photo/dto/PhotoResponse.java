@@ -14,7 +14,7 @@ public abstract class PhotoResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PreSignedUrlListInfo {
-        private List<PreSignedUrlInfo> preSignedUrlList;
+        private List<PreSignedUrlInfo> preSignedUrlInfoList;
     }
 
     @Getter

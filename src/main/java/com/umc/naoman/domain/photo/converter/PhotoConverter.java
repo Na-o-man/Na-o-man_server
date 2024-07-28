@@ -19,7 +19,7 @@ public class PhotoConverter {
                 .collect(Collectors.toList());
 
         return PhotoResponse.PreSignedUrlListInfo.builder()
-                .preSignedUrlList(preSignedUrlResponseList)
+                .preSignedUrlInfoList(preSignedUrlResponseList)
                 .build();
     }
 
