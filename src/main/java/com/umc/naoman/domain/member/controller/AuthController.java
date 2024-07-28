@@ -1,6 +1,5 @@
 package com.umc.naoman.domain.member.controller;
 
-import com.umc.naoman.domain.member.dto.MemberRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.LoginRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.MarketingAgreedRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.umc.naoman.global.error.BusinessException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static com.umc.naoman.global.error.code.MemberErrorCode.INVALID_SOCIAL_TYPE;
 

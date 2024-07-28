@@ -1,6 +1,5 @@
 package com.umc.naoman.global.result.code;
 
-
 import com.umc.naoman.global.result.ResultCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
