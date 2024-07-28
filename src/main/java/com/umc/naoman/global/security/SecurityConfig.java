@@ -1,6 +1,5 @@
 package com.umc.naoman.global.security;
 
-import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.member.service.MemberService;
 import com.umc.naoman.domain.member.service.redis.RefreshTokenService;
 import com.umc.naoman.global.security.filter.JwtAuthenticationFilter;
