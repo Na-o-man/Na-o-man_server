@@ -1,31 +1,34 @@
 package com.umc.naoman.domain.photo.converter;
 
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class PhotoConverter {
 
-    public static PhotoResponse.PreSignedUrlListResponse toPreSignedUrlListResponse(List<PhotoResponse.PreSignedUrlResponse> preSignedUrlResponse) {
-        List<PhotoResponse.PreSignedUrlResponse> preSignedUrlResponseList = preSignedUrlResponse.stream()
-                .map(response -> PhotoResponse.PreSignedUrlResponse.builder()
-                        .preSignedUrl(response.getPreSignedUrl())
-                        .imageUrl(response.getImageUrl())
-                        .imageName(response.getImageName())
-                        .build())
+    public PhotoResponse.PreSignedUrlListInfo toPreSignedUrlListResponse(List<PhotoResponse.PreSignedUrlInfo> preSignedUrlInfoList) {
+        List<PhotoResponse.PreSignedUrlInfo> preSignedUrlResponseList = preSignedUrlInfoList.stream()
+                .map(preSignedUrlInfo -> toPreSignedUrlInfo(
+                        preSignedUrlInfo.getPreSignedUrl(),
+                        preSignedUrlInfo.getImageUrl(),
+                        preSignedUrlInfo.getImageName()
+                ))
                 .collect(Collectors.toList());
 
-        return PhotoResponse.PreSignedUrlListResponse.builder()
+        return PhotoResponse.PreSignedUrlListInfo.builder()
                 .preSignedUrlList(preSignedUrlResponseList)
                 .build();
     }
 
-    public static PhotoResponse.PreSignedUrlResponse toPreSignedUrlResponse(String preSignedUrl, String imageUrl, String imageName) {
-        return PhotoResponse.PreSignedUrlResponse.builder()
+    public PhotoResponse.PreSignedUrlInfo toPreSignedUrlInfo(String preSignedUrl, String imageUrl, String imageName) {
+        return PhotoResponse.PreSignedUrlInfo.builder()
                 .preSignedUrl(preSignedUrl)
                 .imageUrl(imageUrl)
                 .imageName(imageName)
                 .build();
     }
+
 }

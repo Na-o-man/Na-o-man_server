@@ -13,15 +13,15 @@ public abstract class PhotoResponse {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PreSignedUrlListResponse {
-        private List<PreSignedUrlResponse> preSignedUrlList;
+    public static class PreSignedUrlListInfo {
+        private List<PreSignedUrlInfo> preSignedUrlList;
     }
 
     @Getter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PreSignedUrlResponse {
+    public static class PreSignedUrlInfo {
         private String preSignedUrl;
         private String imageUrl;
         private String imageName;

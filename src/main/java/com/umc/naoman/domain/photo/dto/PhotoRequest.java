@@ -1,7 +1,6 @@
 package com.umc.naoman.domain.photo.dto;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +16,9 @@ public abstract class PhotoRequest {
     @AllArgsConstructor
     public static class PreSignedUrlRequest {
 
-        @NotEmpty
+        @NotEmpty(message = "이미지의 이름은 하나 이상이어야 합니다.")
         private List<String> imageNameList;
+
     }
 
 }
