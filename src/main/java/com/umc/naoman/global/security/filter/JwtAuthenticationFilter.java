@@ -13,6 +13,7 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_TYPE = "Bearer ";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
     private final JwtUtils jwtUtils;
     public JwtAuthenticationFilter(JwtUtils jwtUtils) {
         this.jwtUtils = jwtUtils;
@@ -21,7 +22,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String authorization = request.getHeader("Authorization");
+        String authorization = request.getHeader(AUTHORIZATION_HEADER);
 
         if (!validateJwtIsPresent(authorization)) {
             filterChain.doFilter(request, response);
@@ -43,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean validateJwtIsPresent(String authorization) {
         if (authorization == null || !authorization.startsWith(AUTHORIZATION_TYPE)) {
-            System.out.println("토큰이 존재하지 않거나, 인증 타입이 Bearer가 아닙니다.");
+//            System.out.println("토큰이 존재하지 않거나, 인증 타입이 Bearer가 아닙니다.");
             return false;
         }
 
