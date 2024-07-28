@@ -16,14 +16,15 @@ public abstract class ShareGroupRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class createShareGroupRequest extends ShareGroupRequest {
+    public static class createShareGroupRequest {
         @NotNull(message = "멤버 수를 입력해야 합니다.")
-        Integer memberCount;
+        private Integer memberCount;
         @NotEmpty(message = "멤버 이름 리스트는 비어 있을 수 없습니다.")
-        List<String> memberNameList;
+        private List<String> memberNameList;
         @NotEmpty(message = "모임의 성격을 하나 이상 선택해야 합니다.")
-        List<String> meetingTypeList;
-        @NotNull(message = "모임 장소를 입력해야 합니다.")
-        String place;
+        private List<String> meetingTypeList;
+        @NotEmpty(message = "모임 장소를 입력해야 합니다.")
+        private String place;
     }
+
 }

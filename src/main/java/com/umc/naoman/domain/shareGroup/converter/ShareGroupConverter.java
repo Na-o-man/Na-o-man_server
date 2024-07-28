@@ -8,21 +8,21 @@ import java.time.LocalDateTime;
 
 public class ShareGroupConverter {
 
-    public static ShareGroup toShareGroup(ShareGroupRequest.createShareGroupRequest request) {
+    public static ShareGroup toEntity(ShareGroupRequest.createShareGroupRequest request) {
         return ShareGroup.builder()
-                .memberCount(request.getMemberCount())
-                .meetingTypeList(request.getMeetingTypeList())
-                .memberNameList(request.getMemberNameList())
-                .place(request.getPlace())
+                .memberCount(request.getMemberNameList().size())  // 변경 가능성 있음. memberCount 대신 nameList의 size 사용
                 .build();
     }
 
-    public static ShareGroupResponse.createShareGroupResponse toCreateShareGroupResponseDTO(ShareGroup shareGroup) {
-        return ShareGroupResponse.createShareGroupResponse.builder()
+    private static final String baseUrl = "https://na0man/invite/"; //baseUrl 상수
+
+    public static ShareGroupResponse.ShareGroupInfo toShareGroupInfoDTO(ShareGroup shareGroup) {
+        return ShareGroupResponse.ShareGroupInfo.builder()
                 .shareGroupId(shareGroup.getId())
-                .name(shareGroup.getPlace()) //임시 공유 그룹 이름
-                .inviteCode(shareGroup.getInviteCode())
-                .createdAt(LocalDateTime.now())
+                .name("임시 공유 그룹 이름") //임시 공유 그룹 이름 (고유 코드 출력)
+                .inviteUrl(baseUrl + shareGroup.getInviteCode())
+                .createdAt(shareGroup.getCreatedAt())
                 .build();
     }
+
 }

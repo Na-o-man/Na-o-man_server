@@ -26,14 +26,4 @@ public class ShareGroup extends BaseTimeEntity {
     private int memberCount;
     @Column(name = "invite_code", nullable = false)
     private String inviteCode;
-
-    @ElementCollection
-    @Column(name = "member_name")
-    private List<String> memberNameList;
-
-    @ElementCollection
-    @Column(name = "meeting_type")
-    private List<String> meetingTypeList;
-
-    private String place;
 }
