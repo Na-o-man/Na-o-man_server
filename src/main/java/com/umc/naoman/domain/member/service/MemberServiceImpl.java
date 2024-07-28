@@ -85,6 +85,7 @@ public class MemberServiceImpl implements MemberService {
                 .name(payload.get("name", String.class))
                 .image(payload.get("image", String.class))
                 .socialType(SocialType.valueOf(payload.get("socialType", String.class)))
+                .authId(payload.get("authId", Long.class))
                 .marketingAgreed(request.getMarketingAgreed())
                 .build();
 

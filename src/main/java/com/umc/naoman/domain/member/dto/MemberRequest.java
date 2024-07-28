@@ -3,6 +3,7 @@ package com.umc.naoman.domain.member.dto;
 import com.umc.naoman.domain.member.entity.SocialType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ public abstract class MemberRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class WebSignupRequest {
+        // 별도의 데이터는 쿠키로 들어온다.
         @NotNull
         private Boolean marketingAgreed;
     }
@@ -31,8 +33,10 @@ public abstract class MemberRequest {
         @NotBlank(message = "이름은 공백 또는 빈 문자열일 수 없습니다.")
         private String name;
         private String image;
-        @NotNull
+        @NotNull(message = "socialType은 KAKAO, GOOGLE 중 하나를 입력해야 합니다.")
         private SocialType socialType;
+        @NotNull(message = "authId는 소셜 플랫폼에서 제공한 회원 번호를 필수로 입력해야 합니다.")
+        private Long authId;
     }
 
     @Getter

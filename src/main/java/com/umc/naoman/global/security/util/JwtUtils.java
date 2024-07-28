@@ -78,7 +78,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String createJwt(OAuthAttribute oAuthAttribute, Long seconds) {
+    public String createTempMemberInfoJwt(OAuthAttribute oAuthAttribute, Long seconds) {
         final LocalDateTime now = LocalDateTime.now();
         final Date issuedDate = localDateTimeToDate(now);
         final Date expiredDate = localDateTimeToDate(now.plusSeconds(seconds));
@@ -88,6 +88,7 @@ public class JwtUtils {
                 .claim("name", oAuthAttribute.getName())
                 .claim("image", oAuthAttribute.getImage())
                 .claim("socialType", oAuthAttribute.getProvider())
+                .claim("authId", oAuthAttribute.getAuthId())
                 .issuedAt(issuedDate)
                 .expiration(expiredDate)
                 .signWith(secretKey)

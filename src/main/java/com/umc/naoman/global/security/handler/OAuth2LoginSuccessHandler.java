@@ -83,8 +83,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private void handleMemberSignup(HttpServletRequest request, HttpServletResponse response, OAuthAttribute oAuthAttribute)
             throws IOException {
         // Resource Server로부터 조회한 사용자 정보를 JWT로 직렬화 후, 쿠키로 담는다.
-        String tempUserInfo = jwtUtils.createJwt(oAuthAttribute, TEMP_MEMBER_INFO_VALIDITY_IN_SECONDS);
-        CookieUtils.addCookie(response, TEMP_MEMBER_INFO_KEY, tempUserInfo, TEMP_MEMBER_INFO_VALIDITY_IN_SECONDS.intValue());
+        String tempMemberInfo = jwtUtils.createTempMemberInfoJwt(oAuthAttribute, TEMP_MEMBER_INFO_VALIDITY_IN_SECONDS);
+        CookieUtils.addCookie(response, TEMP_MEMBER_INFO_KEY, tempMemberInfo, TEMP_MEMBER_INFO_VALIDITY_IN_SECONDS.intValue());
 
         clearAuthenticationAttributes(request, response);
         // 약관 동의 화면으로 리다이렉션

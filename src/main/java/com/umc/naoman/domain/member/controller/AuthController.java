@@ -43,7 +43,7 @@ public class AuthController {
 
     @PostMapping("/signup/android")
     @Operation(summary = "회원가입 API", description = "안드로이드 클라이언트가 사용하는 회원가입 API입니다.")
-    public ResultResponse<LoginInfo> checkSignup(@Valid @RequestBody AndroidSignupRequest request) {
+    public ResultResponse<LoginInfo> signup(@Valid @RequestBody AndroidSignupRequest request) {
         return ResultResponse.of(SIGNUP, memberService.signup(request));
     }
 
@@ -53,7 +53,7 @@ public class AuthController {
             @Parameter(name = "temp-member-info", description = "리다이렉션 시에 쿠키로 넘겨준 사용자 정보가 담긴 jwt를 헤더로 넘겨주세요.",
                     in = ParameterIn.HEADER)
     })
-    public ResultResponse<LoginInfo> checkSignup(@RequestHeader("temp-member-info") String tempMemberInfo,
+    public ResultResponse<LoginInfo> signup(@RequestHeader("temp-member-info") String tempMemberInfo,
                                                  @Valid @RequestBody WebSignupRequest request) {
         return ResultResponse.of(SIGNUP, memberService.signup(tempMemberInfo, request));
     }
