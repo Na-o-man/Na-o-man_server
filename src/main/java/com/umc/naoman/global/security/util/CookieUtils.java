@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Base64;
 
 public class CookieUtils {
-
     public static void addCookie(HttpServletResponse response, String name, String value,
                                  int maxAge) {
         Cookie cookie = new Cookie(name, value);

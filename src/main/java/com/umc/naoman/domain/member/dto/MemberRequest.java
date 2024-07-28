@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -32,5 +33,17 @@ public abstract class MemberRequest {
         private String image;
         @NotNull
         private SocialType socialType;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AndroidLoginRequest {
+        @NotNull(message = "로그인한 소셜 플랫폼의 회원 id를 입력해야 합니다.")
+        private Long authId;
+        @NotNull
+        private SocialType socialType;
+
     }
 }

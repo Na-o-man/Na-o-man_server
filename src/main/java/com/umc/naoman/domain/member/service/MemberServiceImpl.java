@@ -1,6 +1,7 @@
 package com.umc.naoman.domain.member.service;
 
 import com.umc.naoman.domain.member.converter.MemberConverter;
+import com.umc.naoman.domain.member.dto.MemberRequest.AndroidLoginRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.AndroidSignupRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.WebSignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
@@ -45,6 +46,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public Member findMember(Long authId, SocialType socialType) {
+        return memberRepository.findByAuthIdAndSocialType(authId, socialType)
+                .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_AUTH_ID_AND_SOCIAL_TYPE));
+    }
+
+    @Override
     public CheckMemberRegistration checkRegistration(String email) {
         boolean isRegistered = memberRepository.existsByEmail(email);
         return new CheckMemberRegistration(isRegistered);
@@ -82,5 +89,19 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         return signup(androidSignupRequest);
+    }
+
+    @Override
+    public LoginInfo login(AndroidLoginRequest request) {
+        Member member = findMember(request.getAuthId(), request.getSocialType());
+
+        Long memberId = member.getId();
+        String email = member.getEmail();
+        String role = "ROLE_DEFAULT";
+        String accessToken = jwtUtils.createJwt(email, role, ACCESS_TOKEN_VALIDITY_IN_SECONDS);
+        String refreshToken = jwtUtils.createJwt(email, role, REFRESH_TOKEN_VALIDITY_IN_SECONDS);
+        refreshTokenService.saveRefreshToken(memberId, refreshToken);
+
+        return memberConverter.toLoginInfo(memberId, accessToken, refreshToken);
     }
 }
