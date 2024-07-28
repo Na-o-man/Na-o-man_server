@@ -26,6 +26,6 @@ public class PhotoController {
     @PostMapping("/preSignedUrl")
     public ResultResponse<PhotoResponse.PreSignedUrlListInfo> getPreSignedUrlList(@Valid @RequestBody PhotoRequest.PreSignedUrlRequest request) {
         List<PhotoResponse.PreSignedUrlInfo> preSignedUrlList = photoServiceImpl.getPreSignedUrlList(request.getImageNameList());
-        return ResultResponse.of(PhotoResultCode.CREATE_SHARE_GROUP, photoConverter.toPreSignedUrlListResponse(preSignedUrlList));
+        return ResultResponse.of(PhotoResultCode.CREATE_SHARE_GROUP, photoConverter.toPreSignedUrlListInfo(preSignedUrlList));
     }
 }
