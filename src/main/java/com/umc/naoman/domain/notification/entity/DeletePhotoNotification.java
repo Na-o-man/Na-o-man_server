@@ -51,4 +51,10 @@ public class DeletePhotoNotification  extends Notification {
                 .photoCount(getPhotoCount())
                 .build();
     }
+
+    @Override
+    public String makeNotificationInfoURL() {
+        //사진 삭제 알람 클릭 하면 무반응
+        return null;
+    }
 }

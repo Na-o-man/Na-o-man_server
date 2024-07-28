@@ -17,7 +17,7 @@ public class NotificationConverter {
                 .body(notification.getMessage())
                 .createdAt(notification.getCreatedAt())
                 .isChecked(notification.isChecked())
-                .url("Todo") //아직 프론트에서 어떤 정보를 필요로 하는지 모름... url이 될 수도 있고, 다른 정보가 될 수도 있음
+                .url(notification.makeNotificationInfoURL()) //다형성으로 각기 다른 알림이 적절한 URL 만들도록 오버라이딩.
                 .build();
     }
     public static NotificationResponse.PagedNotificationInfo toNotificationInfoDTO(

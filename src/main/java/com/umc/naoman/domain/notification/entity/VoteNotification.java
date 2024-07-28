@@ -50,4 +50,11 @@ public class VoteNotification extends Notification {
                 .agenda(getAgenda())
                 .build();
     }
+    @Override
+    public String makeNotificationInfoURL() {
+        //해당 투표로 이동
+        // todo 아젠다 컨틀롤러 만들어 지면 MvcUriComponentsBuilder 로 리팩토링 예정
+        //해당 api 미계획으로 인해 null 처리 -> 업데이트 되면 개발 예정
+        return null;
+    }
 }

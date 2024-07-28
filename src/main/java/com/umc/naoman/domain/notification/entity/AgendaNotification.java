@@ -54,4 +54,11 @@ public class AgendaNotification extends Notification {
                 .agenda(this.getAgenda())
                 .build();
     }
+
+    @Override
+    public String makeNotificationInfoURL() {
+        //해당 아젠다로 이동
+        // todo 아젠다 컨틀롤러 만들어 지면 MvcUriComponentsBuilder 로 리팩토링 예정
+        return "/agendas/" + agenda.getId();
+    }
 }

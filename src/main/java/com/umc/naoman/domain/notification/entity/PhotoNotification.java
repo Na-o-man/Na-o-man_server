@@ -60,4 +60,10 @@ public class PhotoNotification extends Notification {
                 .photoCount(getPhotoCount())
                 .build();
     }
+    @Override
+    public String makeNotificationInfoURL() {
+        //해당 공유그룹으로 이동
+        // todo 아젠다 컨틀롤러 만들어 지면 MvcUriComponentsBuilder 로 리팩토링 예정
+        return "/photos/all/shareGroupId=" + shareGroup.getId() + "&page=0";
+    }
 }
