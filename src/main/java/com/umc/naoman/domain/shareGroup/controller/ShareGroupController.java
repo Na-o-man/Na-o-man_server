@@ -7,6 +7,7 @@ import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.result.code.ShareGroupResultCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Validated
 @RequestMapping("/shareGroups")
 public class ShareGroupController {
 
@@ -24,7 +24,7 @@ public class ShareGroupController {
 
     @PostMapping
     public ResultResponse<ShareGroupResponse
-            .ShareGroupInfo> createShareGroup(@RequestBody ShareGroupRequest.createShareGroupRequest request) {
+            .ShareGroupInfo> createShareGroup(@Valid @RequestBody ShareGroupRequest.createShareGroupRequest request) {
 
         ShareGroup shareGroup = shareGroupService.createShareGroup(request);
         return ResultResponse.of(ShareGroupResultCode.CREATE_SHARE_GROUP, ShareGroupConverter.toShareGroupInfoDTO(shareGroup));
