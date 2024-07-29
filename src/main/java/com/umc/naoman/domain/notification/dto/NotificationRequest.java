@@ -5,7 +5,7 @@ import lombok.Getter;
 public class NotificationRequest {
 
     @Getter
-    public static class FcmTokenDTO{
+    public static class FcmToken {
         String token;
     }
 

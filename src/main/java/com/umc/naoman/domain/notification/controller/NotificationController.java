@@ -21,7 +21,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @PostMapping("/token")
-    public ResultResponse<Void> registerFcmToken(@RequestBody NotificationRequest.FcmTokenDTO fcmTokenDTO){
+    public ResultResponse<Void> registerFcmToken(@RequestBody NotificationRequest.FcmToken fcmToken){
 
         return ResultResponse.of(NotificationResultCode.REGISTER_FCM_TOKEN,null);
     }
@@ -32,37 +32,37 @@ public class NotificationController {
         //로그인 처리 후 id 가져와야 됨
         Page<Notification> notificationPage =  notificationService.getNotificationList(null, page,size);
         return ResultResponse.of(NotificationResultCode.GET_MY_NOTIFICATION,
-                NotificationConverter.toNotificationInfoDTO(notificationPage));
+                NotificationConverter.toNotificationInfo(notificationPage));
     }
 
     @GetMapping("/unread")
-    public ResultResponse<NotificationResponse.UnreadNotificationDTO> getIsUnread(){
+    public ResultResponse<NotificationResponse.UnreadNotification> getIsUnread(){
         //로그인 처리 후 id 가져와야 됨
         List<Notification> notificationList =  notificationService.isUnreadNotification(null);
         return ResultResponse.of(NotificationResultCode.CHECK_MY_UNREAD_NOTIFICATION,
-                NotificationConverter.toUnreadNotificationDTO(notificationList));
+                NotificationConverter.toUnreadNotification(notificationList));
     }
 
     @PostMapping("/acknowledgements")
-    public ResultResponse<NotificationResponse.NotificationUpdateCountDTO> setMyNotificationRead(){
+    public ResultResponse<NotificationResponse.NotificationUpdateCount> setMyNotificationRead(){
         //로그인 처리 후 id 가져와야 됨
         List<Notification> notificationList = notificationService.setMyNotificationRead(null);
         return ResultResponse.of(NotificationResultCode.READ_ALL_MY_NOTIFICATION,
-                NotificationConverter.toNotificationUpdateCountDTO(notificationList));
+                NotificationConverter.toNotificationUpdateCount(notificationList));
     }
 
     @DeleteMapping("/{notificationId}")
-    public ResultResponse<NotificationResponse.NotificationUpdateCountDTO> deleteNotification(@PathVariable Long notificationId){
+    public ResultResponse<NotificationResponse.NotificationUpdateCount> deleteNotification(@PathVariable Long notificationId){
         //로그인 처리 후 id 가져와야 됨
         int deletedCount = notificationService.deleteNotification(null,notificationId);
         return ResultResponse.of(NotificationResultCode.DELETE_MY_NOTIFICATION,
-                NotificationConverter.toNotificationUpdateCountDTO(deletedCount));
+                NotificationConverter.toNotificationUpdateCount(deletedCount));
     }
     @DeleteMapping
-    public ResultResponse<NotificationResponse.NotificationUpdateCountDTO> deleteAllNotification(){
+    public ResultResponse<NotificationResponse.NotificationUpdateCount> deleteAllNotification(){
         //로그인 처리 후 id 가져와야 됨
         int deletedCount = notificationService.deleteNotification(null);
         return ResultResponse.of(NotificationResultCode.DELETE_MY_NOTIFICATION,
-                NotificationConverter.toNotificationUpdateCountDTO(deletedCount));
+                NotificationConverter.toNotificationUpdateCount(deletedCount));
     }
 }

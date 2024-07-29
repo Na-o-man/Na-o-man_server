@@ -35,14 +35,14 @@ public class NotificationResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UnreadNotificationDTO {
+    public static class UnreadNotification {
         Boolean isUnread;
     }
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class NotificationUpdateCountDTO {
+    public static class NotificationUpdateCount {
         Integer updateCount;
     }
 
