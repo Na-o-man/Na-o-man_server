@@ -1,6 +1,7 @@
 package com.umc.naoman.domain.member.converter;
 
 import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
+import com.umc.naoman.domain.member.dto.MemberResponse;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
@@ -36,6 +37,14 @@ public class MemberConverter {
                 .socialType(SocialType.valueOf(payload.get("socialType", String.class)))
                 .authId(payload.get("authId", String.class))
                 .marketingAgreed(marketingAgreed)
+                .build();
+    }
+
+    public static MemberResponse.MemberInfo toMemberInfo(Member member) {
+        return MemberResponse.MemberInfo.builder()
+                .name(member.getName())
+                .email(member.getEmail())
+                .image(member.getImage())
                 .build();
     }
 
