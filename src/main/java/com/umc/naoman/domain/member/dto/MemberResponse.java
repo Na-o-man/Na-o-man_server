@@ -25,4 +25,13 @@ public abstract class MemberResponse {
         private String accessToken;
         private String refreshToken;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class MemberInfo { //특정 회원 조회
+        private String name;
+        private String email;
+        private String image;
+    }
 }
