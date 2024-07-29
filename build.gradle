@@ -50,8 +50,16 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation 'com.google.firebase:firebase-admin:8.1.0' //firebase
-	implementation 'com.github.josa-moa:josa-moa:1.0.3'       //조사 처르를 쉽게 하기 위함.
+
+	//firebase
+	implementation 'com.google.firebase:firebase-admin:8.1.0'
+	//조사 처르를 쉽게 하기 위한 라이브러리
+	implementation 'com.github.josa-moa:josa-moa:1.0.3'
+
+	// AWS
+	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.0.0")
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {
