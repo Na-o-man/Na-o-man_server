@@ -1,5 +1,6 @@
 package com.umc.naoman.domain.notification.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +28,7 @@ public class NotificationResponse {
     public static class NotificationInfo {
         String body;
         Boolean isChecked;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime createdAt;
         String url;
     }
