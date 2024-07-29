@@ -40,14 +40,20 @@ public class NotificationConverter {
                 .build();
     }
 
-    public static NotificationResponse.NotificationUpdateCount toNotificationUpdateCount(List<Notification> notificationList){
-        return NotificationResponse.NotificationUpdateCount.builder()
-                .updateCount(notificationList.size())
+    public static NotificationResponse.NotificationAcknowledgeCount toNotificationAcknowledgedCount(List<Notification> notificationList){
+        return NotificationResponse.NotificationAcknowledgeCount.builder()
+                .acknowledgedCount((long)notificationList.size())
                 .build();
     }
-    public static NotificationResponse.NotificationUpdateCount toNotificationUpdateCount(int updateCount){
-        return NotificationResponse.NotificationUpdateCount.builder()
-                .updateCount(updateCount)
+    public static NotificationResponse.NotificationAcknowledgeCount toNotificationAcknowledgedCount(Long updateCount){
+        return NotificationResponse.NotificationAcknowledgeCount.builder()
+                .acknowledgedCount(updateCount)
+                .build();
+    }
+
+    public static NotificationResponse.NotificationDeletedCount toNotificationDeletedCount(Long updateCount){
+        return NotificationResponse.NotificationDeletedCount.builder()
+                .deletedCount(updateCount)
                 .build();
     }
 

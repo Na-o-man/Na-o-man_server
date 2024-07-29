@@ -44,25 +44,25 @@ public class NotificationController {
     }
 
     @PostMapping("/acknowledgements")
-    public ResultResponse<NotificationResponse.NotificationUpdateCount> setMyNotificationRead(){
+    public ResultResponse<NotificationResponse.NotificationAcknowledgeCount> setMyNotificationRead(){
         //로그인 처리 후 id 가져와야 됨
         List<Notification> notificationList = notificationService.setMyNotificationRead(null);
         return ResultResponse.of(NotificationResultCode.READ_ALL_MY_NOTIFICATION,
-                NotificationConverter.toNotificationUpdateCount(notificationList));
+                NotificationConverter.toNotificationAcknowledgedCount(notificationList));
     }
 
     @DeleteMapping("/{notificationId}")
-    public ResultResponse<NotificationResponse.NotificationUpdateCount> deleteNotification(@PathVariable Long notificationId){
+    public ResultResponse<NotificationResponse.NotificationAcknowledgeCount> deleteNotification(@PathVariable Long notificationId){
         //로그인 처리 후 id 가져와야 됨
-        int deletedCount = notificationService.deleteNotification(null,notificationId);
+        long deletedCount = notificationService.deleteNotification(null,notificationId);
         return ResultResponse.of(NotificationResultCode.DELETE_MY_NOTIFICATION,
-                NotificationConverter.toNotificationUpdateCount(deletedCount));
+                NotificationConverter.toNotificationAcknowledgedCount(deletedCount));
     }
     @DeleteMapping
-    public ResultResponse<NotificationResponse.NotificationUpdateCount> deleteAllNotification(){
+    public ResultResponse<NotificationResponse.NotificationDeletedCount> deleteAllNotification(){
         //로그인 처리 후 id 가져와야 됨
-        int deletedCount = notificationService.deleteNotification(null);
+        long deletedCount = notificationService.deleteNotification(null);
         return ResultResponse.of(NotificationResultCode.DELETE_MY_NOTIFICATION,
-                NotificationConverter.toNotificationUpdateCount(deletedCount));
+                NotificationConverter.toNotificationDeletedCount(deletedCount));
     }
 }

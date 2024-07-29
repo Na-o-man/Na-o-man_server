@@ -21,6 +21,7 @@ public class NotificationResponse {
         Boolean isFirst;
         Boolean isLast;
     }
+
     @Builder
     @Getter
     @NoArgsConstructor
@@ -40,13 +41,20 @@ public class NotificationResponse {
     public static class UnreadNotification {
         Boolean isUnread;
     }
+
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class NotificationUpdateCount {
-        Integer updateCount;
+    public static class NotificationAcknowledgeCount {
+        Long acknowledgedCount;
     }
 
-
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NotificationDeletedCount {
+        Long deletedCount;
+    }
 }
