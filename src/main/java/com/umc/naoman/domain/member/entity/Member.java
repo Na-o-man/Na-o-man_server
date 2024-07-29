@@ -33,9 +33,17 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
     private String image;
+    @Column(name = "auth_id", nullable = false)
+    private String authId;
     @Enumerated(EnumType.STRING)
     @Column(name = "social_type", nullable = false)
     private SocialType socialType;
     @Column(name = "marketing_agreed")
     private boolean marketingAgreed;
+
+    public Member update(String name, String image) {
+        this.name = name;
+        this.image = image;
+        return this;
+    }
 }
