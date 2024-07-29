@@ -62,7 +62,7 @@ public abstract class Notification {
     public abstract void postMessage();
     public abstract Notification makeOtherNotification(Member member);
     public abstract String makeNotificationInfoURL();
-    public void postIsChecked(boolean isChecked){
+    public void notificationAcknowledge(boolean isChecked){
         this.isChecked = isChecked;
     }
 }

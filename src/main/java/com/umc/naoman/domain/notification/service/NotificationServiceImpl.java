@@ -34,7 +34,7 @@ public class NotificationServiceImpl implements NotificationService{
     @Override
     public List<Notification> setMyNotificationRead(Long memberId) {
         List<Notification> notificationList =  notificationRepository.findAllByMemberIdAndIsCheckedFalse(memberId);
-        notificationList.forEach((notification -> notification.postIsChecked(true)));
+        notificationList.forEach((notification -> notification.notificationAcknowledge(true)));
         return notificationList;
     }
 
