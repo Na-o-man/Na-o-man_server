@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PhotoResultCode implements ResultCode {
-    CREATE_SHARE_GROUP(200, "SP000", "성공적으로 Presigned URL을 요청하였습니다."),
+    CREATE_PRESIGNED_URL(200, "SP000", "성공적으로 Presigned URL을 요청하였습니다."),
+    UPLOAD_PHOTO(200, "SP000", "성공적으로 이미지를 업로드하였습니다.")
 
     ;
     private final int status;
