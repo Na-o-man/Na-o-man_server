@@ -22,10 +22,10 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("/info/{memberId}") // memberId를 사용해 특정 회원 정보 조회
-    public ResultResponse<MemberResponse.MemberInfoByMemberIdDTO> getMemberInfoByMemberId(@PathVariable(name = "memberId") Long memberId) {
+    @GetMapping("/{memberId}") // memberId를 사용해 특정 회원 정보 조회
+    public ResultResponse<MemberResponse.MemberInfo> getMemberInfo(@PathVariable(name = "memberId") Long memberId) {
         Member member = memberService.findMember(memberId);
         return ResultResponse.of(MemberResultCode.MEMBER_INFO,
-                MemberConverter.toMemberInfoByMemberIdDTO(member));
+                MemberConverter.toMemberInfo(member));
     }
 }
