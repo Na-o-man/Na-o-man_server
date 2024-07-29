@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class MemberConverter {
 
-    public static MemberResponse.MemberInfoByMemberIdDTO toMemberInfoByMemberIdDTO(Member member) {
-        return MemberResponse.MemberInfoByMemberIdDTO.builder()
+    public static MemberResponse.MemberInfo toMemberInfo(Member member) {
+        return MemberResponse.MemberInfo.builder()
                 .name(member.getName())
                 .email(member.getEmail())
                 .image(member.getImage())

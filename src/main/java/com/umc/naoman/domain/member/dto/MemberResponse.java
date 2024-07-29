@@ -11,7 +11,7 @@ public abstract class MemberResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MemberInfoByMemberIdDTO extends MemberResponse { //특정 회원 조회
+    public static class MemberInfo { //특정 회원 조회
         String name;
         String email;
         String image;
