@@ -30,7 +30,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
                 .security(Arrays.asList(securityRequirement))
-                .info(apiInfo()).servers(List.of(local));
+                .info(apiInfo()).servers(List.of(server, local));
     }
 
     private Info apiInfo() {
