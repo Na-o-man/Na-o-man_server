@@ -35,13 +35,13 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Notification {
+public abstract class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id")
     private Long id;
     @Column(nullable = false)
-    private String message;
+    protected String message;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -52,8 +52,17 @@ public class Notification {
     private LocalDateTime createdAt;
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "actor_id")
+    private Member actor;
 
     public void delete() {
         this.deletedAt = LocalDateTime.now();
+    }
+    public abstract void postMessage();
+    public abstract Notification makeOtherNotification(Member member);
+    public abstract String makeNotificationInfoURL();
+    public void notificationAcknowledge(boolean isChecked){
+        this.isChecked = isChecked;
     }
 }

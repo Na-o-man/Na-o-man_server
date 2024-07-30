@@ -21,6 +21,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -50,6 +51,12 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	//firebase
+	implementation 'com.google.firebase:firebase-admin:8.1.0'
+	//조사 처르를 쉽게 하기 위한 라이브러리
+	implementation 'com.github.josa-moa:josa-moa:1.0.3'
+
+	// AWS
 	// AWS, AWS S3
 	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.0.0")
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
