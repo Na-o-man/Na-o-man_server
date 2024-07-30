@@ -33,7 +33,7 @@ public class AuthController {
     private final MemberService memberService;
 
     @PostMapping("/signup/web")
-    @Operation(summary = "회원가입 API(웹)", description = "웹 클라이언트가 사용하는 회원가입 요청 API입니다.")
+    @Operation(summary = "회원가입 API(웹)", description = "웹 클라이언트가 사용하는 회원가입 API입니다.")
     @Parameters(value = {
             @Parameter(name = "temp-member-info", description = "리다이렉션 시에 쿠키로 넘겨준 사용자 정보가 담긴 jwt를 헤더로 넘겨주세요.",
                     in = ParameterIn.HEADER)
