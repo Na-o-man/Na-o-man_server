@@ -12,5 +12,5 @@ public interface NotificationService {
     List<Notification>  setMyNotificationRead(Member member);
     long deleteNotificationAll(Member member);
     long deleteNotification(Member member, Long notificationId);
-    void makeNewNotification(Notification notification);
+    void makeNewNotification(Notification notification, Long shareGroupId);
 }
