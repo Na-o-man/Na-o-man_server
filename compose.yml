@@ -1,0 +1,29 @@
+services:
+  spring-application:
+    container_name: naoman-dev
+    image: ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+    ports:
+      - ${SPRING_OUTER_PORT}:${SPRING_INNER_PORT}
+
+  nginx:
+    container_name: nginx-dev
+    image: nginx:latest
+    volumes:
+      - ./naoman/default.conf:/etc/nginx/conf.d/efault/conf
+    restart: always
+    ports:
+      - 80:80
+
+    # 설정을 6시간마다 다시 로드하여 최신 상태를 유지한다.
+    # 포그라운드 실행을 통해 Nginx 서버를 계속 실행시킨다.
+    command: [
+      "/bin/sh",
+      "-c",
+      "while :; do sleep 6h && wait $${!}; nginx -s reload; done & nginx -g 'daemon off;'"
+    ]
+
+  redis:
+    container_name: redis-dev
+    image: redis:7.2.5
+    ports:
+      - 6379:6379
