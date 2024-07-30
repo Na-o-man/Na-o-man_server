@@ -1,19 +1,28 @@
 package com.umc.naoman.domain.shareGroup.controller;
 
+import com.umc.naoman.domain.member.converter.MemberConverter;
+import com.umc.naoman.domain.member.dto.MemberResponse;
+import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.shareGroup.converter.ShareGroupConverter;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupRequest;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse;
+import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.result.ResultResponse;
+import com.umc.naoman.global.result.code.MemberResultCode;
 import com.umc.naoman.global.result.code.ShareGroupResultCode;
+import com.umc.naoman.global.security.annotation.LoginMember;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,11 +32,27 @@ public class ShareGroupController {
     private final ShareGroupService shareGroupService;
 
     @PostMapping
+    @Operation(summary = "공유그룹 생성 API", description = "새로운 공유그룹을 생성하는 API입니다.")
     public ResultResponse<ShareGroupResponse
-            .ShareGroupInfo> createShareGroup(@Valid @RequestBody ShareGroupRequest.createShareGroupRequest request) {
+            .ShareGroupInfo> createShareGroup(@Valid @RequestBody ShareGroupRequest.createShareGroupRequest request,
+                                              @LoginMember Member member) {
 
-        ShareGroup shareGroup = shareGroupService.createShareGroup(request);
+        ShareGroup shareGroup = shareGroupService.createShareGroup(request, member);
         return ResultResponse.of(ShareGroupResultCode.CREATE_SHARE_GROUP, ShareGroupConverter.toShareGroupInfoDTO(shareGroup));
+    }
+
+    @GetMapping("/{shareGroupId}")
+    @Operation(summary = "공유그룹 조회 API", description = "shareGroupId로 특정 공유그룹을 조회하는 API입니다.")
+    @Parameters(value = {
+            @Parameter(name = "shareGroupId", description = "특정 공유그룹 id를 입력해 주세요.")
+    })
+    public ResultResponse<ShareGroupResponse.ShareGroupInfo> getShareGroupInfo(@PathVariable(name = "shareGroupId") Long shareGroupId) {
+
+        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
+        List<Profile> profileList = shareGroupService.findProfileList(shareGroupId);
+
+        return ResultResponse.of(ShareGroupResultCode.SHARE_GROUP_INFO,
+                ShareGroupConverter.toShareGroupDetailInfoDTO(shareGroup, profileList));
     }
 
 }

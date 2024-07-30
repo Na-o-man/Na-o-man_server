@@ -1,6 +1,8 @@
 package com.umc.naoman.domain.photo.converter;
 
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import com.umc.naoman.domain.photo.entity.Photo;
+import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,8 +15,8 @@ public class PhotoConverter {
         List<PhotoResponse.PreSignedUrlInfo> preSignedUrlInfoList = preSignedUrlList.stream()
                 .map(preSignedUrlInfo -> toPreSignedUrlInfo(
                         preSignedUrlInfo.getPreSignedUrl(),
-                        preSignedUrlInfo.getImageUrl(),
-                        preSignedUrlInfo.getImageName()
+                        preSignedUrlInfo.getPhotoUrl(),
+                        preSignedUrlInfo.getPhotoName()
                 ))
                 .collect(Collectors.toList());
 
@@ -23,12 +25,19 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PhotoResponse.PreSignedUrlInfo toPreSignedUrlInfo(String preSignedUrl, String imageUrl, String imageName) {
+    public PhotoResponse.PreSignedUrlInfo toPreSignedUrlInfo(String preSignedUrl, String photoUrl, String photoName) {
         return PhotoResponse.PreSignedUrlInfo.builder()
                 .preSignedUrl(preSignedUrl)
-                .imageUrl(imageUrl)
-                .imageName(imageName)
+                .photoUrl(photoUrl)
+                .photoName(photoName)
                 .build();
     }
 
+    public Photo toEntity(String photoUrl, String photoName, ShareGroup shareGroup) {
+        return Photo.builder()
+                .url(photoUrl)
+                .name(photoName)
+                .shareGroup(shareGroup)
+                .build();
+    }
 }

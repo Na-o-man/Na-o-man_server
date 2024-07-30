@@ -23,7 +23,16 @@ public abstract class PhotoResponse {
     @NoArgsConstructor
     public static class PreSignedUrlInfo {
         private String preSignedUrl;
-        private String imageUrl;
-        private String imageName;
+        private String photoUrl;
+        private String photoName;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PhotoUploadInfo {
+        private Long shareGroupId;
+        private int uploadCount;
     }
 }
