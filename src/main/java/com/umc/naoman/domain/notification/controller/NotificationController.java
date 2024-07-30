@@ -11,6 +11,9 @@ import com.umc.naoman.global.result.code.NotificationResultCode;
 import com.umc.naoman.global.security.annotation.LoginMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,15 +28,14 @@ public class NotificationController {
     @PostMapping("/token")
     public ResultResponse<Void> registerFcmToken(@RequestBody NotificationRequest.FcmToken fcmToken,
                                                  @LoginMember Member member){
-        
+
         return ResultResponse.of(NotificationResultCode.REGISTER_FCM_TOKEN,null);
     }
 
     @GetMapping("/my")
-    public ResultResponse<NotificationResponse.PagedNotificationInfo> getNotifications(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                                       @RequestParam("size") Integer size,
-                                                                                       @LoginMember Member member){
-        Page<Notification> notificationPage =  notificationService.getNotificationList(member, page,size);
+    public ResultResponse<NotificationResponse.PagedNotificationInfo> getNotifications(@LoginMember Member member,
+                                                                                       @PageableDefault(sort = "createdAt", direction =Sort.Direction.DESC) Pageable pageable){
+        Page<Notification> notificationPage =  notificationService.getNotificationList(member, pageable);
         return ResultResponse.of(NotificationResultCode.GET_MY_NOTIFICATION,
                 NotificationConverter.toNotificationInfo(notificationPage));
     }

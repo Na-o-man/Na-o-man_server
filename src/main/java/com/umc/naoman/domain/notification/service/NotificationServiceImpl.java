@@ -5,8 +5,7 @@ import com.umc.naoman.domain.notification.entity.Notification;
 import com.umc.naoman.domain.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +20,8 @@ public class NotificationServiceImpl implements NotificationService{
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Notification> getNotificationList(Member member, Integer page, Integer size) {
-        return  notificationRepository.findAllByMemberId(member.getId(), PageRequest.of(page,size, Sort.by("createdAt").descending()));
+    public Page<Notification> getNotificationList(Member member, Pageable pageable) {
+        return  notificationRepository.findAllByMemberId(member.getId(), pageable);
     }
 
     @Override
