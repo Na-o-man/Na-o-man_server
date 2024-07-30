@@ -57,25 +57,13 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request) {
-
-        // 공유 그룹 오류 코드 생기면 추후에 수정
         ShareGroup shareGroup = shareGroupRepository.findById(request.getShareGroupId()).orElseThrow(EntityNotFoundException::new);
         int uploadCount = 0;
 
-        for (int i = 0; i < request.getPhotoUrlList().size(); i++) {
-            String photoUrl = request.getPhotoUrlList().get(i);
+        for (String photoUrl : request.getPhotoUrlList()) {
             String photoName = extractPhotoNameFromUrl(photoUrl);
-
-            // S3에서 객체의 존재를 확인
-            S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName + "/" + RAW_PATH_PREFIX, photoName));
-
-            // 객체가 존재한다면 DB에 저장
-            if (s3Object != null) {
-                Photo photo = photoConverter.toPhoto(photoUrl, photoName, shareGroup);
-                photoRepository.save(photo);
+            if (checkAndSavePhoto(photoUrl, photoName, shareGroup)) {
                 uploadCount++;
-            } else {
-                throw new BusinessException(PHOTO_NOT_FOUND_S3);
             }
         }
 
@@ -131,5 +119,17 @@ public class PhotoServiceImpl implements PhotoService {
     private String extractPhotoNameFromUrl(String photoUrl) {
         int lastSlashIndex = photoUrl.lastIndexOf('/');
         return photoUrl.substring(lastSlashIndex + 1);
+    }
+
+    // S3에 객체의 존재 여부 확인 및 저장하는 메서드
+    private boolean checkAndSavePhoto(String photoUrl, String photoName, ShareGroup shareGroup) {
+        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName + "/" + RAW_PATH_PREFIX, photoName));
+        if (s3Object != null) {
+            Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
+            photoRepository.save(photo);
+            return true;
+        } else {
+            throw new BusinessException(PHOTO_NOT_FOUND_S3);
+        }
     }
 }

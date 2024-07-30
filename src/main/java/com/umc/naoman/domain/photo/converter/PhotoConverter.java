@@ -33,7 +33,7 @@ public class PhotoConverter {
                 .build();
     }
 
-    public Photo toPhoto(String photoUrl, String photoName, ShareGroup shareGroup) {
+    public Photo toEntity(String photoUrl, String photoName, ShareGroup shareGroup) {
         return Photo.builder()
                 .url(photoUrl)
                 .name(photoName)
