@@ -61,7 +61,7 @@ public class NotificationController {
     @DeleteMapping
     public ResultResponse<NotificationResponse.NotificationDeletedCount> deleteAllNotification(){
         //로그인 처리 후 id 가져와야 됨
-        long deletedCount = notificationService.deleteNotification(null);
+        long deletedCount = notificationService.deleteNotificationAll(null);
         return ResultResponse.of(NotificationResultCode.DELETE_MY_NOTIFICATION,
                 NotificationConverter.toNotificationDeletedCount(deletedCount));
     }
