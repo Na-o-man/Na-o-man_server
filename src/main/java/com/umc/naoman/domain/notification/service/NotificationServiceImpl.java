@@ -39,12 +39,12 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     @Override
-    public int deleteNotification(Long memberId) {
+    public long deleteNotification(Long memberId) {
         return notificationRepository.deleteByMemberId(memberId);
     }
 
     @Override
-    public int deleteNotification(Long memberId, Long notificationId) {
+    public long deleteNotification(Long memberId, Long notificationId) {
         return  notificationRepository.deleteByMemberIdAndNotificationId(memberId,notificationId);
     }
 

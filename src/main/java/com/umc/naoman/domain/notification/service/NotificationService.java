@@ -9,7 +9,7 @@ public interface NotificationService {
     Page<Notification> getNotificationList(Long memberId, Integer page, Integer size);
     List<Notification> isUnreadNotification(Long memberId);
     List<Notification>  setMyNotificationRead(Long memberId);
-    int deleteNotification(Long memberId);
-    int deleteNotification(Long memberId, Long notificationId);
+    long deleteNotification(Long memberId);
+    long deleteNotification(Long memberId, Long notificationId);
     void makeNewNotificationSameShareGroup(Notification notification);
 }

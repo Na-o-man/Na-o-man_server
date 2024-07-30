@@ -17,10 +17,10 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
     List<Notification> findAllByMemberIdAndIsCheckedFalse(Long memberId);
     @Modifying
     @Query("DELETE FROM Notification n WHERE n.member.id = :memberId AND n.id = :notificationId")
-    int deleteByMemberIdAndNotificationId(@Param("memberId") Long memberId, @Param("notificationId") Long notificationId);
+    long deleteByMemberIdAndNotificationId(@Param("memberId") Long memberId, @Param("notificationId") Long notificationId);
 
     @Modifying
     @Query("DELETE FROM Notification n WHERE n.member.id = :memberId")
-    int deleteByMemberId(@Param("memberId") Long memberId);
+    long deleteByMemberId(@Param("memberId") Long memberId);
 
 }
