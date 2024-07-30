@@ -1,7 +1,5 @@
 name: Docker Hub Dev Deploy
 
-run-name: ${{ github.head_ref }} 브랜치 작업 내용 병합 후 배포
-
 on:
   push:
     branches:
