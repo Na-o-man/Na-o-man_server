@@ -19,7 +19,7 @@ services:
     command: [
       "/bin/sh",
       "-c",
-      "while :; do sleep 6h && wait $${!}; nginx -s reload; done & nginx -g 'daemon off;'"
+      "while :; do sleep 1m && wait $${!}; nginx -s reload; done & nginx -g 'daemon off;'"
     ]
 
   redis:
