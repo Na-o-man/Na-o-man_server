@@ -1,5 +1,6 @@
 package com.umc.naoman.domain.notification.controller;
 
+import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.notification.converter.NotificationConverter;
 import com.umc.naoman.domain.notification.dto.NotificationRequest;
 import com.umc.naoman.domain.notification.dto.NotificationResponse;
@@ -7,6 +8,7 @@ import com.umc.naoman.domain.notification.entity.Notification;
 import com.umc.naoman.domain.notification.service.NotificationService;
 import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.result.code.NotificationResultCode;
+import com.umc.naoman.global.security.annotation.LoginMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -21,47 +23,45 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @PostMapping("/token")
-    public ResultResponse<Void> registerFcmToken(@RequestBody NotificationRequest.FcmToken fcmToken){
-
+    public ResultResponse<Void> registerFcmToken(@RequestBody NotificationRequest.FcmToken fcmToken,
+                                                 @LoginMember Member member){
+        
         return ResultResponse.of(NotificationResultCode.REGISTER_FCM_TOKEN,null);
     }
 
     @GetMapping("/my")
     public ResultResponse<NotificationResponse.PagedNotificationInfo> getNotifications(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                                       @RequestParam("size") Integer size){
-        //로그인 처리 후 id 가져와야 됨
-        Page<Notification> notificationPage =  notificationService.getNotificationList(null, page,size);
+                                                                                       @RequestParam("size") Integer size,
+                                                                                       @LoginMember Member member){
+        Page<Notification> notificationPage =  notificationService.getNotificationList(member, page,size);
         return ResultResponse.of(NotificationResultCode.GET_MY_NOTIFICATION,
                 NotificationConverter.toNotificationInfo(notificationPage));
     }
 
     @GetMapping("/unread")
-    public ResultResponse<NotificationResponse.UnreadNotification> getIsUnread(){
-        //로그인 처리 후 id 가져와야 됨
-        List<Notification> notificationList =  notificationService.isUnreadNotification(null);
+    public ResultResponse<NotificationResponse.UnreadNotification> getIsUnread(@LoginMember Member member){
+        List<Notification> notificationList =  notificationService.isUnreadNotification(member);
         return ResultResponse.of(NotificationResultCode.CHECK_MY_UNREAD_NOTIFICATION,
                 NotificationConverter.toUnreadNotification(notificationList));
     }
 
     @PostMapping("/acknowledgements")
-    public ResultResponse<NotificationResponse.NotificationAcknowledgeCount> setMyNotificationRead(){
-        //로그인 처리 후 id 가져와야 됨
-        List<Notification> notificationList = notificationService.setMyNotificationRead(null);
+    public ResultResponse<NotificationResponse.NotificationAcknowledgeCount> setMyNotificationRead(@LoginMember Member member){
+        List<Notification> notificationList = notificationService.setMyNotificationRead(member);
         return ResultResponse.of(NotificationResultCode.READ_ALL_MY_NOTIFICATION,
                 NotificationConverter.toNotificationAcknowledgedCount(notificationList));
     }
 
     @DeleteMapping("/{notificationId}")
-    public ResultResponse<NotificationResponse.NotificationAcknowledgeCount> deleteNotification(@PathVariable Long notificationId){
-        //로그인 처리 후 id 가져와야 됨
-        long deletedCount = notificationService.deleteNotification(null,notificationId);
+    public ResultResponse<NotificationResponse.NotificationAcknowledgeCount> deleteNotification(@PathVariable Long notificationId,
+                                                                                                @LoginMember Member member){
+        long deletedCount = notificationService.deleteNotification(member,notificationId);
         return ResultResponse.of(NotificationResultCode.DELETE_MY_NOTIFICATION,
                 NotificationConverter.toNotificationAcknowledgedCount(deletedCount));
     }
     @DeleteMapping
-    public ResultResponse<NotificationResponse.NotificationDeletedCount> deleteAllNotification(){
-        //로그인 처리 후 id 가져와야 됨
-        long deletedCount = notificationService.deleteNotificationAll(null);
+    public ResultResponse<NotificationResponse.NotificationDeletedCount> deleteAllNotification(@LoginMember Member member){
+        long deletedCount = notificationService.deleteNotificationAll(member);
         return ResultResponse.of(NotificationResultCode.DELETE_MY_NOTIFICATION,
                 NotificationConverter.toNotificationDeletedCount(deletedCount));
     }

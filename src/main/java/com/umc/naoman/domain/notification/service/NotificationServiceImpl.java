@@ -21,31 +21,31 @@ public class NotificationServiceImpl implements NotificationService{
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Notification> getNotificationList(Long memberId, Integer page, Integer size) {
-        return  notificationRepository.findAllByMemberId(memberId, PageRequest.of(page,size, Sort.by("createdAt").descending()));
+    public Page<Notification> getNotificationList(Member member, Integer page, Integer size) {
+        return  notificationRepository.findAllByMemberId(member.getId(), PageRequest.of(page,size, Sort.by("createdAt").descending()));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Notification> isUnreadNotification(Long memberId) {
-        return notificationRepository.findAllByMemberIdAndIsCheckedFalse(memberId);
+    public List<Notification> isUnreadNotification(Member member) {
+        return notificationRepository.findAllByMemberIdAndIsCheckedFalse(member.getId());
     }
 
     @Override
-    public List<Notification> setMyNotificationRead(Long memberId) {
-        List<Notification> notificationList =  notificationRepository.findAllByMemberIdAndIsCheckedFalse(memberId);
+    public List<Notification> setMyNotificationRead(Member member) {
+        List<Notification> notificationList =  notificationRepository.findAllByMemberIdAndIsCheckedFalse(member.getId());
         notificationList.forEach((notification -> notification.notificationAcknowledge(true)));
         return notificationList;
     }
 
     @Override
-    public long deleteNotificationAll(Long memberId) {
-        return notificationRepository.deleteByMemberId(memberId);
+    public long deleteNotificationAll(Member member) {
+        return notificationRepository.deleteByMemberId(member.getId());
     }
 
     @Override
-    public long deleteNotification(Long memberId, Long notificationId) {
-        return  notificationRepository.deleteByMemberIdAndNotificationId(memberId,notificationId);
+    public long deleteNotification(Member member, Long notificationId) {
+        return  notificationRepository.deleteByMemberIdAndNotificationId(member.getId(), notificationId);
     }
 
     @Override
