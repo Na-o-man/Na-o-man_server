@@ -21,8 +21,8 @@ public class SwaggerConfig {
                 .in(SecurityScheme.In.HEADER).name("Authorization");
         SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
 
-//        Server server = new Server();
-//        server.setUrl("http://{EC2_인스턴스의_IPv4_주소}");
+        Server server = new Server();
+        server.setUrl("http://52.79.212.19");
 
         Server local = new Server();
         local.setUrl("http://localhost:8080");
@@ -35,8 +35,8 @@ public class SwaggerConfig {
 
     private Info apiInfo() {
         return new Info()
-                .title("턴페이지 서비스 API")
-                .description("독후감 작성, 조회와 중고 도서 판매 등의 기능을 제공합니다.")
+                .title("나ㅇ만 서비스 API")
+                .description("친구, 가족, 동료와 찍은 사진들을 손쉽게 공유할 수 있도록 돕는 서비스, 나ㅇ만입니다.")
                 .version("1.0.0");
     }
 }
