@@ -17,6 +17,8 @@ import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,6 +74,17 @@ public class PhotoServiceImpl implements PhotoService {
         }
 
         return new PhotoResponse.PhotoUploadInfo(shareGroup.getId(), uploadCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Photo> getAllPhotoListByShareGroup(Long shareGroupId, Pageable pageable) {
+        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
+        if (shareGroup == null) {
+            throw new BusinessException(SHARE_GROUP_NOT_FOUND);
+        }
+
+        return photoRepository.findAllByShareGroup(shareGroup, pageable);
     }
 
     private PhotoResponse.PreSignedUrlInfo getPreSignedUrl(String originalFilename) {
