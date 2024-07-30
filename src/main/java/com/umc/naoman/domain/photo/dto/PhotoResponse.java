@@ -41,8 +41,9 @@ public abstract class PhotoResponse {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PagedPhotoInfo {
+    public static class PhotoListInfo {
         private List<PhotoInfo> photoInfoList;
+        Integer listSize;
         Integer totalPage;
         Long totalElements;
         Boolean isFirst;
@@ -57,6 +58,6 @@ public abstract class PhotoResponse {
         private String photoUrl;
         private String photoName;
         private String resizedPhotoName;
-        private LocalDateTime createdAt;
+        private LocalDateTime uploadTime;
     }
 }
