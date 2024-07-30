@@ -13,9 +13,8 @@ import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
-import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
+import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,6 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.umc.naoman.global.error.code.S3ErrorCode.PHOTO_NOT_FOUND_S3;
+import static com.umc.naoman.global.error.code.ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     private final AmazonS3 amazonS3;
     private final PhotoRepository photoRepository;
-    private final ShareGroupRepository shareGroupRepository;
+    private final ShareGroupService shareGroupService;
     private final PhotoConverter photoConverter;
 
     @Value("${spring.cloud.aws.s3.bucket}")
@@ -57,7 +57,11 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request) {
-        ShareGroup shareGroup = shareGroupRepository.findById(request.getShareGroupId()).orElseThrow(EntityNotFoundException::new);
+        ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
+        if (shareGroup == null) {
+            throw new BusinessException(SHARE_GROUP_NOT_FOUND);
+        }
+
         int uploadCount = 0;
 
         for (String photoUrl : request.getPhotoUrlList()) {
