@@ -1,12 +1,14 @@
 package com.umc.naoman.global.security.model;
 
 import com.umc.naoman.domain.member.entity.Member;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
 
+@Getter
 public class MemberDetails implements UserDetails {
     private final Member member;
 
