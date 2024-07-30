@@ -20,7 +20,7 @@ jobs:
         run: |
           # create application.yml
           cd ./src/main
-          cd .resources
+          cd ./resources
           
           touch ./application.yml
           
