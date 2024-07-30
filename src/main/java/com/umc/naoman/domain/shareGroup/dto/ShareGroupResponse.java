@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public abstract class ShareGroupResponse {
 
@@ -18,7 +19,24 @@ public abstract class ShareGroupResponse {
         private Long shareGroupId;
         private String name; //공유그룹 이름 반환
         private String inviteUrl; //공유그룹 초대 코드 반환
+        private String image; //공유그룹 대표 이미지 반환
+        private int memberCount;
+        private List<ProfileInfo> profileInfoList;
+
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private LocalDateTime createdAt;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProfileInfo {
+        private Long profileId;
+        private String name;
+        private String image; //프로필 이미지 반환
+        private Long memberId;
+    }
+
+
 }

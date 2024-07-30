@@ -50,7 +50,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// AWS
+	// AWS, AWS S3
 	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.0.0")
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'

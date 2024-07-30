@@ -11,6 +11,9 @@ public enum ShareGroupErrorCode implements ErrorCode {
     EMPTY_MEETING_TYPE_LIST(400, "EG002", "모임의 성격을 하나 이상 선택해야 합니다."),
     NULL_PLACE(400, "EG003", "모임 장소를 입력해야 합니다."),
     MEMBER_COUNT_MISMATCH(400, "EG004", "멤버 수와 멤버 이름 리스트의 크기가 일치하지 않습니다."),
+
+    SHARE_GROUP_NOT_FOUND(404, "EG005", "공유 그룹을 찾을 수 없습니다."),
+
     ;
 
     private final int status;
