@@ -49,7 +49,7 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     @Override
-    public void makeNewNotificationSameShareGroup(Notification notification) {
+    public void makeNewNotification(Notification notification) {
         //notification은 actor(해당 알람을 촉발시킨 맴버)가 생성하였으므로, actor는 읽음 처리 되어 있다. 또한 actor에게는 알림이 가면 안된다
         // 해당 공유그룹에 속한 맴버는 같은 알람을 받고 읽지 않음 처리. 또한 push도 보내야 한다
 
