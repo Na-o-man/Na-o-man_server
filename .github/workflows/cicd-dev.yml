@@ -24,7 +24,7 @@ jobs:
           
           touch ./application.yml
           
-          echo "${{ secrets.DEV_APPLICATION_YML }}" >> ./application.yml
+          echo "${{ secrets.APPLICATION_DEV_YML }}" >> ./application.yml
 
       # 빌드 권한 부여
       - name: Grant execute permission for gradlew
@@ -32,7 +32,7 @@ jobs:
 
       # docker image 빌드
       - name: Build
-        run: docker build --no-cache -t ${{ secretes.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:${{ secrets.DOCKERHUB_TAG }} .
+        run: docker build --no-cache -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:${{ secrets.DOCKERHUB_IMAGE_TAG }} .
 
       # docker hub 로그인
       - name: Docker Hub login
@@ -43,14 +43,14 @@ jobs:
 
       # docker hub에 image push
       - name: docker image push
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME}}:${{secrets.DOCKERHUB_TAG }}
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME}}:${{secrets.DOCKERHUB_IMAGE_TAG }}
 
       # docker compose에 사용될 환경 변수들이 담긴 env 파일 세팅
       - name: Set up environment variables
         run: |
-          echo "DOCKER_USER_NAME=${{ secrets.DOCKERHUB_USERNAME }}" >> dev.env
+          echo "DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> dev.env
           echo "DOCKER_IMAGE_NAME=${{ secrets.DOCKERHUB_IMAGE_NAME }}" >> dev.env
-          echo "DOCKER_IMAGE_TAG=${{ secrets.DOCKERHUB_TAG }}" >> dev.env
+          echo "DOCKER_IMAGE_TAG=${{ secrets.DOCKERHUB_IMAGE_TAG }}" >> dev.env
           echo "SPRING_OUTER_PORT=${{ secrets.SPRING_OUTER_PORT }}" >> dev.env
           echo "SPRING_INNER_PORT=${{ secrets.SPRING_INNER_PORT }}" >> dev.env
 
@@ -78,7 +78,7 @@ jobs:
             sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN_READ_ONLY }}
             sudo docker container stop naoman-dev
             sudo docker container rm naoman-dev
-            sudo docker image rm  ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME}}:${{secrets.DOCKERHUB_TAG }}
+            sudo docker image rm  ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME}}:${{secrets.DOCKERHUB_IMAGE_TAG }}
             sudo docker compose --env-file dev.env -f compose.yml up -d  
             sudo docker container prune -f
             sudo docker image prune -a -f
