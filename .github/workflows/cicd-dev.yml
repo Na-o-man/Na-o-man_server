@@ -1,0 +1,84 @@
+name: Docker Hub Dev Deploy
+
+run-name: ${{ github.head_ref }} 브랜치 작업 내용 병합 후 배포
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # develop 브랜치 체크아웃
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # application.yml 파일 생성
+      - name: make application.yml
+        run: |
+          # create application.yml
+          cd ./src/main
+          cd .resources
+          
+          touch ./application.yml
+          
+          echo "${{ secrets.DEV_APPLICATION_YML }}" >> ./application.yml
+
+      # 빌드 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      # docker image 빌드
+      - name: Build
+        run: docker build --no-cache -t ${{ secretes.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:${{ secrets.DOCKERHUB_TAG }} .
+
+      # docker hub 로그인
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secretes.DOCKERHUB_USERNAME }}
+          password: ${{ secretes.DOCKERHUB_TOKEN_READ_WRITE }}
+
+      # docker hub에 image push
+      - name: docker image push
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME}}:${{secrets.DOCKERHUB_TAG }}
+
+      # docker compose에 사용될 환경 변수들이 담긴 env 파일 세팅
+      - name: Set up environment variables
+        run: |
+          echo "DOCKER_USER_NAME=${{ secrets.DOCKERHUB_USERNAME }}" >> dev.env
+          echo "DOCKER_IMAGE_NAME=${{ secrets.DOCKERHUB_IMAGE_NAME }}" >> dev.env
+          echo "DOCKER_IMAGE_TAG=${{ secrets.DOCKERHUB_TAG }}" >> dev.env
+          echo "SPRING_OUTER_PORT=${{ secrets.SPRING_OUTER_PORT }}" >> dev.env
+          echo "SPRING_INNER_PORT=${{ secrets.SPRING_INNER_PORT }}" >> dev.env
+
+      # compose.yml, dev.env 파일 서버로 복사
+      - name: Copy compose.yml, dev.env
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "compose.yml, dev.env"
+          target: /home/ubuntu
+
+      # EC2에서 docker compose up
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu
+            sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN_READ_ONLY }}
+            sudo docker container stop naoman-dev
+            sudo docker container rm naoman-dev
+            sudo docker image rm  ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME}}:${{secrets.DOCKERHUB_TAG }}
+            sudo docker compose --env-file dev.env -f compose.yml up -d  
+            sudo docker container prune -f
+            sudo docker image prune -a -f
