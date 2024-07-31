@@ -40,6 +40,7 @@ public class Profile {
     private Long id;
     @Column(nullable = false)
     private String name;
+    @Column(length = 2000)
     private String image;
     @Enumerated(EnumType.STRING)
     private Role role;

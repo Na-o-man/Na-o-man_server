@@ -32,6 +32,7 @@ public class Member extends BaseTimeEntity {
     private String email;
     @Column(nullable = false)
     private String name;
+    @Column(length = 2000)
     private String image;
     @Column(name = "auth_id", nullable = false)
     private String authId;
