@@ -1,6 +1,7 @@
 package com.umc.naoman.domain.shareGroup.service;
 
 import com.umc.naoman.domain.member.entity.Member;
+import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.shareGroup.converter.ShareGroupConverter;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupRequest;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
@@ -9,6 +10,7 @@ import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
 import com.umc.naoman.global.error.BusinessException;
+import com.umc.naoman.global.error.code.MemberErrorCode;
 import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class ShareGroupServiceImpl implements ShareGroupService {
 
     private final ShareGroupRepository shareGroupRepository;
     private final ProfileRepository profileRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     @Override
@@ -57,6 +60,34 @@ public class ShareGroupServiceImpl implements ShareGroupService {
 
         // 리턴
         return savedShareGroup;
+    }
+
+    @Transactional
+    @Override
+    public ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Long memberId) {
+
+        ShareGroup shareGroup = findShareGroup(shareGroupId);
+
+        //Profile 객체
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
+
+        //공유그룹에 해당 profile이 존재하지 않으면
+        if (!profile.getShareGroup().getId().equals(shareGroupId)) {
+            throw new BusinessException(ShareGroupErrorCode.INVALID_PROFILE_FOR_GROUP);
+        }
+
+        //Member 객체 (현재 로그인된 본인 id)
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(MemberErrorCode.MEMBER_NOT_FOUND_BY_MEMBER_ID));
+
+        //해당 멤버(본인)을 선택한 profile에 세팅, 저장
+        profile.setMember(member);
+        profile.setJoinedAt(LocalDateTime.now());
+
+        profileRepository.save(profile);
+
+        return shareGroup;
     }
 
     @Override

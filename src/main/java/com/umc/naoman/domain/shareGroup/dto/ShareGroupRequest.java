@@ -27,4 +27,15 @@ public abstract class ShareGroupRequest {
         private String place;
     }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class joinShareGroupRequest {
+        @NotNull(message = "공유그룹 ID를 입력해야 합니다.")
+        private Long shareGroupId;
+        @NotNull(message = "프로필 ID를 입력해야 합니다.")
+        private Long profileId;
+    }
+
 }
