@@ -103,5 +103,6 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     private void setMemberAndJoinedAt(Profile profile, Member member, LocalDateTime joinedAt) {
         profile.setMember(member);
         profile.setJoinedAt(joinedAt);
+        profile.setImage(member.getImage());
     }
 }
