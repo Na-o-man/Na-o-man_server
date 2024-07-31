@@ -26,4 +26,10 @@ public class MemberController {
         return ResultResponse.of(MemberResultCode.MEMBER_INFO,
                 MemberConverter.toMemberInfo(member));
     }
+
+    @GetMapping("/terms/{memberId}")
+    public ResultResponse<MemberResponse.MarketingAgreed> getMarketingAgreed(@PathVariable(name = "memberId") Long memberId) {
+        Member member = memberService.findMember(memberId);
+        return ResultResponse.of(MemberResultCode.CHECK_MARKETING_AGREED, MemberConverter.toMarketingAgreed(member));
+    }
 }

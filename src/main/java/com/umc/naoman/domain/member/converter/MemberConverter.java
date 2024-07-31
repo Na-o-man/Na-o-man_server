@@ -48,4 +48,10 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponse.MarketingAgreed toMarketingAgreed(Member member) {
+        return MemberResponse.MarketingAgreed.builder()
+                .marketingAgreed(member.getMarketingAgreed())
+                .build();
+    }
+
 }
