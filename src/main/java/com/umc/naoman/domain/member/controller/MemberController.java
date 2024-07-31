@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-
+    private final MemberConverter memberConverter;
 
     @GetMapping("/{memberId}") // memberId를 사용해 특정 회원 정보 조회
     @Operation( summary = "특정 회원 정보 조회 API", description = "[PathVariable]\n memberId\n[request]\n" +
@@ -39,7 +39,7 @@ public class MemberController {
     public ResultResponse<MemberResponse.MemberInfo> getMemberInfo(@PathVariable(name = "memberId") Long memberId) {
         Member member = memberService.findMember(memberId);
         return ResultResponse.of(MemberResultCode.MEMBER_INFO,
-                MemberConverter.toMemberInfo(member));
+                memberConverter.toMemberInfo(member));
     }
 
     @GetMapping("/terms/{memberId}")
@@ -54,6 +54,6 @@ public class MemberController {
     })
     public ResultResponse<MemberResponse.MarketingAgreed> getMarketingAgreed(@PathVariable(name = "memberId") Long memberId) {
         Member member = memberService.findMember(memberId);
-        return ResultResponse.of(MemberResultCode.CHECK_MARKETING_AGREED, MemberConverter.toMarketingAgreed(member));
+        return ResultResponse.of(MemberResultCode.CHECK_MARKETING_AGREED, memberConverter.toMarketingAgreed(member));
     }
 }
