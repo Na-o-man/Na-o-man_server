@@ -14,5 +14,5 @@ public interface PhotoService {
 
     PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request);
 
-    Page<Photo> getAllPhotoListByShareGroup(Long shareGroupId, Pageable pageable);
+    Page<Photo> getAllPhotoList(Long shareGroupId, Pageable pageable);
 }

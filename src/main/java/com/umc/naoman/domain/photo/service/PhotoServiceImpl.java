@@ -78,13 +78,13 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Photo> getAllPhotoListByShareGroup(Long shareGroupId, Pageable pageable) {
+    public Page<Photo> getAllPhotoList(Long shareGroupId, Pageable pageable) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
         if (shareGroup == null) {
             throw new BusinessException(SHARE_GROUP_NOT_FOUND);
         }
 
-        return photoRepository.findAllByShareGroup(shareGroup, pageable);
+        return photoRepository.findAllByShareGroupId(shareGroupId, pageable);
     }
 
     private PhotoResponse.PreSignedUrlInfo getPreSignedUrl(String originalFilename) {
