@@ -13,7 +13,6 @@ public class CookieUtils {
     public static void addCookie(HttpServletResponse response, String name, String value,
                                  int maxAge) {
         Cookie cookie = new Cookie(name, value);
-        cookie.setDomain("ec2-52-79-212-19.ap-northeast-2.compute.amazonaws.com");
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
         // HTTPS 적용 시 함께 적용
