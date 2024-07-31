@@ -1,0 +1,31 @@
+{
+  "settings" : {
+    "index" :{
+      "number_of_shards" : 2,
+      "number_of_replicas" : 2
+    }
+  },
+  "mappings" : {
+    "_routing": {
+      "required" : true
+    },
+    "properties" : {
+      "shareGroupId" : {
+        "type" : "long"
+      },
+      "keyValue" : {
+        "type" : "keyword"
+      },
+      "createdAt" : {
+        "type" : "date",
+        "format" : "basic_ordinal_date_time_no_millis"
+      },
+      "faceTag" : {
+        "type" : "long"
+      },
+      "downloadTag" : {
+        "type" : "long"
+      }
+    }
+  }
+}
