@@ -44,9 +44,9 @@ public class PhotoController {
     }
 
     @GetMapping("/all")
-    public ResultResponse<PhotoResponse.PhotoListInfo> getAllPhotoListByShareGroup(@RequestParam Long shareGroupId,
-                                                                                   @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<Photo> allPhotoListByShareGroup = photoService.getAllPhotoListByShareGroup(shareGroupId, pageable);
+    public ResultResponse<PhotoResponse.PagedPhotoInfo> getAllPhotoListByShareGroup(@RequestParam Long shareGroupId,
+                                                                                    @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Photo> allPhotoListByShareGroup = photoService.getAllPhotoList(shareGroupId, pageable);
         return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPhotoListInfo(allPhotoListByShareGroup));
     }
 
