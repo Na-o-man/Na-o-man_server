@@ -77,7 +77,7 @@ public class ShareGroupServiceImpl implements ShareGroupService {
         }
 
         //해당 멤버(본인)을 선택한 profile에 세팅, 저장
-        setMemberAndJoinedAt(profile, member, LocalDateTime.now());
+        profile.setInfo(member);
         profileRepository.save(profile);
 
         return shareGroup;
@@ -100,9 +100,4 @@ public class ShareGroupServiceImpl implements ShareGroupService {
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
     }
 
-    private void setMemberAndJoinedAt(Profile profile, Member member, LocalDateTime joinedAt) {
-        profile.setMember(member);
-        profile.setJoinedAt(joinedAt);
-        profile.setImage(member.getImage());
-    }
 }
