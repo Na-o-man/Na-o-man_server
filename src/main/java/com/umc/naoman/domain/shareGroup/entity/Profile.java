@@ -35,7 +35,7 @@ public class Profile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "share_group_id")
     private ShareGroup shareGroup;
-    @Column(name = "joined_at", nullable = false, updatable = false)
+    @Column(name = "joined_at")
     private LocalDateTime joinedAt;
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
