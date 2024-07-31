@@ -34,4 +34,11 @@ public abstract class MemberResponse {
         private String email;
         private String image;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class MarketingAgreed {
+        private Boolean marketingAgreed;
+    }
 }
