@@ -40,8 +40,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String REFRESH_TOKEN_KEY = "refresh-token";
     private static final String TEMP_MEMBER_INFO_KEY = "temp-member-info";
-    private static final String FRONTEND_BASE_URL = "http://localhost:3000";
-    private static final String FRONTEND_AGREEMENT_PATH = "/enter/login/clause";
+    private static final String FRONTEND_BASE_URL = "https://www.naver.com";
+    private static final String FRONTEND_AGREEMENT_PATH = "/login/clause";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
