@@ -31,6 +31,14 @@ public abstract class ShareGroupResponse {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class ShareGroupId {
+        private Long shareGroupId;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ProfileInfo {
         private Long profileId;
         private String name;

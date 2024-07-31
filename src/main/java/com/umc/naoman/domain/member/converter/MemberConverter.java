@@ -40,11 +40,17 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResponse.MemberInfo toMemberInfo(Member member) {
+    public MemberResponse.MemberInfo toMemberInfo(Member member) {
         return MemberResponse.MemberInfo.builder()
                 .name(member.getName())
                 .email(member.getEmail())
                 .image(member.getImage())
+                .build();
+    }
+
+    public MemberResponse.MarketingAgreed toMarketingAgreed(Member member) {
+        return MemberResponse.MarketingAgreed.builder()
+                .marketingAgreed(member.getMarketingAgreed())
                 .build();
     }
 
