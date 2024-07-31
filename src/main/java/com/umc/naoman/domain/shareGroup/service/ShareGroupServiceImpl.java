@@ -64,27 +64,20 @@ public class ShareGroupServiceImpl implements ShareGroupService {
 
     @Transactional
     @Override
-    public ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Long memberId) {
+    public ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member) {
 
         ShareGroup shareGroup = findShareGroup(shareGroupId);
 
-        //Profile 객체
-        Profile profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
+        //repo에서 Profile 객체 꺼내오기
+        Profile profile = findProfile(profileId);
 
         //공유그룹에 해당 profile이 존재하지 않으면
         if (!profile.getShareGroup().getId().equals(shareGroupId)) {
             throw new BusinessException(ShareGroupErrorCode.INVALID_PROFILE_FOR_GROUP);
         }
 
-        //Member 객체 (현재 로그인된 본인 id)
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessException(MemberErrorCode.MEMBER_NOT_FOUND_BY_MEMBER_ID));
-
         //해당 멤버(본인)을 선택한 profile에 세팅, 저장
-        profile.setMember(member);
-        profile.setJoinedAt(LocalDateTime.now());
-
+        setMemberAndJoinedAt(profile, member, LocalDateTime.now());
         profileRepository.save(profile);
 
         return shareGroup;
@@ -99,5 +92,16 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     @Override
     public List<Profile> findProfileList(Long shareGroupId) {
         return profileRepository.findByShareGroupId(shareGroupId);
+    }
+
+    @Override
+    public Profile findProfile(Long profileId) {
+        return profileRepository.findById(profileId)
+                .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
+    }
+
+    private void setMemberAndJoinedAt(Profile profile, Member member, LocalDateTime joinedAt) {
+        profile.setMember(member);
+        profile.setJoinedAt(joinedAt);
     }
 }

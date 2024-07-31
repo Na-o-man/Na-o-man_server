@@ -11,5 +11,6 @@ public interface ShareGroupService {
     ShareGroup createShareGroup(ShareGroupRequest.createShareGroupRequest request, Member member);
     ShareGroup findShareGroup(Long shareGroupId);
     List<Profile> findProfileList(Long shareGroupId);
-    ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Long memberId);
+    ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member);
+    Profile findProfile(Long profileId);
 }

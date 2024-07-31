@@ -30,8 +30,8 @@ public class ShareGroupConverter {
     }
 
     // 그룹 참여 시 반환하는 DTO
-    public static ShareGroupResponse.JoinShareGroupInfo toJoinShareGroupInfoDTO(ShareGroup shareGroup) {
-        return ShareGroupResponse.JoinShareGroupInfo.builder()
+    public static ShareGroupResponse.ShareGroupId toJoinShareGroupInfoDTO(ShareGroup shareGroup) {
+        return ShareGroupResponse.ShareGroupId.builder()
                 .shareGroupId(shareGroup.getId())
                 .build();
     }

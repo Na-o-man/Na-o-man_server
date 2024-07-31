@@ -31,7 +31,7 @@ public abstract class ShareGroupResponse {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class JoinShareGroupInfo {
+    public static class ShareGroupId {
         private Long shareGroupId;
     }
 
