@@ -13,7 +13,7 @@ public enum MemberResultCode implements ResultCode {
     EDIT_MYPAGE_INFO(200, "SM002", "내 정보를 성공적으로 수정하였습니다."),
     CHECK_MEMBER_REGISTRATION(200, "SM000", "해당 이메일을 가진 회원의 가입 여부를 성공적으로 조회하였습니다."),
     MEMBER_INFO (200,"SM005","회원 정보를 성공적으로 조회하였습니다."),
-    CHECK_MARKETING_AGREED(200,"SM006","마케팅 동의 여부를 성공적으로 조회하였습니다."),
+    CHECK_MARKETING_AGREED(200,"SM006","마케팅동의여부를 성공적으로 조회하였습니다."),
     ;
     private final int status;
     private final String code;
