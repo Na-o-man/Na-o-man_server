@@ -29,7 +29,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.umc.naoman.global.error.code.S3ErrorCode.PHOTO_NOT_FOUND_S3;
-import static com.umc.naoman.global.error.code.ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -60,10 +59,6 @@ public class PhotoServiceImpl implements PhotoService {
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
-        if (shareGroup == null) {
-            throw new BusinessException(SHARE_GROUP_NOT_FOUND);
-        }
-
         int uploadCount = 0;
 
         for (String photoUrl : request.getPhotoUrlList()) {
@@ -78,13 +73,9 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Photo> getAllPhotoListByShareGroup(Long shareGroupId, Pageable pageable) {
+    public Page<Photo> getAllPhotoList(Long shareGroupId, Pageable pageable) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
-        if (shareGroup == null) {
-            throw new BusinessException(SHARE_GROUP_NOT_FOUND);
-        }
-
-        return photoRepository.findAllByShareGroup(shareGroup, pageable);
+        return photoRepository.findAllByShareGroupId(shareGroup.getId(), pageable);
     }
 
     private PhotoResponse.PreSignedUrlInfo getPreSignedUrl(String originalFilename) {
