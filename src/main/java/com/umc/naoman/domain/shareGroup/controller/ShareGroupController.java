@@ -55,4 +55,13 @@ public class ShareGroupController {
                 ShareGroupConverter.toShareGroupDetailInfoDTO(shareGroup, profileList));
     }
 
+    @PostMapping("/join")
+    @Operation(summary = "공유그룹 참여 API", description = "특정 공유그룹에 참여하는 API입니다.")
+    public ResultResponse<ShareGroupResponse.ShareGroupId> joinShareGroup(@Valid @RequestBody ShareGroupRequest.JoinShareGroupRequest request,
+                                                                                @LoginMember Member member) {
+        ShareGroup shareGroup = shareGroupService.joinShareGroup(request.getShareGroupId(), request.getProfileId(), member);
+        return ResultResponse.of(ShareGroupResultCode.JOIN_SHARE_GROUP,
+                ShareGroupConverter.toJoinShareGroupInfoDTO(shareGroup));
+    }
+
 }
