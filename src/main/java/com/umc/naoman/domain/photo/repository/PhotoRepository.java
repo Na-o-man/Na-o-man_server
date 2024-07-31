@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
-    Page<Photo> findAllByShareGroup(ShareGroup shareGroup, Pageable pageable);
+    Page<Photo> findAllByShareGroupId(Long shareGroupId, Pageable pageable);
 }
