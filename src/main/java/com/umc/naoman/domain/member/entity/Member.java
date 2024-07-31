@@ -39,7 +39,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "social_type", nullable = false)
     private SocialType socialType;
     @Column(name = "marketing_agreed")
-    private boolean marketingAgreed;
+    private Boolean marketingAgreed;
 
     public Member update(String name, String image) {
         this.name = name;
