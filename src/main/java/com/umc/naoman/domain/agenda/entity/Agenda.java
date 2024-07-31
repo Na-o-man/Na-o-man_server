@@ -1,6 +1,5 @@
 package com.umc.naoman.domain.agenda.entity;
 
-import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.global.entity.BaseTimeEntity;
@@ -30,6 +29,6 @@ public class Agenda extends BaseTimeEntity {
     @JoinColumn(name = "share_group_id")
     private ShareGroup shareGroup;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "profile_id")
     private Profile profile;
 }
