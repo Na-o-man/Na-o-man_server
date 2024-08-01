@@ -54,9 +54,9 @@ public abstract class PhotoResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PhotoInfo {
-        private String photoUrl;
-        private String photoName;
-        private String resizedPhotoName;
+        private String rawPhotoUrl;
+        private String w200PhotoUrl;
+        private String w400PhotoUrl;
         private LocalDateTime createdAt;
     }
 }

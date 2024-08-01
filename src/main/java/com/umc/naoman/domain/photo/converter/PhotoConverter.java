@@ -57,15 +57,27 @@ public class PhotoConverter {
     }
 
     public PhotoResponse.PhotoInfo toPhotoInfo(Photo photo) {
+        String rawUrl = photo.getUrl();
+
         return PhotoResponse.PhotoInfo.builder()
-                .photoUrl(photo.getUrl())
-                .photoName(photo.getName())
-                .resizedPhotoName(convertExtension(photo.getName()))
+                .rawPhotoUrl(rawUrl)
+                .w200PhotoUrl(createResizedPhotoUrl(rawUrl, "w200"))
+                .w400PhotoUrl(createResizedPhotoUrl(rawUrl, "w400"))
                 .createdAt(photo.getCreatedAt())
                 .build();
     }
 
-    // HEIC에서 JPG로 확장자를 변환하는 메서드
+    private String createResizedPhotoUrl(String photoUrl, String size) {
+        String resizedUrl = getResizedUrl(photoUrl, size);
+        return convertExtension(resizedUrl);
+    }
+
+    // 리사이즈된 사진의 URL로 변환하는 메서드
+    private String getResizedUrl(String photoUrl, String size) {
+        return photoUrl.replace("/raw/", "/" + size + "/");
+    }
+
+    // 확장자 변환 메서드
     private String convertExtension(String photoUrl) {
         return photoUrl.replace(".HEIC", ".jpg");
     }
