@@ -46,7 +46,7 @@ public class ShareGroupController {
     @Parameters(value = {
             @Parameter(name = "shareGroupId", description = "특정 공유그룹 id를 입력해 주세요.")
     })
-    public ResultResponse<ShareGroupResponse.ShareGroupInfo> getShareGroupInfo(@PathVariable(name = "shareGroupId") Long shareGroupId) {
+    public ResultResponse<ShareGroupResponse.ShareGroupDetailInfo> getShareGroupInfo(@PathVariable(name = "shareGroupId") Long shareGroupId) {
 
         ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
         List<Profile> profileList = shareGroupService.findProfileList(shareGroupId);

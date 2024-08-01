@@ -14,6 +14,7 @@ public class ShareGroupConverter {
     public static ShareGroup toEntity(ShareGroupRequest.createShareGroupRequest request) {
         return ShareGroup.builder()
                 .memberCount(request.getMemberNameList().size())  // 변경 가능성 있음. memberCount 대신 nameList의 size 사용
+                .name("임시 공유 그룹 이름") //임시 공유 그룹 이름
                 .build();
     }
 
@@ -23,7 +24,7 @@ public class ShareGroupConverter {
     public static ShareGroupResponse.ShareGroupInfo toShareGroupInfoDTO(ShareGroup shareGroup) {
         return ShareGroupResponse.ShareGroupInfo.builder()
                 .shareGroupId(shareGroup.getId())
-                .name("임시 공유 그룹 이름") //임시 공유 그룹 이름 (고유 코드 출력)
+                .name(shareGroup.getName())
                 .inviteUrl(baseUrl + shareGroup.getInviteCode())
                 .createdAt(shareGroup.getCreatedAt())
                 .build();
@@ -37,12 +38,12 @@ public class ShareGroupConverter {
     }
 
     // 조회 시, 디테일한 그룹 정보를 반환하는 DTO
-    public static ShareGroupResponse.ShareGroupInfo toShareGroupDetailInfoDTO(ShareGroup shareGroup, List<Profile> profiles) {
+    public static ShareGroupResponse.ShareGroupDetailInfo toShareGroupDetailInfoDTO(ShareGroup shareGroup, List<Profile> profiles) {
         List<ShareGroupResponse.ProfileInfo> profileInfoList = profiles.stream()
                 .map(ShareGroupConverter::toProfileInfo)
                 .toList();
 
-        return ShareGroupResponse.ShareGroupInfo.builder()
+        return ShareGroupResponse.ShareGroupDetailInfo.builder()
                 .shareGroupId(shareGroup.getId())
                 .name("임시 공유 그룹 이름") //임시 공유 그룹 이름 (고유 코드 출력)
                 .image(shareGroup.getImage())
