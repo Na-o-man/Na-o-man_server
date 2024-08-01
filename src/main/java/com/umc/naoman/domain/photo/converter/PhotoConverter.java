@@ -67,15 +67,19 @@ public class PhotoConverter {
                 .build();
     }
 
-    // Helper method to create resized photo URL
     private String createResizedPhotoUrl(String photoUrl, String size) {
-        return convertExtension(photoUrl.replace("/raw/", "/" + size + "/"));
+        String resizedUrl = getResizedUrl(photoUrl, size);
+        return convertExtension(resizedUrl);
     }
 
-    // HEIC to JPG conversion method
+    // 리사이즈된 사진의 URL로 변환하는 메서드
+    private String getResizedUrl(String photoUrl, String size) {
+        return photoUrl.replace("/raw/", "/" + size + "/");
+    }
+
+    // 확장자 변환 메서드
     private String convertExtension(String photoUrl) {
         return photoUrl.replace(".HEIC", ".jpg");
     }
-
 
 }
