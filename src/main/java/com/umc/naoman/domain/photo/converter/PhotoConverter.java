@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.umc.naoman.domain.photo.service.PhotoServiceImpl.*;
+
 @Component
 public class PhotoConverter {
 
@@ -61,8 +63,8 @@ public class PhotoConverter {
 
         return PhotoResponse.PhotoInfo.builder()
                 .rawPhotoUrl(rawUrl)
-                .w200PhotoUrl(createResizedPhotoUrl(rawUrl, "w200"))
-                .w400PhotoUrl(createResizedPhotoUrl(rawUrl, "w400"))
+                .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
+                .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))
                 .createdAt(photo.getCreatedAt())
                 .build();
     }
@@ -74,12 +76,22 @@ public class PhotoConverter {
 
     // 리사이즈된 사진의 URL로 변환하는 메서드
     private String getResizedUrl(String photoUrl, String size) {
-        return photoUrl.replace("/raw/", "/" + size + "/");
+        return photoUrl.replace("/" + RAW_PATH_PREFIX + "/", "/" + size + "/");
     }
 
     // 확장자 변환 메서드
-    private String convertExtension(String photoUrl) {
+    public String convertExtension(String photoUrl) {
         return photoUrl.replace(".HEIC", ".jpg");
+    }
+
+    public PhotoResponse.PhotoDeleteInfo toPhotoDeleteInfo(List<Photo> photoList) {
+        List<Long> photoIdList = photoList.stream()
+                .map(Photo::getId)
+                .collect(Collectors.toList());
+
+        return PhotoResponse.PhotoDeleteInfo.builder()
+                .photoIdList(photoIdList)
+                .build();
     }
 
 }

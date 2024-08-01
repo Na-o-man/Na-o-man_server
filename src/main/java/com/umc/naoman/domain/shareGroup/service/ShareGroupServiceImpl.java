@@ -122,4 +122,10 @@ public class ShareGroupServiceImpl implements ShareGroupService {
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
     }
 
+    @Override
+    public Profile findProfile(Long shareGroupId, Long memberId) {
+        return profileRepository.findByShareGroupIdAndMemberId(shareGroupId, memberId)
+                .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
+    }
+
 }
