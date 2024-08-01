@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
     List<Profile> findByShareGroupId(Long shareGroupId);
+    List<Profile> findByMemberId(Long memberId);
 }
