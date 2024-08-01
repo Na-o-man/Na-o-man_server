@@ -29,6 +29,13 @@ public class ShareGroupConverter {
                 .build();
     }
 
+    // 그룹 참여 시 반환하는 DTO
+    public static ShareGroupResponse.ShareGroupId toJoinShareGroupInfoDTO(ShareGroup shareGroup) {
+        return ShareGroupResponse.ShareGroupId.builder()
+                .shareGroupId(shareGroup.getId())
+                .build();
+    }
+
     // 조회 시, 디테일한 그룹 정보를 반환하는 DTO
     public static ShareGroupResponse.ShareGroupInfo toShareGroupDetailInfoDTO(ShareGroup shareGroup, List<Profile> profiles) {
         List<ShareGroupResponse.ProfileInfo> profileInfoList = profiles.stream()
@@ -45,6 +52,7 @@ public class ShareGroupConverter {
                 .build();
     }
 
+    // profile 정보 반환 DTO
     public static ShareGroupResponse.ProfileInfo toProfileInfo(Profile profile) {
         return ShareGroupResponse.ProfileInfo.builder()
                 .profileId(profile.getId())

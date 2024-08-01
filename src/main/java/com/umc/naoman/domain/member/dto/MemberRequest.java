@@ -42,10 +42,9 @@ public abstract class MemberRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LoginRequest {
-        @NotNull(message = "로그인한 소셜 플랫폼에서 제공한 회원 번호를 필수로 입력해야 합니다.")
-        private String authId;
         @NotNull(message = "socialType은 KAKAO, GOOGLE 중 하나를 입력해야 합니다.")
         private SocialType socialType;
-
+        @NotNull(message = "로그인한 소셜 플랫폼에서 제공한 회원 번호를 필수로 입력해야 합니다.")
+        private String authId;
     }
 }

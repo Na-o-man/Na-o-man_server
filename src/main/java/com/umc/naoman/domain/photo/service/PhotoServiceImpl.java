@@ -17,6 +17,8 @@ import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +29,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.umc.naoman.global.error.code.S3ErrorCode.PHOTO_NOT_FOUND_S3;
-import static com.umc.naoman.global.error.code.ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -58,10 +59,6 @@ public class PhotoServiceImpl implements PhotoService {
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
-        if (shareGroup == null) {
-            throw new BusinessException(SHARE_GROUP_NOT_FOUND);
-        }
-
         int uploadCount = 0;
 
         for (String photoUrl : request.getPhotoUrlList()) {
@@ -72,6 +69,13 @@ public class PhotoServiceImpl implements PhotoService {
         }
 
         return new PhotoResponse.PhotoUploadInfo(shareGroup.getId(), uploadCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Photo> getAllPhotoList(Long shareGroupId, Pageable pageable) {
+        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
+        return photoRepository.findAllByShareGroupId(shareGroup.getId(), pageable);
     }
 
     private PhotoResponse.PreSignedUrlInfo getPreSignedUrl(String originalFilename) {

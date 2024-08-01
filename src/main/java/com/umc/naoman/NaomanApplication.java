@@ -13,14 +13,12 @@ import java.util.TimeZone;
 @SpringBootApplication
 @Slf4j
 public class NaomanApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(NaomanApplication.class, args);
 	}
 
 	@PostConstruct
 	public void setTimeZone() {
-		log.debug("타임존 설정 전 현재 시각: {}", ZonedDateTime.now());
 		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
 		log.debug("타임존 설정 후 현재 시각: {}", ZonedDateTime.now());
 	}
