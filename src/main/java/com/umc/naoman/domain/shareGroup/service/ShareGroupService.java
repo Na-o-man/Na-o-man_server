@@ -13,4 +13,5 @@ public interface ShareGroupService {
     List<Profile> findProfileList(Long shareGroupId);
     ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member);
     Profile findProfile(Long profileId);
+    Profile findProfile(Long shareGroupId, Long memberID);
 }

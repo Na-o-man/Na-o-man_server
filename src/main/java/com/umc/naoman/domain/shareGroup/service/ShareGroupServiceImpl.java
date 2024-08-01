@@ -10,7 +10,6 @@ import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
 import com.umc.naoman.global.error.BusinessException;
-import com.umc.naoman.global.error.code.MemberErrorCode;
 import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -97,6 +96,12 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     @Override
     public Profile findProfile(Long profileId) {
         return profileRepository.findById(profileId)
+                .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
+    }
+
+    @Override
+    public Profile findProfile(Long shareGroupId, Long memberId) {
+        return profileRepository.findByShareGroupIdAndMemberId(shareGroupId, memberId)
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
     }
 
