@@ -90,6 +90,12 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     }
 
     @Override
+    public ShareGroup findShareGroupByInviteCode(String inviteCode) {
+        return shareGroupRepository.findByInviteCode(inviteCode)
+                .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND));
+    }
+
+    @Override
     public List<Profile> findProfileList(Long shareGroupId) {
         return profileRepository.findByShareGroupId(shareGroupId);
     }

@@ -10,6 +10,7 @@ import java.util.List;
 public interface ShareGroupService {
     ShareGroup createShareGroup(ShareGroupRequest.createShareGroupRequest request, Member member);
     ShareGroup findShareGroup(Long shareGroupId);
+    ShareGroup findShareGroupByInviteCode(String inviteCode);
     List<Profile> findProfileList(Long shareGroupId);
     ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member);
     Profile findProfile(Long profileId);
