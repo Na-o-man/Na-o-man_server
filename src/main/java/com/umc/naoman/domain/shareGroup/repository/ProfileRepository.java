@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
     List<Profile> findByShareGroupId(Long shareGroupId);
     Optional<Profile> findByShareGroupIdAndMemberId(Long shareGroupId, Long memberId);
+    List<Profile> findByMemberId(Long memberId);
 }

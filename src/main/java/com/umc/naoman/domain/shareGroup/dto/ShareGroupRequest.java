@@ -17,8 +17,6 @@ public abstract class ShareGroupRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class createShareGroupRequest {
-        @NotNull(message = "멤버 수를 입력해야 합니다.")
-        private Integer memberCount;
         @NotEmpty(message = "멤버 이름 리스트는 비어 있을 수 없습니다.")
         private List<String> memberNameList;
         @NotEmpty(message = "모임의 성격을 하나 이상 선택해야 합니다.")
