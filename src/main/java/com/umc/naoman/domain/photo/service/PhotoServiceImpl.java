@@ -162,29 +162,35 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member) {
+        // 멤버가 해당 공유 그룹에 대한 권한이 있는지 확인
         if (profileRepository.findByShareGroupIdAndMemberId(request.getShareGroupId(), member.getId()) == null) {
-            throw new BusinessException(UNAUTHORIZED_DELETE);
+            throw new BusinessException(UNAUTHORIZED_DELETE); // 권한이 없는 경우 예외 발생
         }
 
-        List<Long> photoIdList = request.getPhotoIdList();
-        List<Photo> deletedPhotoList = new ArrayList<>();
+        // 요청된 사진 ID 목록과 공유 그룹 ID를 기반으로 사진 목록 조회
+        List<Photo> photoList = photoRepository.findByIdInAndShareGroupId(request.getPhotoIdList(), request.getShareGroupId());
 
-        for (Long photoId : photoIdList) {
-            Optional<Photo> photoOptional = photoRepository.findById(photoId);
-            if (photoOptional.isPresent()) {
-                Photo photo = photoOptional.get();
-                deletePhoto(photo);
-                deletedPhotoList.add(photo);
-            }
+        // 사진 목록 크기 검증
+        if (photoList.size() != request.getPhotoIdList().size()) {
+            throw new BusinessException(PHOTO_NOT_FOUND); // 요청한 사진이 일부 또는 전부 없을 경우 예외 발생
         }
 
-        return deletedPhotoList;
+        // 각 사진에 대해 S3에서 객체 삭제 및 데이터베이스에서 삭제
+        for (Photo photo : photoList) {
+            deletePhoto(photo);
+        }
+
+        return photoList; // 삭제된 사진 목록 반환
     }
 
     private void deletePhoto(Photo photo) {
-        s3Template.deleteObject(bucketName, RAW_PATH_PREFIX+ "/" + photo.getName());
-        s3Template.deleteObject(bucketName, W200_PATH_PREFIX+ "/" + photoConverter.convertExtension(photo.getName()));
-        s3Template.deleteObject(bucketName, W400_PATH_PREFIX+ "/" + photoConverter.convertExtension(photo.getName()));
+        // S3에서 원본 및 변환된 이미지 삭제
+        s3Template.deleteObject(bucketName, RAW_PATH_PREFIX + "/" + photo.getName());
+        s3Template.deleteObject(bucketName, W200_PATH_PREFIX + "/" + photoConverter.convertExtension(photo.getName()));
+        s3Template.deleteObject(bucketName, W400_PATH_PREFIX + "/" + photoConverter.convertExtension(photo.getName()));
+
+        // 데이터베이스에서 사진 삭제
         photoRepository.delete(photo);
     }
+
 }
