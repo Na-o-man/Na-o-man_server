@@ -5,13 +5,13 @@ import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.shareGroup.converter.ShareGroupConverter;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupRequest;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse;
+import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse.PagedShareGroupInfo;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.Role;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
 import com.umc.naoman.global.error.BusinessException;
-import com.umc.naoman.global.error.code.MemberErrorCode;
 import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,16 +32,16 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     private final ShareGroupRepository shareGroupRepository;
     private final ProfileRepository profileRepository;
     private final MemberRepository memberRepository;
+    private final ShareGroupConverter shareGroupConverter;
 
     @Transactional
     @Override
     public ShareGroup createShareGroup(ShareGroupRequest.createShareGroupRequest request, Member member) {
-
         // 초대링크를 위한 고유번호 생성 (UUID)
         String inviteCode = UUID.randomUUID().toString().replace("-", "").toUpperCase();
 
         // 변환 로직
-        ShareGroup newShareGroup = ShareGroupConverter.toEntity(request);
+        ShareGroup newShareGroup = shareGroupConverter.toEntity(request);
         newShareGroup.setInviteCode(inviteCode);
 
         // 생성된 공유 그룹 저장
@@ -88,33 +88,15 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     }
 
     @Override
-    public ShareGroupResponse.ShareGroupInfoList getMyShareGroupList(Member member, Pageable pageable) {
-
+    public Page<ShareGroup> getMyShareGroupList(Member member, Pageable pageable) {
         // 멤버를 통해 profile을 가져와서, 해당 profile의 shareGroupId를 추출
-        List<Long> shareGroupIds = profileRepository.findByMember(member).stream()
+        List<Long> shareGroupIdList = profileRepository.findByMemberId(member.getId())
+                .stream()
                 .map(profile -> profile.getShareGroup().getId())
-                .distinct() // 중복된 공유 그룹 ID 제거
                 .collect(Collectors.toList()); // 리스트로 수집
 
         // 추출한 공유 그룹 ID 리스트를 통해 해당 공유 그룹들을 페이징 처리하여 가져오기
-        Page<ShareGroup> shareGroupPage = shareGroupRepository.findByIdIn(shareGroupIds, pageable);
-
-        // 각 공유 그룹에 대한 상세 정보를 가져오기 (DetailInfo response 재사용)
-        List<ShareGroupResponse.ShareGroupDetailInfo> shareGroupDetailInfoList = shareGroupPage.getContent().stream()
-                .map(shareGroup -> {
-                    List<Profile> profiles = findProfileList(shareGroup.getId()); // profile 리스트 가져오기
-                    return ShareGroupConverter.toShareGroupDetailInfoDTO(shareGroup, profiles); // 공유그룹 DetailInfo 반환
-                })
-                .collect(Collectors.toList());
-
-        // 최종적으로 공유 그룹 목록 정보를 DTO로 변환하여 반환
-        return ShareGroupResponse.ShareGroupInfoList.builder()
-                .shareGroupDetailInfoList(shareGroupDetailInfoList) // 만든 info 리스트
-                .page(shareGroupPage.getNumber())
-                .totalElements(shareGroupPage.getTotalElements())
-                .isFirst(shareGroupPage.isFirst())
-                .isLast(shareGroupPage.isLast())
-                .build();
+        return shareGroupRepository.findByIdIn(shareGroupIdList, pageable);
     }
 
     @Override
