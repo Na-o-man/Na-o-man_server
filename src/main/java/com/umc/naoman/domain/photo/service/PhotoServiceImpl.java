@@ -13,6 +13,7 @@ import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
+import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
@@ -59,9 +60,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public List<PhotoResponse.PreSignedUrlInfo> getPreSignedUrlList(PhotoRequest.PreSignedUrlRequest request, Member member) {
-        if (profileRepository.findByShareGroupIdAndMemberId(request.getShareGroupId(), member.getId()) == null) {
-            throw new BusinessException(UNAUTHORIZED_UPLOAD);
-        }
+        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
 
         return request.getPhotoNameList().stream()
                 .map(this::getPreSignedUrl)
@@ -116,10 +115,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
-        if (profileRepository.findByShareGroupIdAndMemberId(request.getShareGroupId(), member.getId()) == null) {
-            throw new BusinessException(UNAUTHORIZED_UPLOAD);
-        }
-
+        shareGroupService.findProfile(member.getId(), request.getShareGroupId());
         ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
         int uploadCount = 0;
 
@@ -155,10 +151,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Transactional(readOnly = true)
     public Page<Photo> getAllPhotoList(Long shareGroupId, Member member, Pageable pageable) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
-
-        if (profileRepository.findByShareGroupIdAndMemberId(shareGroup.getId(), member.getId()) == null) {
-            throw new BusinessException(UNAUTHORIZED_GET);
-        }
+        shareGroupService.findProfile(shareGroup.getId(), member.getId());
 
         return photoRepository.findAllByShareGroupId(shareGroup.getId(), pageable);
     }
@@ -167,9 +160,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Transactional
     public List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member) {
         // 멤버가 해당 공유 그룹에 대한 권한이 있는지 확인
-        if (profileRepository.findByShareGroupIdAndMemberId(request.getShareGroupId(), member.getId()) == null) {
-            throw new BusinessException(UNAUTHORIZED_DELETE); // 권한이 없는 경우 예외 발생
-        }
+        shareGroupService.findProfile(member.getId(), request.getShareGroupId());
 
         // 요청된 사진 ID 목록과 공유 그룹 ID를 기반으로 사진 목록 조회
         List<Photo> photoList = photoRepository.findByIdInAndShareGroupId(request.getPhotoIdList(), request.getShareGroupId());
