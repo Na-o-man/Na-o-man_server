@@ -115,7 +115,11 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional
-    public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request) {
+    public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
+        if (profileRepository.findByShareGroupIdAndMemberId(request.getShareGroupId(), member.getId()) == null) {
+            throw new BusinessException(UNAUTHORIZED_UPLOAD);
+        }
+
         ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
         int uploadCount = 0;
 

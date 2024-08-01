@@ -42,8 +42,9 @@ public class PhotoController {
     }
 
     @PostMapping("/upload")
-    public ResultResponse<PhotoResponse.PhotoUploadInfo> uploadPhotoList(@Valid @RequestBody PhotoRequest.PhotoUploadRequest request) {
-        PhotoResponse.PhotoUploadInfo photoUploadInfo = photoService.uploadPhotoList(request);
+    public ResultResponse<PhotoResponse.PhotoUploadInfo> uploadPhotoList(@Valid @RequestBody PhotoRequest.PhotoUploadRequest request,
+                                                                         @LoginMember Member member) {
+        PhotoResponse.PhotoUploadInfo photoUploadInfo = photoService.uploadPhotoList(request, member);
         return ResultResponse.of(UPLOAD_PHOTO, photoUploadInfo);
     }
 

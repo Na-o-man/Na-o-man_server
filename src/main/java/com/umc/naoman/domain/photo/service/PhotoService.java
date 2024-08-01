@@ -13,7 +13,7 @@ public interface PhotoService {
 
     List<PhotoResponse.PreSignedUrlInfo> getPreSignedUrlList(PhotoRequest.PreSignedUrlRequest request, Member member);
 
-    PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request);
+    PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member);
 
     Page<Photo> getAllPhotoList(Long shareGroupId, Member member, Pageable pageable);
 
