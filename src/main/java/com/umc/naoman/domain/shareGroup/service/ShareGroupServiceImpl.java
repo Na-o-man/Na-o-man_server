@@ -4,6 +4,7 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.shareGroup.converter.ShareGroupConverter;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupRequest;
+import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.Role;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
@@ -13,12 +14,15 @@ import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.error.code.MemberErrorCode;
 import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -84,13 +88,43 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     }
 
     @Override
+    public ShareGroupResponse.ShareGroupInfoList getMyShareGroupList(Member member, Pageable pageable) {
+
+        // 멤버를 통해 profile을 가져와서, 해당 profile의 shareGroupId를 추출
+        List<Long> shareGroupIds = profileRepository.findByMember(member).stream()
+                .map(profile -> profile.getShareGroup().getId())
+                .distinct() // 중복된 공유 그룹 ID 제거
+                .collect(Collectors.toList()); // 리스트로 수집
+
+        // 추출한 공유 그룹 ID 리스트를 통해 해당 공유 그룹들을 페이징 처리하여 가져오기
+        Page<ShareGroup> shareGroupPage = shareGroupRepository.findByIdIn(shareGroupIds, pageable);
+
+        // 각 공유 그룹에 대한 상세 정보를 가져오기 (DetailInfo response 재사용)
+        List<ShareGroupResponse.ShareGroupDetailInfo> shareGroupDetailInfoList = shareGroupPage.getContent().stream()
+                .map(shareGroup -> {
+                    List<Profile> profiles = findProfileList(shareGroup.getId()); // profile 리스트 가져오기
+                    return ShareGroupConverter.toShareGroupDetailInfoDTO(shareGroup, profiles); // 공유그룹 DetailInfo 반환
+                })
+                .collect(Collectors.toList());
+
+        // 최종적으로 공유 그룹 목록 정보를 DTO로 변환하여 반환
+        return ShareGroupResponse.ShareGroupInfoList.builder()
+                .shareGroupDetailInfoList(shareGroupDetailInfoList) // 만든 info 리스트
+                .page(shareGroupPage.getNumber())
+                .totalElements(shareGroupPage.getTotalElements())
+                .isFirst(shareGroupPage.isFirst())
+                .isLast(shareGroupPage.isLast())
+                .build();
+    }
+
+    @Override
     public ShareGroup findShareGroup(Long shareGroupId) {
         return shareGroupRepository.findById(shareGroupId)
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND));
     }
 
     @Override
-    public ShareGroup findShareGroupByInviteCode(String inviteCode) {
+    public ShareGroup findShareGroup(String inviteCode) {
         return shareGroupRepository.findByInviteCode(inviteCode)
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND));
     }
