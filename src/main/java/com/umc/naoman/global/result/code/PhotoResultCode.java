@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 public enum PhotoResultCode implements ResultCode {
     CREATE_PRESIGNED_URL(200, "SP000", "성공적으로 Presigned URL을 요청하였습니다."),
     UPLOAD_PHOTO(200, "SP000", "성공적으로 이미지를 업로드하였습니다."),
-    RETRIEVE_PHOTO(200, "SP000", "성공적으로 이미지를 조회하였습니다.")
+    RETRIEVE_PHOTO(200, "SP000", "성공적으로 이미지를 조회하였습니다."),
+    DELETE_PHOTO(200, "SP000", "성공적으로 이미지를 삭제하였습니다.")
 
     ;
     private final int status;

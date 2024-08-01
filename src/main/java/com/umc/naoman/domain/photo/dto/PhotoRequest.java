@@ -17,6 +17,8 @@ public abstract class PhotoRequest {
     @AllArgsConstructor
     public static class PreSignedUrlRequest {
 
+        @NotNull(message = "공유 그룹의 아이디 값을 입력해야 합니다.")
+        private Long shareGroupId;
         @NotEmpty(message = "사진의 이름은 하나 이상이어야 합니다.")
         private List<String> photoNameList;
 
@@ -34,4 +36,15 @@ public abstract class PhotoRequest {
         private List<String> photoUrlList;
     }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PhotoDeletedRequest {
+
+        @NotNull(message = "삭제할 사진이 존재하는 공유 그룹의 아이디 값을 입력해야 합니다.")
+        private Long shareGroupId;
+        @NotEmpty(message = "삭제할 사진을 하나 이상 선택해야 합니다.")
+        private List<Long> photoIdList;
+    }
 }
