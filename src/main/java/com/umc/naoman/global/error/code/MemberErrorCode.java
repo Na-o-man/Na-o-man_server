@@ -13,6 +13,7 @@ public enum MemberErrorCode implements ErrorCode {
     REFRESH_TOKEN_NOT_FOUND(404, "EM000", "해당 refresh token이 존재하지 않습니다."),
     INVALID_SOCIAL_TYPE(404, "EM000", "해당 socialType은 유효하지 않습니다."),
     MEMBER_ALREADY_SIGNUP(400, "EM000", "해당 이메일을 가진 회원은 이미 회원가입하였습니다."),
+    TEMP_MEMBER_INFO_COOKIE_NOT_FOUND(404, "EM000", "회원가입에 사용할 temp-member-info 쿠키가 존재하지 않습니다."),
 
     ;
 
