@@ -113,8 +113,6 @@ public class ShareGroupServiceImpl implements ShareGroupService {
 
         // 공유그룹 삭제 처리
         shareGroup.delete();
-        shareGroupRepository.save(shareGroup);
-
         return shareGroup;
     }
 

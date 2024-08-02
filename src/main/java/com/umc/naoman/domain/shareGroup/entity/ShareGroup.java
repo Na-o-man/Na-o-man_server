@@ -29,6 +29,7 @@ public class ShareGroup extends BaseTimeEntity {
     @Column(name = "invite_code", nullable = false)
     private String inviteCode;
     @OneToMany(mappedBy = "shareGroup")
+    @Builder.Default
     private List<Profile> profiles = new ArrayList<>();
 
     public void delete() {
