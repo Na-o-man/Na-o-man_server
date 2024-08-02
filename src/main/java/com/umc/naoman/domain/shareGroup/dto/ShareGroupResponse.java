@@ -55,8 +55,6 @@ public abstract class ShareGroupResponse {
         private Long shareGroupId;
     }
 
-
-
     @Getter
     @Builder
     @NoArgsConstructor

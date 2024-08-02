@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,4 +28,13 @@ public class ShareGroup extends BaseTimeEntity {
     private int memberCount;
     @Column(name = "invite_code", nullable = false)
     private String inviteCode;
+    @OneToMany(mappedBy = "shareGroup")
+    private List<Profile> profiles = new ArrayList<>();
+
+    public void delete() {
+        super.delete();
+        for (Profile profile : profiles) {
+            profile.delete();
+        }
+    }
 }

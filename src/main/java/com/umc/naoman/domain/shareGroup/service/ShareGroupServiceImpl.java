@@ -101,7 +101,7 @@ public class ShareGroupServiceImpl implements ShareGroupService {
 
     @Transactional
     @Override
-    public void deleteShareGroup(Long shareGroupId, Member member) {
+    public ShareGroup deleteShareGroup(Long shareGroupId, Member member) {
         ShareGroup shareGroup = findShareGroup(shareGroupId); //해당 공유그룹
         // 공유그룹 id와 멤버 id로 공유그룹 내 프로필 찾기
         Profile creatorProfile = findProfile(shareGroupId, member.getId());
@@ -115,12 +115,7 @@ public class ShareGroupServiceImpl implements ShareGroupService {
         shareGroup.delete();
         shareGroupRepository.save(shareGroup);
 
-        // 해당 공유그룹의 모든 프로필 삭제 처리
-        List<Profile> profiles = findProfileList(shareGroupId);
-        for (Profile profile : profiles) {
-            profile.delete();
-            profileRepository.save(profile);
-        }
+        return shareGroup;
     }
 
     @Override

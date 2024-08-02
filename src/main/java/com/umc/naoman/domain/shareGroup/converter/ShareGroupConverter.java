@@ -35,15 +35,8 @@ public class ShareGroupConverter {
                 .build();
     }
 
-    // 그룹 삭제 시 반환하는 정보 DTO
-    public ShareGroupResponse.ShareGroupId toDeleteShareGroupInfo(Long shareGroupId) {
-        return ShareGroupResponse.ShareGroupId.builder()
-                .shareGroupId(shareGroupId)
-                .build();
-    }
-
-    // 그룹 Id만 반환 (그룹 참여 시 반환하는 DTO)
-    public ShareGroupResponse.ShareGroupId toJoinShareGroupInfo(ShareGroup shareGroup) {
+    // 그룹 Id만 반환 (그룹 참여 시, 그룹 삭제 시 반환하는 DTO)
+    public ShareGroupResponse.ShareGroupId toShareGroupId(ShareGroup shareGroup) {
         return ShareGroupResponse.ShareGroupId.builder()
                 .shareGroupId(shareGroup.getId())
                 .build();

@@ -93,7 +93,7 @@ public class ShareGroupController {
                                                                           @LoginMember Member member) {
         ShareGroup shareGroup = shareGroupService.joinShareGroup(request.getShareGroupId(), request.getProfileId(), member);
         return ResultResponse.of(ShareGroupResultCode.JOIN_SHARE_GROUP,
-                shareGroupConverter.toJoinShareGroupInfo(shareGroup));
+                shareGroupConverter.toShareGroupId(shareGroup));
     }
 
     @DeleteMapping("/{shareGroupId}")
@@ -103,9 +103,9 @@ public class ShareGroupController {
     })
     public ResultResponse<ShareGroupResponse.ShareGroupId> deleteShareGroup(@PathVariable Long shareGroupId,
                                                                             @LoginMember Member member) {
-        shareGroupService.deleteShareGroup(shareGroupId, member);
+        ShareGroup deletedShareGroup = shareGroupService.deleteShareGroup(shareGroupId, member);
         return ResultResponse.of(ShareGroupResultCode.DELETE_SHARE_GROUP,
-                shareGroupConverter.toDeleteShareGroupInfo(shareGroupId));
+                shareGroupConverter.toShareGroupId(deletedShareGroup));
     }
 
 }
