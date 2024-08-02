@@ -66,5 +66,13 @@ public abstract class ShareGroupResponse {
         private Long memberId;
     }
 
-
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class InviteInfo {
+        private Long shareGroupId;
+        private String inviteCode;
+        private String inviteUrl;
+    }
 }
