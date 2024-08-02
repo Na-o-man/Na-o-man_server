@@ -38,8 +38,8 @@ public class AuthController {
     @PostMapping("/signup/web")
     @Operation(summary = "회원가입 API(웹)", description = "웹 클라이언트가 사용하는 회원가입 API입니다.")
     @Parameters(value = {
-            @Parameter(name = "temp-member-info", description = "리다이렉션 시에 쿠키로 넘겨준 사용자 정보가 담긴 jwt가 "
-                    + "요청과 함께 쿠키로 넘어와야 합니다.", in = ParameterIn.COOKIE)
+            @Parameter(name = "temp-member-info", description = "리다이렉션 시에 쿠키로 넘겨준 사용자 정보가 담긴 jwt를 입력해 주세요.",
+                    hidden = true, in = ParameterIn.COOKIE)
     })
     public ResultResponse<LoginInfo> signup(@CookieValue("temp-member-info") Cookie tempMemberInfoCookie,
                                             @Valid @RequestBody MarketingAgreedRequest request) {
