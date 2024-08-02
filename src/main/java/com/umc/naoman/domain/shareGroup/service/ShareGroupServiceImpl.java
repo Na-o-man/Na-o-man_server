@@ -9,6 +9,7 @@ import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
 import com.umc.naoman.global.error.BusinessException;
+import com.umc.naoman.global.error.code.MemberErrorCode;
 import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     @Transactional
     @Override
     public ShareGroup createShareGroup(ShareGroupRequest.createShareGroupRequest request, Member member) {
+
         // 초대링크를 위한 고유번호 생성 (UUID)
         String inviteCode = UUID.randomUUID().toString().replace("-", "").toUpperCase();
 
