@@ -21,5 +21,4 @@ public class AgendaConverter {
                 .shareGroup(shareGroup)
                 .build();
     }
-
 }

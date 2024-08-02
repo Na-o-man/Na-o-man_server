@@ -3,7 +3,6 @@ package com.umc.naoman.domain.agenda.service;
 import com.umc.naoman.domain.agenda.converter.AgendaConverter;
 import com.umc.naoman.domain.agenda.entity.Agenda;
 import com.umc.naoman.domain.agenda.repository.AgendaRepository;
-import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
