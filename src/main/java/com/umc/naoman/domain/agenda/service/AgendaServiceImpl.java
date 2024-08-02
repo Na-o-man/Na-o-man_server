@@ -5,10 +5,9 @@ import com.umc.naoman.domain.agenda.entity.Agenda;
 import com.umc.naoman.domain.agenda.repository.AgendaRepository;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
-import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
+import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.error.code.AgendaErrorCode;
-import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AgendaServiceImpl implements AgendaService {
 
     private final AgendaRepository agendaRepository;
-    private final ShareGroupRepository shareGroupRepository;
+    private final ShareGroupService shareGroupService;
 
     @Override
     @Transactional(readOnly = true)
@@ -30,8 +29,7 @@ public class AgendaServiceImpl implements AgendaService {
     @Override
     @Transactional
     public Agenda createAgenda(Profile profile, Long shareGroupId, String title) {
-        ShareGroup shareGroup = shareGroupRepository.findById(shareGroupId)
-                .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND));
+        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
         Agenda newAgenda = AgendaConverter.toAgenda(profile,title,shareGroup);
         return agendaRepository.save(newAgenda);
     }
