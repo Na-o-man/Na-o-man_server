@@ -18,4 +18,5 @@ public interface ShareGroupService {
     Profile findProfile(Long profileId);
     Profile findProfile(Long shareGroupId, Long memberID);
     Page<ShareGroup> getMyShareGroupList(Member member, Pageable pageable);
+    ShareGroup deleteShareGroup(Long shareGroupId, Member member);
 }
