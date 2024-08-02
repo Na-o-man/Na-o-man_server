@@ -5,6 +5,6 @@ import com.umc.naoman.domain.shareGroup.entity.Profile;
 
 public interface AgendaService {
 
-    public Agenda findAgenda(Long agendaId);
-    public Agenda createAgenda(Profile profile, Long shareGroupId, String title);
+    Agenda findAgenda(Long agendaId);
+    Agenda createAgenda(Profile profile, Long shareGroupId, String title);
 }
