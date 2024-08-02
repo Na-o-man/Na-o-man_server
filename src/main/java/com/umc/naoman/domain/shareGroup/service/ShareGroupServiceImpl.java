@@ -31,7 +31,6 @@ public class ShareGroupServiceImpl implements ShareGroupService {
 
     private final ShareGroupRepository shareGroupRepository;
     private final ProfileRepository profileRepository;
-    private final MemberRepository memberRepository;
     private final ShareGroupConverter shareGroupConverter;
 
     @Transactional
@@ -97,6 +96,16 @@ public class ShareGroupServiceImpl implements ShareGroupService {
 
         // 추출한 공유 그룹 ID 리스트를 통해 해당 공유 그룹들을 페이징 처리하여 가져오기
         return shareGroupRepository.findByIdIn(shareGroupIdList, pageable);
+    }
+
+    @Override
+    public ShareGroup getInviteInfo(Long shareGroupId, Member member) {
+        ShareGroup shareGroup = findShareGroup(shareGroupId); //해당 공유그룹 엔티티
+
+        // 사용자가 해당 공유그룹에 속하는지 검증해야 함
+        findProfile(shareGroupId, member.getId());
+
+        return shareGroup;
     }
 
     @Transactional

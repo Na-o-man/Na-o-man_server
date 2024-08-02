@@ -42,6 +42,15 @@ public class ShareGroupConverter {
                 .build();
     }
 
+    // 내 공유 그룹의 inviteCode를 반환하는 DTO
+    public ShareGroupResponse.InviteInfo toInviteInfo(ShareGroup shareGroup) {
+        return ShareGroupResponse.InviteInfo.builder()
+                .shareGroupId(shareGroup.getId())
+                .inviteCode(shareGroup.getInviteCode())
+                .inviteUrl(BASE_URL + shareGroup.getInviteCode())
+                .build();
+    }
+
     // 조회 시, 디테일한 그룹 정보를 반환하는 DTO
     public ShareGroupDetailInfo toShareGroupDetailInfo(ShareGroup shareGroup, List<Profile> profiles) {
         List<ShareGroupResponse.ProfileInfo> profileInfoList = profiles.stream()
@@ -85,6 +94,4 @@ public class ShareGroupConverter {
                 .isLast(shareGroupList.isLast())
                 .build();
     }
-
-
 }

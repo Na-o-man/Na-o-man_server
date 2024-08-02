@@ -87,6 +87,18 @@ public class ShareGroupController {
                 shareGroupConverter.toPagedShareGroupInfo(shareGroupList));
     }
 
+    @GetMapping("/{shareGroupId}/invite")
+    @Operation(summary = "공유그룹 초대 코드 조회 API", description = "공유그룹의 초대 코드를 조회하는 API입니다.")
+    @Parameters(value = {
+            @Parameter(name = "shareGroupId", description = "조회할 공유그룹 id를 입력해 주세요.")
+    })
+    public ResultResponse<ShareGroupResponse.InviteInfo> getInviteCode(@PathVariable Long shareGroupId,
+                                                                       @LoginMember Member member) {
+        ShareGroup shareGroup = shareGroupService.getInviteInfo(shareGroupId, member);
+        return ResultResponse.of(ShareGroupResultCode.GET_INVITE_CODE,
+                shareGroupConverter.toInviteInfo(shareGroup));
+    }
+
     @PostMapping("/join")
     @Operation(summary = "공유그룹 참여 API", description = "특정 공유그룹에 참여하는 API입니다.")
     public ResultResponse<ShareGroupResponse.ShareGroupId> joinShareGroup(@Valid @RequestBody ShareGroupRequest.JoinShareGroupRequest request,
