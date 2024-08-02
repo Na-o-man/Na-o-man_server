@@ -35,5 +35,4 @@ public abstract class ShareGroupRequest {
         @NotNull(message = "프로필 ID를 입력해야 합니다.")
         private Long profileId;
     }
-
 }

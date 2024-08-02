@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -68,8 +69,15 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     @Transactional
     @Override
     public ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member) {
-
         ShareGroup shareGroup = findShareGroup(shareGroupId);
+
+        // 프로필을 찾아서 멤버가 이미 설정되어 있는지 확인
+        Profile existingprofile = findProfile(shareGroupId, member.getId());
+
+        // 이미 참여한 경우 예외 처리
+        if (existingprofile.getMember() != null) {
+            throw new BusinessException(ShareGroupErrorCode.ALREADY_JOINED);
+        }
 
         //repo에서 Profile 객체 꺼내오기
         Profile profile = findProfile(profileId);
