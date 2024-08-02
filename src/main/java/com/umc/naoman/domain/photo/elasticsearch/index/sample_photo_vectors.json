@@ -6,6 +6,7 @@
     }
   },
   "mappings" : {
+    "dynamic": "false",
     "properties" : {
       "memberId" : {
         "type" : "long"

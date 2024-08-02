@@ -6,6 +6,7 @@
     }
   },
   "mappings" : {
+    "dynamic": "false",
     "_routing": {
       "required" : true
     },
@@ -18,7 +19,7 @@
       },
       "createdAt" : {
         "type" : "date",
-        "format" : "basic_ordinal_date_time_no_millis"
+        "format": "yyyy-MM-dd HH:mm:ss"
       },
       "faceVector" : {
         "type": "dense_vector",
