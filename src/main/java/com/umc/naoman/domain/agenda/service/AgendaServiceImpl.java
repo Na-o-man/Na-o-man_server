@@ -4,6 +4,7 @@ import com.umc.naoman.domain.agenda.converter.AgendaConverter;
 import com.umc.naoman.domain.agenda.entity.Agenda;
 import com.umc.naoman.domain.agenda.repository.AgendaRepository;
 import com.umc.naoman.domain.member.entity.Member;
+import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
 import com.umc.naoman.global.error.BusinessException;
@@ -29,10 +30,10 @@ public class AgendaServiceImpl implements AgendaService {
 
     @Override
     @Transactional
-    public Agenda createAgenda(Member member, Long shareGroupId, String title) {
+    public Agenda createAgenda(Profile profile, Long shareGroupId, String title) {
         ShareGroup shareGroup = shareGroupRepository.findById(shareGroupId)
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND));
-        Agenda newAgenda = AgendaConverter.toAgenda(member,title,shareGroup);
+        Agenda newAgenda = AgendaConverter.toAgenda(profile,title,shareGroup);
         return agendaRepository.save(newAgenda);
     }
 }
