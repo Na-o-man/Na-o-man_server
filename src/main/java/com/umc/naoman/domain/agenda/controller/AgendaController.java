@@ -56,7 +56,7 @@ public class AgendaController {
                                                                     @LoginMember Member member) {
         Long shareGroupId = request.getShareGroupId();
         String title = request.getTitle();
-        Profile profile = shareGroupService.findProfile(member.getId(), shareGroupId);
+        Profile profile = shareGroupService.findProfile(shareGroupId,member.getId());
         Agenda agenda = agendaService.createAgenda(profile,shareGroupId, title);
         agendaPhotoService.saveAgendasPhotos(agenda,request.getAgendasPhotoList());
         return ResultResponse.of(AgendaResultCode.CREATE_AGENDA, AgendaConverter.toCreateAgenda(agenda));
