@@ -41,7 +41,7 @@ public class AuthController {
             @Parameter(name = "temp-member-info", description = "리다이렉션 시에 쿠키로 넘겨준 사용자 정보가 담긴 jwt를 입력해 주세요.",
                     hidden = true, in = ParameterIn.COOKIE)
     })
-    public ResultResponse<LoginInfo> signup(@CookieValue("temp-member-info") Cookie tempMemberInfoCookie,
+    public ResultResponse<LoginInfo> signup(@CookieValue(value = "temp-member-info", required = false) Cookie tempMemberInfoCookie,
                                             @Valid @RequestBody MarketingAgreedRequest request) {
         // 추후에 핸들러 처리로 바꿀까 생각 중
         if (tempMemberInfoCookie == null) {
