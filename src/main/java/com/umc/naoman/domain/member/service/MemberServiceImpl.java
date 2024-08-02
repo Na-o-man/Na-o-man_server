@@ -106,4 +106,11 @@ public class MemberServiceImpl implements MemberService {
     public MemberInfo getMyInfo(Member member) {
         return memberConverter.toMemberInfo(member);
     }
+
+    @Override
+    public Member deleteMember(Long memberId) {
+        Member member = findMember(memberId);
+        member.delete();
+        return member;
+    }
 }

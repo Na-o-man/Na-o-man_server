@@ -18,4 +18,5 @@ public interface MemberService {
     LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request);
     LoginInfo login(LoginRequest request);
     MemberInfo getMyInfo(Member member);
+    Member deleteMember(Long memberId);
 }

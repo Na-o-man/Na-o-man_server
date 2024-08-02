@@ -15,10 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.umc.naoman.global.result.code.MemberResultCode.CHECK_MEMBER_REGISTRATION;
 
@@ -65,5 +62,20 @@ public class MemberController {
     public ResultResponse<MemberResponse.MarketingAgreed> getMarketingAgreed(@PathVariable(name = "memberId") Long memberId) {
         Member member = memberService.findMember(memberId);
         return ResultResponse.of(MemberResultCode.CHECK_MARKETING_AGREED, memberConverter.toMarketingAgreed(member));
+    }
+
+    @DeleteMapping("/{memberId}")
+    @Operation(summary = "회원 탈퇴 API", description = "[PathVariable]\n memberId\n[request]\n" +
+            "[response]\n 탈퇴한 회원 ID, 탈퇴한 시간")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SM007", description = "회원 탈퇴 성공."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse
+                    (responseCode = "EM001", description = "해당 memberId를 가진 회원이 존재하지 않습니다.",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    public ResultResponse<MemberResponse.MemberDeletion> getMemberDeletion(@PathVariable(name = "memberId") Long memberId) {
+        Member member = memberService.deleteMember(memberId);
+        return ResultResponse.of(MemberResultCode.DELETE_MEMBER,
+                MemberConverter.toMemberDeletion(member));
     }
 }

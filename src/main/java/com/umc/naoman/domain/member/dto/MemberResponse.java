@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 public abstract class MemberResponse {
     @Getter
     @AllArgsConstructor
@@ -40,5 +42,13 @@ public abstract class MemberResponse {
     @AllArgsConstructor
     public static class MarketingAgreed {
         private Boolean marketingAgreed;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class MemberDeletion {
+        private Long memberId;
+        private LocalDateTime deletedAt;
     }
 }
