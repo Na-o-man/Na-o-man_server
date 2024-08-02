@@ -1,11 +1,8 @@
 package com.umc.naoman.domain.shareGroup.service;
 
 import com.umc.naoman.domain.member.entity.Member;
-import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.shareGroup.converter.ShareGroupConverter;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupRequest;
-import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse;
-import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse.PagedShareGroupInfo;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.Role;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
@@ -21,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -71,15 +67,11 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     public ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member) {
         ShareGroup shareGroup = findShareGroup(shareGroupId);
 
-        // 프로필을 찾아서 멤버가 이미 설정되어 있는지 확인
-        Profile existingprofile = findProfile(shareGroupId, member.getId());
-
-        // 이미 참여한 경우 예외 처리
-        if (existingprofile.getMember() != null) {
+        if (doesProfileExist(shareGroupId, member.getId())) {
             throw new BusinessException(ShareGroupErrorCode.ALREADY_JOINED);
         }
 
-        //repo에서 Profile 객체 꺼내오기
+        // --- repo에서 Profile 객체 꺼내오기 ---
         Profile profile = findProfile(profileId);
 
         //공유그룹에 해당 profile이 존재하지 않으면
@@ -160,6 +152,11 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     public Profile findProfile(Long shareGroupId, Long memberId) {
         return profileRepository.findByShareGroupIdAndMemberId(shareGroupId, memberId)
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
+    }
+
+    @Override
+    public boolean doesProfileExist(Long shareGroupId, Long memberId) {
+        return profileRepository.existsByShareGroupIdAndMemberId(shareGroupId, memberId);
     }
 
 }

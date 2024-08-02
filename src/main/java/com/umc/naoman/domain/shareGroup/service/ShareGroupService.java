@@ -20,4 +20,5 @@ public interface ShareGroupService {
     Page<ShareGroup> getMyShareGroupList(Member member, Pageable pageable);
     ShareGroup deleteShareGroup(Long shareGroupId, Member member);
     ShareGroup getInviteInfo(Long shareGroupId, Member member);
+    boolean doesProfileExist(Long shareGroupId, Long memberId);
 }

@@ -14,7 +14,7 @@ import java.util.List;
 
 @Component
 public class ShareGroupConverter {
-    private static final String BASE_URL = "https://na0man/invite/"; //baseUrl 상수
+    private static final String BASE_URL = "https://naoman/invite/"; //baseUrl 상수
 
     public ShareGroup toEntity(ShareGroupRequest.createShareGroupRequest request) {
         return ShareGroup.builder()
