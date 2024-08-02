@@ -100,4 +100,11 @@ public class MemberServiceImpl implements MemberService {
 
         return memberConverter.toLoginInfo(memberId, accessToken, refreshToken);
     }
+
+    @Override
+    public Member deleteMember(Long memberId) {
+        Member member = findMember(memberId);
+        member.delete();
+        return member;
+    }
 }
