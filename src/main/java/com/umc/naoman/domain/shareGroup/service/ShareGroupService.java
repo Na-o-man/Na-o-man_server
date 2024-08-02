@@ -16,6 +16,6 @@ public interface ShareGroupService {
     List<Profile> findProfileList(Long shareGroupId);
     ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member);
     Profile findProfile(Long profileId);
-    Profile findProfile(Long shareGroupId, Long memberID);
     Page<ShareGroup> getMyShareGroupList(Member member, Pageable pageable);
+    Profile findProfile(Long memberId, Long shareGroupId);
 }
