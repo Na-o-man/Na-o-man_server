@@ -12,7 +12,7 @@ public abstract class AgendaResponse {
     @Getter
     @AllArgsConstructor
     public static class CreateAgenda {
-        Long agendaId;
-        LocalDateTime createdAt;
+        private Long agendaId;
+        private LocalDateTime createdAt;
     }
 }
