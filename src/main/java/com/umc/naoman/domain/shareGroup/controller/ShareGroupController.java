@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -93,6 +94,18 @@ public class ShareGroupController {
         ShareGroup shareGroup = shareGroupService.joinShareGroup(request.getShareGroupId(), request.getProfileId(), member);
         return ResultResponse.of(ShareGroupResultCode.JOIN_SHARE_GROUP,
                 shareGroupConverter.toJoinShareGroupInfo(shareGroup));
+    }
+
+    @DeleteMapping("/{shareGroupId}")
+    @Operation(summary = "공유그룹 삭제 API", description = "공유그룹을 삭제하는 API입니다. 공유그룹 생성자만 삭제할 수 있습니다.")
+    @Parameters(value = {
+            @Parameter(name = "shareGroupId", description = "삭제할 공유그룹 id를 입력해 주세요.")
+    })
+    public ResultResponse<ShareGroupResponse.ShareGroupId> deleteShareGroup(@PathVariable Long shareGroupId,
+                                                                            @LoginMember Member member) {
+        shareGroupService.deleteShareGroup(shareGroupId, member);
+        return ResultResponse.of(ShareGroupResultCode.DELETE_SHARE_GROUP,
+                shareGroupConverter.toDeleteShareGroupInfo(shareGroupId));
     }
 
 }

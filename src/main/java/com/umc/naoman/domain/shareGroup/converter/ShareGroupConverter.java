@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class ShareGroupConverter {
@@ -36,7 +35,14 @@ public class ShareGroupConverter {
                 .build();
     }
 
-    // 그룹 참여 시 반환하는 DTO
+    // 그룹 삭제 시 반환하는 정보 DTO
+    public ShareGroupResponse.ShareGroupId toDeleteShareGroupInfo(Long shareGroupId) {
+        return ShareGroupResponse.ShareGroupId.builder()
+                .shareGroupId(shareGroupId)
+                .build();
+    }
+
+    // 그룹 Id만 반환 (그룹 참여 시 반환하는 DTO)
     public ShareGroupResponse.ShareGroupId toJoinShareGroupInfo(ShareGroup shareGroup) {
         return ShareGroupResponse.ShareGroupId.builder()
                 .shareGroupId(shareGroup.getId())
@@ -70,6 +76,7 @@ public class ShareGroupConverter {
                 .build();
     }
 
+    // 공유 그룹 목록 반환 DTO
     public PagedShareGroupInfo toPagedShareGroupInfo(Page<ShareGroup> shareGroupList) {
         // 각 공유 그룹에 대한 상세 정보를 가져오기 (DetailInfo response 재사용)
         List<ShareGroupInfo> shareGroupInfoList = shareGroupList

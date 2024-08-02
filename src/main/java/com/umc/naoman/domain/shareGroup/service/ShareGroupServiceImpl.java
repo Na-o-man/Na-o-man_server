@@ -99,6 +99,30 @@ public class ShareGroupServiceImpl implements ShareGroupService {
         return shareGroupRepository.findByIdIn(shareGroupIdList, pageable);
     }
 
+    @Transactional
+    @Override
+    public void deleteShareGroup(Long shareGroupId, Member member) {
+        ShareGroup shareGroup = findShareGroup(shareGroupId); //해당 공유그룹
+        // 공유그룹 id와 멤버 id로 공유그룹 내 프로필 찾기
+        Profile creatorProfile = findProfile(shareGroupId, member.getId());
+
+        // 프로필 내 역할이 creator가 아니면 에러
+        if (creatorProfile.getRole() != Role.CREATOR) {
+            throw new BusinessException(ShareGroupErrorCode.UNAUTHORIZED_DELETE);
+        }
+
+        // 공유그룹 삭제 처리
+        shareGroup.delete();
+        shareGroupRepository.save(shareGroup);
+
+        // 해당 공유그룹의 모든 프로필 삭제 처리
+        List<Profile> profiles = findProfileList(shareGroupId);
+        for (Profile profile : profiles) {
+            profile.delete();
+            profileRepository.save(profile);
+        }
+    }
+
     @Override
     public ShareGroup findShareGroup(Long shareGroupId) {
         return shareGroupRepository.findById(shareGroupId)
