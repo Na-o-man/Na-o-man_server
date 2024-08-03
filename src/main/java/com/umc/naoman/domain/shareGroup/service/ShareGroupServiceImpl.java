@@ -1,7 +1,6 @@
 package com.umc.naoman.domain.shareGroup.service;
 
 import com.umc.naoman.domain.member.entity.Member;
-import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.shareGroup.converter.ShareGroupConverter;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupRequest;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
@@ -10,15 +9,17 @@ import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
 import com.umc.naoman.global.error.BusinessException;
-import com.umc.naoman.global.error.code.MemberErrorCode;
 import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,17 +28,16 @@ public class ShareGroupServiceImpl implements ShareGroupService {
 
     private final ShareGroupRepository shareGroupRepository;
     private final ProfileRepository profileRepository;
-    private final MemberRepository memberRepository;
+    private final ShareGroupConverter shareGroupConverter;
 
     @Transactional
     @Override
     public ShareGroup createShareGroup(ShareGroupRequest.createShareGroupRequest request, Member member) {
-
         // 초대링크를 위한 고유번호 생성 (UUID)
         String inviteCode = UUID.randomUUID().toString().replace("-", "").toUpperCase();
 
         // 변환 로직
-        ShareGroup newShareGroup = ShareGroupConverter.toEntity(request);
+        ShareGroup newShareGroup = shareGroupConverter.toEntity(request);
         newShareGroup.setInviteCode(inviteCode);
 
         // 생성된 공유 그룹 저장
@@ -65,10 +65,13 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     @Transactional
     @Override
     public ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member) {
-
         ShareGroup shareGroup = findShareGroup(shareGroupId);
 
-        //repo에서 Profile 객체 꺼내오기
+        if (doesProfileExist(shareGroupId, member.getId())) {
+            throw new BusinessException(ShareGroupErrorCode.ALREADY_JOINED);
+        }
+
+        // --- repo에서 Profile 객체 꺼내오기 ---
         Profile profile = findProfile(profileId);
 
         //공유그룹에 해당 profile이 존재하지 않으면
@@ -84,8 +87,53 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     }
 
     @Override
+    public Page<ShareGroup> getMyShareGroupList(Member member, Pageable pageable) {
+        // 멤버를 통해 profile을 가져와서, 해당 profile의 shareGroupId를 추출
+        List<Long> shareGroupIdList = profileRepository.findByMemberId(member.getId())
+                .stream()
+                .map(profile -> profile.getShareGroup().getId())
+                .collect(Collectors.toList()); // 리스트로 수집
+
+        // 추출한 공유 그룹 ID 리스트를 통해 해당 공유 그룹들을 페이징 처리하여 가져오기
+        return shareGroupRepository.findByIdIn(shareGroupIdList, pageable);
+    }
+
+    @Override
+    public ShareGroup getInviteInfo(Long shareGroupId, Member member) {
+        ShareGroup shareGroup = findShareGroup(shareGroupId); //해당 공유그룹 엔티티
+
+        // 사용자가 해당 공유그룹에 속하는지 검증해야 함
+        findProfile(shareGroupId, member.getId());
+
+        return shareGroup;
+    }
+
+    @Transactional
+    @Override
+    public ShareGroup deleteShareGroup(Long shareGroupId, Member member) {
+        ShareGroup shareGroup = findShareGroup(shareGroupId); //해당 공유그룹
+        // 공유그룹 id와 멤버 id로 공유그룹 내 프로필 찾기
+        Profile creatorProfile = findProfile(shareGroupId, member.getId());
+
+        // 프로필 내 역할이 creator가 아니면 에러
+        if (creatorProfile.getRole() != Role.CREATOR) {
+            throw new BusinessException(ShareGroupErrorCode.UNAUTHORIZED_DELETE);
+        }
+
+        // 공유그룹 삭제 처리
+        shareGroup.delete();
+        return shareGroup;
+    }
+
+    @Override
     public ShareGroup findShareGroup(Long shareGroupId) {
         return shareGroupRepository.findById(shareGroupId)
+                .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND));
+    }
+
+    @Override
+    public ShareGroup findShareGroup(String inviteCode) {
+        return shareGroupRepository.findByInviteCode(inviteCode)
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND));
     }
 
@@ -98,6 +146,17 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     public Profile findProfile(Long profileId) {
         return profileRepository.findById(profileId)
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
+    }
+
+    @Override
+    public Profile findProfile(Long shareGroupId, Long memberId) {
+        return profileRepository.findByShareGroupIdAndMemberId(shareGroupId, memberId)
+                .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
+    }
+
+    @Override
+    public boolean doesProfileExist(Long shareGroupId, Long memberId) {
+        return profileRepository.existsByShareGroupIdAndMemberId(shareGroupId, memberId);
     }
 
 }

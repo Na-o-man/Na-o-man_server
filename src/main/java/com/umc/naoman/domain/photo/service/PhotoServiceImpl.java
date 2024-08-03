@@ -7,14 +7,17 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
+import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
+import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -28,16 +31,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.umc.naoman.global.error.code.S3ErrorCode.PHOTO_NOT_FOUND_S3;
+import static com.umc.naoman.global.error.code.S3ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
 
     private final AmazonS3 amazonS3;
+    private final S3Template s3Template;
     private final PhotoRepository photoRepository;
     private final ShareGroupService shareGroupService;
     private final PhotoConverter photoConverter;
+    private final ProfileRepository profileRepository;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
@@ -45,37 +50,18 @@ public class PhotoServiceImpl implements PhotoService {
     @Value("${spring.cloud.aws.region.static}")
     private String region;
 
-    private static final String RAW_PATH_PREFIX = "raw";
+    public static final String RAW_PATH_PREFIX = "raw";
+    public static final String W200_PATH_PREFIX = "w200";
+    public static final String W400_PATH_PREFIX = "w400";
 
     @Override
     @Transactional
-    public List<PhotoResponse.PreSignedUrlInfo> getPreSignedUrlList(PhotoRequest.PreSignedUrlRequest request) {
+    public List<PhotoResponse.PreSignedUrlInfo> getPreSignedUrlList(PhotoRequest.PreSignedUrlRequest request, Member member) {
+        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
+
         return request.getPhotoNameList().stream()
                 .map(this::getPreSignedUrl)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional
-    public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request) {
-        ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
-        int uploadCount = 0;
-
-        for (String photoUrl : request.getPhotoUrlList()) {
-            String photoName = extractPhotoNameFromUrl(photoUrl);
-            if (checkAndSavePhoto(photoUrl, photoName, shareGroup)) {
-                uploadCount++;
-            }
-        }
-
-        return new PhotoResponse.PhotoUploadInfo(shareGroup.getId(), uploadCount);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Photo> getAllPhotoList(Long shareGroupId, Pageable pageable) {
-        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
-        return photoRepository.findAllByShareGroupId(shareGroup.getId(), pageable);
     }
 
     private PhotoResponse.PreSignedUrlInfo getPreSignedUrl(String originalFilename) {
@@ -123,6 +109,23 @@ public class PhotoServiceImpl implements PhotoService {
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName);
     }
 
+    @Override
+    @Transactional
+    public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
+        shareGroupService.findProfile(member.getId(), request.getShareGroupId());
+        ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
+        int uploadCount = 0;
+
+        for (String photoUrl : request.getPhotoUrlList()) {
+            String photoName = extractPhotoNameFromUrl(photoUrl);
+            if (checkAndSavePhoto(photoUrl, photoName, shareGroup)) {
+                uploadCount++;
+            }
+        }
+
+        return new PhotoResponse.PhotoUploadInfo(shareGroup.getId(), uploadCount);
+    }
+
     // 사진 URL에서 사진 이름을 추출하는 메서드
     private String extractPhotoNameFromUrl(String photoUrl) {
         int lastSlashIndex = photoUrl.lastIndexOf('/');
@@ -140,4 +143,46 @@ public class PhotoServiceImpl implements PhotoService {
             throw new BusinessException(PHOTO_NOT_FOUND_S3);
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Photo> getAllPhotoList(Long shareGroupId, Member member, Pageable pageable) {
+        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
+        shareGroupService.findProfile(shareGroup.getId(), member.getId());
+
+        return photoRepository.findAllByShareGroupId(shareGroup.getId(), pageable);
+    }
+
+    @Override
+    @Transactional
+    public List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member) {
+        // 멤버가 해당 공유 그룹에 대한 권한이 있는지 확인
+        shareGroupService.findProfile(member.getId(), request.getShareGroupId());
+
+        // 요청된 사진 ID 목록과 공유 그룹 ID를 기반으로 사진 목록 조회
+        List<Photo> photoList = photoRepository.findByIdInAndShareGroupId(request.getPhotoIdList(), request.getShareGroupId());
+
+        // 사진 목록 크기 검증
+        if (photoList.size() != request.getPhotoIdList().size()) {
+            throw new BusinessException(PHOTO_NOT_FOUND); // 요청한 사진이 일부 또는 전부 없을 경우 예외 발생
+        }
+
+        // 각 사진에 대해 S3에서 객체 삭제 및 데이터베이스에서 삭제
+        for (Photo photo : photoList) {
+            deletePhoto(photo);
+        }
+
+        return photoList; // 삭제된 사진 목록 반환
+    }
+
+    private void deletePhoto(Photo photo) {
+        // S3에서 원본 및 변환된 이미지 삭제
+        s3Template.deleteObject(bucketName, RAW_PATH_PREFIX + "/" + photo.getName());
+        s3Template.deleteObject(bucketName, W200_PATH_PREFIX + "/" + photoConverter.convertExtension(photo.getName()));
+        s3Template.deleteObject(bucketName, W400_PATH_PREFIX + "/" + photoConverter.convertExtension(photo.getName()));
+
+        // 데이터베이스에서 사진 삭제
+        photoRepository.delete(photo);
+    }
+
 }

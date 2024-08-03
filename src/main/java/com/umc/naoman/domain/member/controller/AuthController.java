@@ -6,23 +6,26 @@ import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
 import com.umc.naoman.domain.member.service.MemberService;
+import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.umc.naoman.global.error.code.MemberErrorCode.TEMP_MEMBER_INFO_COOKIE_NOT_FOUND;
 import static com.umc.naoman.global.result.code.MemberResultCode.*;
 
 @RestController
@@ -35,12 +38,16 @@ public class AuthController {
     @PostMapping("/signup/web")
     @Operation(summary = "회원가입 API(웹)", description = "웹 클라이언트가 사용하는 회원가입 API입니다.")
     @Parameters(value = {
-            @Parameter(name = "temp-member-info", description = "리다이렉션 시에 쿠키로 넘겨준 사용자 정보가 담긴 jwt를 헤더로 넘겨주세요.",
-                    in = ParameterIn.HEADER)
+            @Parameter(name = "temp-member-info", description = "리다이렉션 시에 쿠키로 넘겨준 사용자 정보가 담긴 jwt를 입력해 주세요.",
+                    hidden = true, in = ParameterIn.COOKIE)
     })
-    public ResultResponse<LoginInfo> signup(@RequestHeader("temp-member-info") String tempMemberInfo,
+    public ResultResponse<LoginInfo> signup(@CookieValue(value = "temp-member-info", required = false) Cookie tempMemberInfoCookie,
                                             @Valid @RequestBody MarketingAgreedRequest request) {
-        return ResultResponse.of(SIGNUP, memberService.signup(tempMemberInfo, request));
+        // 추후에 핸들러 처리로 바꿀까 생각 중
+        if (tempMemberInfoCookie == null) {
+            throw new BusinessException(TEMP_MEMBER_INFO_COOKIE_NOT_FOUND);
+        }
+        return ResultResponse.of(SIGNUP, memberService.signup(tempMemberInfoCookie.getValue(), request));
     }
 
     @PostMapping("/signup/android")

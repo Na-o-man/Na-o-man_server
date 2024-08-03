@@ -59,4 +59,13 @@ public abstract class PhotoResponse {
         private String w400PhotoUrl;
         private LocalDateTime createdAt;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PhotoDeleteInfo {
+        private List<Long> photoIdList;
+    }
+
 }
