@@ -3,10 +3,13 @@ package com.umc.naoman.domain.photo.service;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
@@ -17,14 +20,23 @@ import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
+import com.umc.naoman.global.error.code.S3ErrorCode;
 import io.awspring.cloud.s3.S3Template;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +49,7 @@ import static com.umc.naoman.global.error.code.S3ErrorCode.*;
 @RequiredArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
 
+    private static final Logger log = LoggerFactory.getLogger(PhotoServiceImpl.class);
     private final AmazonS3 amazonS3;
     private final S3Template s3Template;
     private final PhotoRepository photoRepository;
@@ -112,7 +125,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
-        shareGroupService.findProfile(member.getId(), request.getShareGroupId());
+        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
         ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
         int uploadCount = 0;
 
@@ -157,14 +170,15 @@ public class PhotoServiceImpl implements PhotoService {
     @Transactional
     public List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member) {
         // 멤버가 해당 공유 그룹에 대한 권한이 있는지 확인
-        shareGroupService.findProfile(member.getId(), request.getShareGroupId());
+        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
 
         // 요청된 사진 ID 목록과 공유 그룹 ID를 기반으로 사진 목록 조회
         List<Photo> photoList = photoRepository.findByIdInAndShareGroupId(request.getPhotoIdList(), request.getShareGroupId());
 
         // 사진 목록 크기 검증
         if (photoList.size() != request.getPhotoIdList().size()) {
-            throw new BusinessException(PHOTO_NOT_FOUND); // 요청한 사진이 일부 또는 전부 없을 경우 예외 발생
+            // 요청한 사진이 일부 또는 전부 없을 경우 예외 발생
+            throw new BusinessException(PHOTO_NOT_FOUND);
         }
 
         // 각 사진에 대해 S3에서 객체 삭제 및 데이터베이스에서 삭제
@@ -185,4 +199,42 @@ public class PhotoServiceImpl implements PhotoService {
         photoRepository.delete(photo);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ByteArrayResource downloadPhoto(Long photoId, Long shareGroupId, Member member) {
+        // photoId에 해당하는 사진을 조회, 존재하지 않으면 예외를 던짐
+        Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND));
+
+        // S3에서 사진을 가져오기 위해 사진 이름을 키 값으로 사용
+        String photoName = photo.getName();
+
+        // S3에서 해당 키 값을 가진 객체를 가져옴
+        S3Object s3Object;
+
+        try {
+            s3Object = amazonS3.getObject(bucketName + "/" + RAW_PATH_PREFIX, photoName);
+        } catch (AmazonS3Exception e) {
+            throw new BusinessException(PHOTO_NOT_FOUND);
+        }
+
+        // S3 객체의 내용을 읽음
+        try (S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent()) {
+            return new ByteArrayResource(IOUtils.toByteArray(s3ObjectInputStream));
+        } catch (IOException e) {
+            throw new BusinessException(FAILED_DOWNLOAD_PHOTO);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getPhotoName(Long photoId) {
+        return photoRepository.findById(photoId).orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND)).getName();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member) {
+        shareGroupService.findProfile(shareGroupId, member.getId());
+        return photoConverter.toPhotoDownloadUrlListResponse(photoIdList, shareGroupId);
+    }
 }

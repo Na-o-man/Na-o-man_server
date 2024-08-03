@@ -3,7 +3,9 @@ package com.umc.naoman.domain.photo.converter;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -94,4 +96,13 @@ public class PhotoConverter {
                 .build();
     }
 
+    public PhotoResponse.PhotoDownloadUrlListInfo toPhotoDownloadUrlListResponse(List<Long> photoIdList, Long shareGroupId) {
+        List<String> photoDownloadUrlList = photoIdList.stream()
+                .map(photoId -> "http://localhost:8080/photos/download/" + photoId + "?shareGroupId=" + shareGroupId)
+                .collect(Collectors.toList());
+
+        return PhotoResponse.PhotoDownloadUrlListInfo.builder()
+                .photoDownloadUrlList(photoDownloadUrlList)
+                .build();
+    }
 }

@@ -12,7 +12,8 @@ public enum S3ErrorCode implements ErrorCode {
     UNAUTHORIZED_GET(403, "ES3000", "사진을 조회할 권한이 없습니다."),
     UNAUTHORIZED_DELETE(403, "ES3000", "사진을 삭제할 권한이 없습니다."),
     UNAUTHORIZED_UPLOAD(403, "ES3000", "사진을 업로드할 권한이 없습니다."),
-    PHOTO_NOT_FOUND(404, "ES3005", "요청한 사진이 존재하지 않습니다."),
+    PHOTO_NOT_FOUND(404, "ES3000", "요청한 사진이 존재하지 않습니다."),
+    FAILED_DOWNLOAD_PHOTO(500, "ES3000", "사진을 다운로드하는 도중 문제가 발생하였습니다.")
 
     ;
 

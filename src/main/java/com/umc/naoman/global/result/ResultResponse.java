@@ -2,6 +2,7 @@ package com.umc.naoman.global.result;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpHeaders;
 
 @Getter
 @Builder
