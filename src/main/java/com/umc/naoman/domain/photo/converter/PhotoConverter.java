@@ -3,9 +3,7 @@ package com.umc.naoman.domain.photo.converter;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
