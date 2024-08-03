@@ -56,7 +56,7 @@ public class PhotoController {
     }
 
     @GetMapping("/all")
-    @Operation(summary = "특정 공유그룹의 전체 사진 요청 API", description = "특정 공유 그룹의 전체 사진을 요청하는 API입니다.")
+    @Operation(summary = "특정 공유그룹의 전체 사진 조회 API", description = "특정 공유 그룹의 전체 사진을 조회하는 API입니다.")
     public ResultResponse<PhotoResponse.PagedPhotoInfo> getAllPhotoListByShareGroup(@RequestParam Long shareGroupId, @LoginMember Member member,
                                                                                     @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<Photo> allPhotoListByShareGroup = photoService.getAllPhotoList(shareGroupId, member, pageable);
