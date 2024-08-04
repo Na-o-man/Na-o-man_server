@@ -33,6 +33,7 @@ public class AgendaController {
 
     private final AgendaService agendaService;
     private final ShareGroupService shareGroupService;
+    private final AgendaConverter agendaConverter;
 
     @PostMapping("/agendas")
     @Operation(summary = "안건 생성 API", description = "[request]\n shareGroupId, title, 안건에 올릴 PhotoId 리스트" +
@@ -50,7 +51,7 @@ public class AgendaController {
                                                                     @LoginMember Member member) {
         Profile profile = shareGroupService.findProfile(request.getShareGroupId(),member.getId());
         Agenda agenda = agendaService.createAgenda(profile,request);
-        return ResultResponse.of(AgendaResultCode.CREATE_AGENDA, AgendaConverter.toCreateAgenda(agenda));
+        return ResultResponse.of(AgendaResultCode.CREATE_AGENDA, agendaConverter.toCreateAgenda(agenda));
     }
 }
 

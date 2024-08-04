@@ -20,7 +20,7 @@ public class AgendaServiceImpl implements AgendaService {
     private final AgendaRepository agendaRepository;
     private final ShareGroupService shareGroupService;
     private final AgendaPhotoService agendaPhotoService;
-
+    private final AgendaConverter agendaConverter;
 
     @Override
     @Transactional(readOnly = true)
@@ -33,7 +33,7 @@ public class AgendaServiceImpl implements AgendaService {
     @Transactional
     public Agenda createAgenda(Profile profile, AgendaRequest.CreateAgendaRequest request) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
-        Agenda newAgenda = AgendaConverter.toAgenda(profile,request.getTitle(),shareGroup);
+        Agenda newAgenda = agendaConverter.toEntity(profile,request.getTitle(),shareGroup);
         agendaPhotoService.saveAgendasPhotos(newAgenda,request.getAgendasPhotoList());
 
         return agendaRepository.save(newAgenda);

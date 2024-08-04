@@ -27,7 +27,7 @@ public class AgendaPhotoServiceImpl implements AgendaPhotoService {
         for (Long photoId : photos) {
             Photo photo = photoRepository.findById(photoId).
                     orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND_BY_PHOTO_ID));
-            agendaPhotoRepository.save(AgendaPhotoConverter.toAgendaPhoto(agenda, photo));
+            agendaPhotoRepository.save(AgendaPhotoConverter.toEntity(agenda, photo));
         }
     }
 }
