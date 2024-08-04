@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -157,10 +158,7 @@ public class PhotoEsClientRepository {
     }
 
     private Page<PhotoEs> toPagePhotoEs(List<Hit<PhotoEs>> hits, Pageable pageable){
-        List<PhotoEs> photoEsList = new ArrayList<>();
-        hits.forEach(hit->{
-            photoEsList.add(hit.source());
-        });
+        List<PhotoEs> photoEsList = hits.stream().map(Hit::source).collect(Collectors.toList());
         return new PageImpl<>(photoEsList, pageable, hits.size());
     }
 
