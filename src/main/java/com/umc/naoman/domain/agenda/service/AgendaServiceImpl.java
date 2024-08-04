@@ -1,6 +1,7 @@
 package com.umc.naoman.domain.agenda.service;
 
 import com.umc.naoman.domain.agenda.converter.AgendaConverter;
+import com.umc.naoman.domain.agenda.dto.AgendaRequest;
 import com.umc.naoman.domain.agenda.entity.Agenda;
 import com.umc.naoman.domain.agenda.repository.AgendaRepository;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
@@ -18,6 +19,8 @@ public class AgendaServiceImpl implements AgendaService {
 
     private final AgendaRepository agendaRepository;
     private final ShareGroupService shareGroupService;
+    private final AgendaPhotoService agendaPhotoService;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -28,9 +31,11 @@ public class AgendaServiceImpl implements AgendaService {
 
     @Override
     @Transactional
-    public Agenda createAgenda(Profile profile, Long shareGroupId, String title) {
-        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
-        Agenda newAgenda = AgendaConverter.toAgenda(profile,title,shareGroup);
+    public Agenda createAgenda(Profile profile, AgendaRequest.CreateAgendaRequest request) {
+        ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
+        Agenda newAgenda = AgendaConverter.toAgenda(profile,request.getTitle(),shareGroup);
+        agendaPhotoService.saveAgendasPhotos(newAgenda,request.getAgendasPhotoList());
+
         return agendaRepository.save(newAgenda);
     }
 }

@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AgendaController {
 
     private final AgendaService agendaService;
-    private final AgendaPhotoService agendaPhotoService;
     private final ShareGroupService shareGroupService;
 
     @PostMapping("/agendas")
@@ -49,11 +48,8 @@ public class AgendaController {
     })
     public ResultResponse<AgendaResponse.CreateAgenda> createAgenda(@RequestBody @Valid AgendaRequest.CreateAgendaRequest request,
                                                                     @LoginMember Member member) {
-        Long shareGroupId = request.getShareGroupId();
-        String title = request.getTitle();
-        Profile profile = shareGroupService.findProfile(shareGroupId,member.getId());
-        Agenda agenda = agendaService.createAgenda(profile,shareGroupId, title);
-        agendaPhotoService.saveAgendasPhotos(agenda,request.getAgendasPhotoList());
+        Profile profile = shareGroupService.findProfile(request.getShareGroupId(),member.getId());
+        Agenda agenda = agendaService.createAgenda(profile,request);
         return ResultResponse.of(AgendaResultCode.CREATE_AGENDA, AgendaConverter.toCreateAgenda(agenda));
     }
 }
