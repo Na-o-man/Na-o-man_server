@@ -6,7 +6,7 @@ import com.umc.naoman.domain.photo.entity.Photo;
 
 public class AgendaPhotoConverter {
 
-    public static AgendaPhoto toAgendaPhoto(Agenda agenda, Photo photo) {
+    public static AgendaPhoto toEntity(Agenda agenda, Photo photo) {
         return AgendaPhoto.builder()
                 .agenda(agenda)
                 .photo(photo)
