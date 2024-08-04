@@ -3,13 +3,10 @@ package com.umc.naoman.domain.photo.service;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.util.IOUtils;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
@@ -17,21 +14,16 @@ import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
-import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +41,7 @@ public class PhotoServiceImpl implements PhotoService {
     private final PhotoRepository photoRepository;
     private final ShareGroupService shareGroupService;
     private final PhotoConverter photoConverter;
-:
+
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
 
@@ -202,7 +194,7 @@ public class PhotoServiceImpl implements PhotoService {
             throw new BusinessException(PHOTO_NOT_FOUND);
         }
 
-        return photoConverter.toPhotoDownloadUrlListResponse(photoList);
+        return photoConverter.toPhotoDownloadUrlListInfo(photoList);
     }
 
     private void validateShareGroupAndProfile(Long shareGroupId, Member member) {
