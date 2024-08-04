@@ -15,8 +15,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "sample_photo_vectors")
-public class SamplePhotoVector {
+@Document(indexName = "sample_face_vectors")
+public class SampleFaceVector {
     @Id
     private String id;
     @Field(type = FieldType.Long)
