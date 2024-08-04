@@ -12,7 +12,7 @@ public abstract class AgendaResponse {
     @Builder
     @Getter
     @AllArgsConstructor
-    public static class CreateAgenda {
+    public static class AgendaInfo {
         private Long agendaId;
         @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDateTime createdAt;

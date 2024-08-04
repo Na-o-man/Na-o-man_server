@@ -4,7 +4,6 @@ import com.umc.naoman.domain.agenda.converter.AgendaConverter;
 import com.umc.naoman.domain.agenda.dto.AgendaRequest;
 import com.umc.naoman.domain.agenda.dto.AgendaResponse;
 import com.umc.naoman.domain.agenda.entity.Agenda;
-import com.umc.naoman.domain.agenda.service.AgendaPhotoService;
 import com.umc.naoman.domain.agenda.service.AgendaService;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
@@ -14,8 +13,6 @@ import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.result.code.AgendaResultCode;
 import com.umc.naoman.global.security.annotation.LoginMember;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -47,8 +44,8 @@ public class AgendaController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "EG006",description = "그룹에 속한 회원의 프로필이 없습니다..",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
-    public ResultResponse<AgendaResponse.CreateAgenda> createAgenda(@RequestBody @Valid AgendaRequest.CreateAgendaRequest request,
-                                                                    @LoginMember Member member) {
+    public ResultResponse<AgendaResponse.AgendaInfo> createAgenda(@RequestBody @Valid AgendaRequest.CreateAgendaRequest request,
+                                                                  @LoginMember Member member) {
         Profile profile = shareGroupService.findProfile(request.getShareGroupId(),member.getId());
         Agenda agenda = agendaService.createAgenda(profile,request);
         return ResultResponse.of(AgendaResultCode.CREATE_AGENDA, agendaConverter.toCreateAgenda(agenda));
