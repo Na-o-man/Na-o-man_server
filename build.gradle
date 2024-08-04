@@ -61,6 +61,13 @@ dependencies {
 	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.0.0")
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	//AWS lambda
+	implementation 'com.amazonaws:aws-java-sdk-lambda:1.12.767'
+
+	//elasticSearch에 포함되어 있음. 추후 제거 예정
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 }
 
 tasks.named('test') {
