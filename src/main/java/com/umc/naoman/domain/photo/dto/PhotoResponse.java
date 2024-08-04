@@ -74,16 +74,6 @@ public abstract class PhotoResponse {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PhotoDownloadInfo {
-        private String photoName;
-        private ByteArrayResource byteArrayResource;
-        private HttpHeaders httpHeaders;
-    }
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class PhotoDownloadUrlListInfo {
         private List<String> photoDownloadUrlList;
     }

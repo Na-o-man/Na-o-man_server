@@ -94,10 +94,9 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PhotoResponse.PhotoDownloadUrlListInfo toPhotoDownloadUrlListResponse(List<Long> photoIdList, Long shareGroupId) {
-        List<String> photoDownloadUrlList = photoIdList.stream()
-//                .map(photoId -> "http://localhost:8080/photos/download/" + photoId + "?shareGroupId=" + shareGroupId)
-                .map(photoId -> "https://naoman.site:8080/photos/download/" + photoId + "?shareGroupId=" + shareGroupId)
+    public PhotoResponse.PhotoDownloadUrlListInfo toPhotoDownloadUrlListResponse(List<Photo> photoList) {
+        List<String> photoDownloadUrlList = photoList.stream()
+                .map(Photo::getUrl)
                 .collect(Collectors.toList());
 
         return PhotoResponse.PhotoDownloadUrlListInfo.builder()

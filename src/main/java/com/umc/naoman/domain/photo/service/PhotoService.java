@@ -20,9 +20,5 @@ public interface PhotoService {
 
     List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member);
 
-    ByteArrayResource downloadPhoto(Long photoId, Long shareGroupId, Member member);
-
-    String getPhotoName(Long photoId);
-
     PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member);
 }

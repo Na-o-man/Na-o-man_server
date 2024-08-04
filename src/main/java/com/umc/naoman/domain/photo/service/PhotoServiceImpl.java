@@ -44,13 +44,11 @@ import static com.umc.naoman.global.error.code.S3ErrorCode.*;
 @RequiredArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
 
-    private static final Logger log = LoggerFactory.getLogger(PhotoServiceImpl.class);
     private final AmazonS3 amazonS3;
     private final S3Template s3Template;
     private final PhotoRepository photoRepository;
     private final ShareGroupService shareGroupService;
     private final PhotoConverter photoConverter;
-    private final ProfileRepository profileRepository;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
@@ -222,14 +220,9 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional(readOnly = true)
-    public String getPhotoName(Long photoId) {
-        return photoRepository.findById(photoId).orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND)).getName();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member) {
         shareGroupService.findProfile(shareGroupId, member.getId());
-        return photoConverter.toPhotoDownloadUrlListResponse(photoIdList, shareGroupId);
+        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
+        return photoConverter.toPhotoDownloadUrlListResponse(photoList);
     }
 }
