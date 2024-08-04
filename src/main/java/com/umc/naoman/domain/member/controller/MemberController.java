@@ -73,7 +73,7 @@ public class MemberController {
                     (responseCode = "EM001", description = "해당 memberId를 가진 회원이 존재하지 않습니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
-    public ResultResponse<MemberResponse.MemberDeletion> getMemberDeletion(@PathVariable(name = "memberId") Long memberId) {
+    public ResultResponse<MemberResponse.MemberDeletion> deleteMember(@PathVariable(name = "memberId") Long memberId) {
         Member member = memberService.deleteMember(memberId);
         return ResultResponse.of(MemberResultCode.DELETE_MEMBER,
                 MemberConverter.toMemberDeletion(member));
