@@ -197,6 +197,12 @@ public class PhotoServiceImpl implements PhotoService {
     public PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member) {
         shareGroupService.findProfile(shareGroupId, member.getId());
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
+
+        if (photoList.size() != photoIdList.size()) {
+            // 요청한 사진이 일부 또는 전부 없을 경우 예외 발생
+            throw new BusinessException(PHOTO_NOT_FOUND);
+        }
+
         return photoConverter.toPhotoDownloadUrlListResponse(photoList);
     }
 }
