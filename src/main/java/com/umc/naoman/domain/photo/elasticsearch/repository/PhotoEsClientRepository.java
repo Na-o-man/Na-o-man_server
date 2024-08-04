@@ -6,7 +6,7 @@ import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
-import com.umc.naoman.global.error.ElasticsearchIOException;
+import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.error.code.ElasticsearchErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -49,7 +49,7 @@ public class PhotoEsClientRepository {
         try {
             BulkResponse result = elasticsearchClient.bulk(bulkBuilder.build());
         } catch (IOException e) {
-            throw new ElasticsearchIOException(e, ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION);
+            throw new BusinessException(ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION, e);
         }
     }
 
@@ -75,7 +75,7 @@ public class PhotoEsClientRepository {
                     PhotoEs.class
             );
         } catch (IOException e) {
-            throw new ElasticsearchIOException(e, ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION);
+            throw new BusinessException(ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION, e);
         }
         return toPagePhotoEs(response.hits().hits(), pageable);
     }
@@ -110,7 +110,7 @@ public class PhotoEsClientRepository {
                     PhotoEs.class
             );
         } catch (IOException e) {
-            throw new ElasticsearchIOException(e, ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION);
+            throw new BusinessException(ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION, e);
         }
 
         return toPagePhotoEs(response.hits().hits(), pageable);
@@ -145,7 +145,7 @@ public class PhotoEsClientRepository {
                     PhotoEs.class
             );
         }catch (IOException e){
-            throw new ElasticsearchIOException(e, ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION);
+            throw new BusinessException(ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION, e);
         }
 
         return toPagePhotoEs(response.hits().hits(), pageable);
