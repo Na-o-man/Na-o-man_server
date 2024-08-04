@@ -34,7 +34,7 @@ public class AgendaServiceImpl implements AgendaService {
     public Agenda createAgenda(Profile profile, AgendaRequest.CreateAgendaRequest request) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
         Agenda newAgenda = agendaConverter.toEntity(profile,request.getTitle(),shareGroup);
-        agendaPhotoService.saveAgendasPhotos(newAgenda,request.getAgendasPhotoList());
+        agendaPhotoService.saveAgendaPhotos(newAgenda,request.getAgendasPhotoList());
 
         return agendaRepository.save(newAgenda);
     }

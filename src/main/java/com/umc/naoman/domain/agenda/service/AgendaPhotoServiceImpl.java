@@ -23,7 +23,7 @@ public class AgendaPhotoServiceImpl implements AgendaPhotoService {
 
     @Override
     @Transactional
-    public void saveAgendasPhotos(Agenda agenda, List<Long> photos) {
+    public void saveAgendaPhotos(Agenda agenda, List<Long> photos) {
         for (Long photoId : photos) {
             Photo photo = photoRepository.findById(photoId).
                     orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND_BY_PHOTO_ID));
