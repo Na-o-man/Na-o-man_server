@@ -49,7 +49,7 @@ public class PhotoServiceImpl implements PhotoService {
     private final PhotoRepository photoRepository;
     private final ShareGroupService shareGroupService;
     private final PhotoConverter photoConverter;
-
+:
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
 
@@ -190,32 +190,6 @@ public class PhotoServiceImpl implements PhotoService {
 
         // 데이터베이스에서 사진 삭제
         photoRepository.delete(photo);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ByteArrayResource downloadPhoto(Long photoId, Long shareGroupId, Member member) {
-        // photoId에 해당하는 사진을 조회, 존재하지 않으면 예외를 던짐
-        Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND));
-
-        // S3에서 사진을 가져오기 위해 사진 이름을 키 값으로 사용
-        String photoName = photo.getName();
-
-        // S3에서 해당 키 값을 가진 객체를 가져옴
-        S3Object s3Object;
-
-        try {
-            s3Object = amazonS3.getObject(bucketName + "/" + RAW_PATH_PREFIX, photoName);
-        } catch (AmazonS3Exception e) {
-            throw new BusinessException(PHOTO_NOT_FOUND);
-        }
-
-        // S3 객체의 내용을 읽음
-        try (S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent()) {
-            return new ByteArrayResource(IOUtils.toByteArray(s3ObjectInputStream));
-        } catch (IOException e) {
-            throw new BusinessException(FAILED_DOWNLOAD_PHOTO);
-        }
     }
 
     @Override
