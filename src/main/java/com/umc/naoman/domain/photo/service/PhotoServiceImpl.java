@@ -63,7 +63,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public List<PhotoResponse.PreSignedUrlInfo> getPreSignedUrlList(PhotoRequest.PreSignedUrlRequest request, Member member) {
-        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
+        validateShareGroupAndProfile(request.getShareGroupId(), member);
 
         return request.getPhotoNameList().stream()
                 .map(this::getPreSignedUrl)
@@ -118,8 +118,8 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
-        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
         ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
+        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
         int uploadCount = 0;
 
         for (String photoUrl : request.getPhotoUrlList()) {
@@ -162,8 +162,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member) {
-        // 멤버가 해당 공유 그룹에 대한 권한이 있는지 확인
-        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
+        validateShareGroupAndProfile(request.getShareGroupId(), member);
 
         // 요청된 사진 ID 목록과 공유 그룹 ID를 기반으로 사진 목록 조회
         List<Photo> photoList = photoRepository.findByIdInAndShareGroupId(request.getPhotoIdList(), request.getShareGroupId());
@@ -195,7 +194,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional(readOnly = true)
     public PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member) {
-        shareGroupService.findProfile(shareGroupId, member.getId());
+        validateShareGroupAndProfile(shareGroupId, member);
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
 
         if (photoList.size() != photoIdList.size()) {
@@ -204,5 +203,12 @@ public class PhotoServiceImpl implements PhotoService {
         }
 
         return photoConverter.toPhotoDownloadUrlListResponse(photoList);
+    }
+
+    private void validateShareGroupAndProfile(Long shareGroupId, Member member) {
+        // 해당 공유 그룹이 존재하는지 확인
+        shareGroupService.findShareGroup(shareGroupId);
+        // 멤버가 해당 공유 그룹에 속해있는지 확인
+        shareGroupService.findProfile(shareGroupId, member.getId());
     }
 }
