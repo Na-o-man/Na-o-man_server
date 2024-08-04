@@ -1,5 +1,6 @@
 package com.umc.naoman.domain.agenda.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,7 @@ public abstract class AgendaResponse {
     @AllArgsConstructor
     public static class CreateAgenda {
         private Long agendaId;
+        @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDateTime createdAt;
     }
 }
