@@ -1,0 +1,32 @@
+{
+  "settings" : {
+    "index" :{
+      "number_of_shards" : 5,
+      "number_of_replicas" : 1
+    }
+  },
+  "mappings" : {
+    "dynamic": "false",
+    "_routing": {
+      "required" : true
+    },
+    "properties" : {
+      "shareGroupId" : {
+        "type" : "long"
+      },
+      "keyValue" : {
+        "type" : "keyword"
+      },
+      "createdAt" : {
+        "type" : "date",
+        "format": "yyyy-MM-dd HH:mm:ss"
+      },
+      "faceVector" : {
+        "type": "dense_vector",
+        "dims": 128,
+        "index": true,
+        "similarity" : "dot_product"
+      }
+    }
+  }
+}
