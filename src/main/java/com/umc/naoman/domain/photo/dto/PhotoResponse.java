@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -68,4 +70,11 @@ public abstract class PhotoResponse {
         private List<Long> photoIdList;
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PhotoDownloadUrlListInfo {
+        private List<String> photoDownloadUrlList;
+    }
 }

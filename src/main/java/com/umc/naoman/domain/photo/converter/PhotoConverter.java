@@ -94,4 +94,13 @@ public class PhotoConverter {
                 .build();
     }
 
+    public PhotoResponse.PhotoDownloadUrlListInfo toPhotoDownloadUrlListInfo(List<Photo> photoList) {
+        List<String> photoDownloadUrlList = photoList.stream()
+                .map(Photo::getUrl)
+                .collect(Collectors.toList());
+
+        return PhotoResponse.PhotoDownloadUrlListInfo.builder()
+                .photoDownloadUrlList(photoDownloadUrlList)
+                .build();
+    }
 }
