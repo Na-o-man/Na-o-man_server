@@ -1,5 +1,6 @@
 package com.umc.naoman.domain.member.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,8 +48,9 @@ public abstract class MemberResponse {
     @Builder
     @Getter
     @AllArgsConstructor
-    public static class MemberDeletion {
+    public static class deleteMemberInfo {
         private Long memberId;
+        @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDateTime deletedAt;
     }
 }
