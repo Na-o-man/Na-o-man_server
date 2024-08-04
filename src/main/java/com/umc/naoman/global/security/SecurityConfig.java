@@ -4,6 +4,7 @@ import com.umc.naoman.domain.member.service.MemberService;
 import com.umc.naoman.domain.member.service.redis.RefreshTokenService;
 import com.umc.naoman.global.security.filter.JwtAuthenticationFilter;
 import com.umc.naoman.global.security.handler.CustomAccessDeniedHandler;
+import com.umc.naoman.global.security.handler.CustomAuthenticationEntryPoint;
 import com.umc.naoman.global.security.handler.OAuth2LoginSuccessHandler;
 import com.umc.naoman.global.security.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.umc.naoman.global.security.service.CustomOAuth2UserService;
@@ -26,6 +27,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final RefreshTokenService refreshTokenService;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final JwtUtils jwtUtils;
 
     @Bean
@@ -59,14 +61,15 @@ public class SecurityConfig {
                                 "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(exception -> exception.accessDeniedHandler(customAccessDeniedHandler))
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                        .authenticationEntryPoint(customAuthenticationEntryPoint))
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(endpoint -> endpoint
                                 .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository()))
                         .userInfoEndpoint(userInfoEndpointConfig ->
                                 userInfoEndpointConfig.userService(customOAuth2UserService))
                         .successHandler(oAuth2LoginSuccessHandler())
-                        .loginPage("/auth/login")
                 )
                 .addFilterAfter(new JwtAuthenticationFilter(jwtUtils), OAuth2LoginAuthenticationFilter.class);
 

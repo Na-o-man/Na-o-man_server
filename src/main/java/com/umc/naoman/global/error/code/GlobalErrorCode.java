@@ -22,6 +22,7 @@ public enum GlobalErrorCode implements ErrorCode {
     INTERNAL_SERVER_ERROR(500, "EG051", "내부 서버 오류입니다."),
     UNDEFINED_ERROR(400, "EG100", "정의되지 않은 에러입니다."),
     CLIENT_REGISTRATION_NOT_FOUND(400, "EM000", "해당 registrationId를 가진 ClientRegistration이 존재하지 않습니다."),
+    UNAUTHORIZED(401, "EG000", "인증되지 않은 사용자의 요청입니다. 로그인해 주세요.");
 
     ;
     private final int status;
