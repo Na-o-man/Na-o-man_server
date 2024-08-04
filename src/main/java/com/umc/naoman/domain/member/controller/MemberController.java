@@ -2,11 +2,13 @@ package com.umc.naoman.domain.member.controller;
 
 import com.umc.naoman.domain.member.converter.MemberConverter;
 import com.umc.naoman.domain.member.dto.MemberResponse;
+import com.umc.naoman.domain.member.dto.MemberResponse.MemberInfo;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.service.MemberService;
 import com.umc.naoman.global.error.ErrorResponse;
 import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.result.code.MemberResultCode;
+import com.umc.naoman.global.security.annotation.LoginMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.umc.naoman.global.result.code.MemberResultCode.CHECK_MEMBER_REGISTRATION;
 
 @RestController
 @RequestMapping("/members")
@@ -36,10 +40,16 @@ public class MemberController {
                     (responseCode = "EM001", description = "해당 memberId를 가진 회원이 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
-    public ResultResponse<MemberResponse.MemberInfo> getMemberInfo(@PathVariable(name = "memberId") Long memberId) {
+    public ResultResponse<MemberInfo> getMemberInfo(@PathVariable(name = "memberId") Long memberId) {
         Member member = memberService.findMember(memberId);
         return ResultResponse.of(MemberResultCode.MEMBER_INFO,
                 memberConverter.toMemberInfo(member));
+    }
+
+    @GetMapping("/my")
+    @Operation(summary = "내 회원정보 조회 API", description = "자신의 회원 정보를 조회하는 API입니다.")
+    public ResultResponse<MemberInfo> checkSignup(@LoginMember Member member) {
+        return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.getMyInfo(member));
     }
 
     @GetMapping("/terms/{memberId}")

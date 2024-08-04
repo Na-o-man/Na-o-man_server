@@ -6,6 +6,7 @@ import com.umc.naoman.domain.member.dto.MemberRequest.MarketingAgreedRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
+import com.umc.naoman.domain.member.dto.MemberResponse.MemberInfo;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
 import com.umc.naoman.domain.member.repository.MemberRepository;
@@ -99,5 +100,10 @@ public class MemberServiceImpl implements MemberService {
         refreshTokenService.saveRefreshToken(memberId, refreshToken);
 
         return memberConverter.toLoginInfo(memberId, accessToken, refreshToken);
+    }
+
+    @Override
+    public MemberInfo getMyInfo(Member member) {
+        return memberConverter.toMemberInfo(member);
     }
 }

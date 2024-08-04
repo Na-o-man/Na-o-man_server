@@ -12,4 +12,5 @@ import java.util.List;
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
     Page<Photo> findAllByShareGroupId(Long shareGroupId, Pageable pageable);
     List<Photo> findByIdInAndShareGroupId(List<Long> photoIdList, Long shareGroupId);
+    List<Photo> findByIdIn(List<Long> photoIdList);
 }
