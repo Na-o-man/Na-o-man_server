@@ -47,11 +47,6 @@ public class AgendaController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "EG006",description = "그룹에 속한 회원의 프로필이 없습니다..",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
-    @Parameters(value = {
-            @Parameter(name = "shareGroupId",description = "안건이 생성되는 공유그룹의 Id"),
-            @Parameter(name = "title",description = "안건의 제목"),
-            @Parameter(name = "agendasPhotoList",description = "안건에 올릴 사진의 photoId 리스트")
-    })
     public ResultResponse<AgendaResponse.CreateAgenda> createAgenda(@RequestBody @Valid AgendaRequest.CreateAgendaRequest request,
                                                                     @LoginMember Member member) {
         Long shareGroupId = request.getShareGroupId();
