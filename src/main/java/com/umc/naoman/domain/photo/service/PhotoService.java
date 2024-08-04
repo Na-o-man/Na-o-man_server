@@ -18,4 +18,6 @@ public interface PhotoService {
     Page<Photo> getAllPhotoList(Long shareGroupId, Member member, Pageable pageable);
 
     List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member);
+
+    Photo findPhoto(Long photoId);
 }

@@ -42,7 +42,6 @@ public class PhotoServiceImpl implements PhotoService {
     private final PhotoRepository photoRepository;
     private final ShareGroupService shareGroupService;
     private final PhotoConverter photoConverter;
-    private final ProfileRepository profileRepository;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
@@ -185,4 +184,9 @@ public class PhotoServiceImpl implements PhotoService {
         photoRepository.delete(photo);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Photo findPhoto(Long photoId) {
+        return photoRepository.findById(photoId).orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND));
+    }
 }
