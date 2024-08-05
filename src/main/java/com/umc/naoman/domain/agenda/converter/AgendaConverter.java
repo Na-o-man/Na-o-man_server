@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AgendaConverter {
 
-    public AgendaResponse.AgendaInfo toCreateAgenda(Agenda agenda){
+    public AgendaResponse.AgendaInfo toAgendaInfo(Agenda agenda){
         return AgendaResponse.AgendaInfo.builder()
                 .agendaId(agenda.getId())
                 .createdAt(agenda.getCreatedAt())

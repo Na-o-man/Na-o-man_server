@@ -48,7 +48,7 @@ public class AgendaController {
                                                                   @LoginMember Member member) {
         Profile profile = shareGroupService.findProfile(request.getShareGroupId(),member.getId());
         Agenda agenda = agendaService.createAgenda(profile,request);
-        return ResultResponse.of(AgendaResultCode.CREATE_AGENDA, agendaConverter.toCreateAgenda(agenda));
+        return ResultResponse.of(AgendaResultCode.CREATE_AGENDA, agendaConverter.toAgendaInfo(agenda));
     }
 }
 
