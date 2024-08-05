@@ -185,6 +185,9 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional(readOnly = true)
+    public Photo findPhoto(Long photoId) {
+        return photoRepository.findById(photoId).orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND));
+
     public PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member) {
         validateShareGroupAndProfile(shareGroupId, member);
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
