@@ -4,6 +4,7 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.entity.Photo;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,4 +21,6 @@ public interface PhotoService {
     List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member);
 
     Photo findPhoto(Long photoId);
+
+    PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member);
 }

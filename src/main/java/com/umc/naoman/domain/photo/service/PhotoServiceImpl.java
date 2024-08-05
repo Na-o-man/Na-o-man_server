@@ -14,7 +14,6 @@ import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
-import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import io.awspring.cloud.s3.S3Template;
@@ -56,7 +55,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public List<PhotoResponse.PreSignedUrlInfo> getPreSignedUrlList(PhotoRequest.PreSignedUrlRequest request, Member member) {
-        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
+        validateShareGroupAndProfile(request.getShareGroupId(), member);
 
         return request.getPhotoNameList().stream()
                 .map(this::getPreSignedUrl)
@@ -111,8 +110,8 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
-        shareGroupService.findProfile(member.getId(), request.getShareGroupId());
         ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
+        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
         int uploadCount = 0;
 
         for (String photoUrl : request.getPhotoUrlList()) {
@@ -155,15 +154,15 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member) {
-        // 멤버가 해당 공유 그룹에 대한 권한이 있는지 확인
-        shareGroupService.findProfile(member.getId(), request.getShareGroupId());
+        validateShareGroupAndProfile(request.getShareGroupId(), member);
 
         // 요청된 사진 ID 목록과 공유 그룹 ID를 기반으로 사진 목록 조회
         List<Photo> photoList = photoRepository.findByIdInAndShareGroupId(request.getPhotoIdList(), request.getShareGroupId());
 
         // 사진 목록 크기 검증
         if (photoList.size() != request.getPhotoIdList().size()) {
-            throw new BusinessException(PHOTO_NOT_FOUND); // 요청한 사진이 일부 또는 전부 없을 경우 예외 발생
+            // 요청한 사진이 일부 또는 전부 없을 경우 예외 발생
+            throw new BusinessException(PHOTO_NOT_FOUND);
         }
 
         // 각 사진에 대해 S3에서 객체 삭제 및 데이터베이스에서 삭제
@@ -188,5 +187,23 @@ public class PhotoServiceImpl implements PhotoService {
     @Transactional(readOnly = true)
     public Photo findPhoto(Long photoId) {
         return photoRepository.findById(photoId).orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND));
+
+    public PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member) {
+        validateShareGroupAndProfile(shareGroupId, member);
+        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
+
+        if (photoList.size() != photoIdList.size()) {
+            // 요청한 사진이 일부 또는 전부 없을 경우 예외 발생
+            throw new BusinessException(PHOTO_NOT_FOUND);
+        }
+
+        return photoConverter.toPhotoDownloadUrlListInfo(photoList);
+    }
+
+    private void validateShareGroupAndProfile(Long shareGroupId, Member member) {
+        // 해당 공유 그룹이 존재하는지 확인
+        shareGroupService.findShareGroup(shareGroupId);
+        // 멤버가 해당 공유 그룹에 속해있는지 확인
+        shareGroupService.findProfile(shareGroupId, member.getId());
     }
 }

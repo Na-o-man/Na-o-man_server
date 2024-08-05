@@ -1,0 +1,22 @@
+{
+  "settings" : {
+    "index" :{
+      "number_of_shards" : 3,
+      "number_of_replicas" : 1
+    }
+  },
+  "mappings" : {
+    "dynamic": "false",
+    "properties" : {
+      "memberId" : {
+        "type" : "long"
+      },
+      "faceVector" : {
+        "type": "dense_vector",
+        "dims": 128,
+        "index": true,
+        "similarity" : "dot_product"
+      }
+    }
+  }
+}
