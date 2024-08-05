@@ -35,7 +35,6 @@ import static com.umc.naoman.global.error.code.S3ErrorCode.*;
 @Service
 @RequiredArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
-
     private final AmazonS3 amazonS3;
     private final S3Template s3Template;
     private final PhotoRepository photoRepository;
@@ -44,13 +43,18 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
-
     @Value("${spring.cloud.aws.region.static}")
     private String region;
 
     public static final String RAW_PATH_PREFIX = "raw";
     public static final String W200_PATH_PREFIX = "w200";
     public static final String W400_PATH_PREFIX = "w400";
+
+    @Override
+    @Transactional(readOnly = true)
+    public Photo findPhoto(Long photoId) {
+        return photoRepository.findById(photoId).orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND));
+    }
 
     @Override
     @Transactional
@@ -60,51 +64,6 @@ public class PhotoServiceImpl implements PhotoService {
         return request.getPhotoNameList().stream()
                 .map(this::getPreSignedUrl)
                 .collect(Collectors.toList());
-    }
-
-    private PhotoResponse.PreSignedUrlInfo getPreSignedUrl(String originalFilename) {
-        String fileName = createPath(originalFilename);
-
-        String photoName = fileName.split("/")[1];
-        String photoUrl = generateFileAccessUrl(fileName);
-
-        URL preSignedUrl = amazonS3.generatePresignedUrl(getGeneratePreSignedUrlRequest(bucketName, fileName));
-        return photoConverter.toPreSignedUrlInfo(preSignedUrl.toString(), photoUrl, photoName);
-    }
-
-    // 사진 업로드용(PUT) PreSigned URL 생성
-    private GeneratePresignedUrlRequest getGeneratePreSignedUrlRequest(String bucket, String fileName) {
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, fileName)
-                .withMethod(HttpMethod.PUT)
-                .withExpiration(getPreSignedUrlExpiration());
-        generatePresignedUrlRequest.addRequestParameter(Headers.S3_CANNED_ACL, CannedAccessControlList.PublicRead.toString());
-
-        return generatePresignedUrlRequest;
-    }
-
-    // PreSigned URL 유효 기간 설정
-    private Date getPreSignedUrlExpiration() {
-        Date expiration = new Date();
-        long expTimeMillis = expiration.getTime();
-        expTimeMillis += 1000 * 60 * 3;
-        expiration.setTime(expTimeMillis);
-        return expiration;
-    }
-
-    // 사진 고유 ID 생성
-    private String createFileId() {
-        return UUID.randomUUID().toString();
-    }
-
-    // 원본 사진 전체 경로 생성
-    private String createPath(String fileName) {
-        String fileId = createFileId();
-        return String.format("%s/%s", RAW_PATH_PREFIX, fileId + fileName);
-    }
-
-    // 원본 사진의 접근 URL 생성
-    private String generateFileAccessUrl(String fileName) {
-        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName);
     }
 
     @Override
@@ -122,24 +81,6 @@ public class PhotoServiceImpl implements PhotoService {
         }
 
         return new PhotoResponse.PhotoUploadInfo(shareGroup.getId(), uploadCount);
-    }
-
-    // 사진 URL에서 사진 이름을 추출하는 메서드
-    private String extractPhotoNameFromUrl(String photoUrl) {
-        int lastSlashIndex = photoUrl.lastIndexOf('/');
-        return photoUrl.substring(lastSlashIndex + 1);
-    }
-
-    // S3에 객체의 존재 여부 확인 및 저장하는 메서드
-    private boolean checkAndSavePhoto(String photoUrl, String photoName, ShareGroup shareGroup) {
-        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName + "/" + RAW_PATH_PREFIX, photoName));
-        if (s3Object != null) {
-            Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
-            photoRepository.save(photo);
-            return true;
-        } else {
-            throw new BusinessException(PHOTO_NOT_FOUND_S3);
-        }
     }
 
     @Override
@@ -173,21 +114,6 @@ public class PhotoServiceImpl implements PhotoService {
         return photoList; // 삭제된 사진 목록 반환
     }
 
-    private void deletePhoto(Photo photo) {
-        // S3에서 원본 및 변환된 이미지 삭제
-        s3Template.deleteObject(bucketName, RAW_PATH_PREFIX + "/" + photo.getName());
-        s3Template.deleteObject(bucketName, W200_PATH_PREFIX + "/" + photoConverter.convertExtension(photo.getName()));
-        s3Template.deleteObject(bucketName, W400_PATH_PREFIX + "/" + photoConverter.convertExtension(photo.getName()));
-
-        // 데이터베이스에서 사진 삭제
-        photoRepository.delete(photo);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Photo findPhoto(Long photoId) {
-        return photoRepository.findById(photoId).orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND));
-
     public PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member) {
         validateShareGroupAndProfile(shareGroupId, member);
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
@@ -200,10 +126,84 @@ public class PhotoServiceImpl implements PhotoService {
         return photoConverter.toPhotoDownloadUrlListInfo(photoList);
     }
 
+    private PhotoResponse.PreSignedUrlInfo getPreSignedUrl(String originalFilename) {
+        String fileName = createPath(originalFilename);
+
+        String photoName = fileName.split("/")[1];
+        String photoUrl = generateFileAccessUrl(fileName);
+
+        URL preSignedUrl = amazonS3.generatePresignedUrl(getGeneratePreSignedUrlRequest(bucketName, fileName));
+        return photoConverter.toPreSignedUrlInfo(preSignedUrl.toString(), photoUrl, photoName);
+    }
+
+    // 사진 업로드용(PUT) PreSigned URL 생성
+    private GeneratePresignedUrlRequest getGeneratePreSignedUrlRequest(String bucket, String fileName) {
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, fileName)
+                .withMethod(HttpMethod.PUT)
+                .withExpiration(getPreSignedUrlExpiration());
+        generatePresignedUrlRequest.addRequestParameter(Headers.S3_CANNED_ACL, CannedAccessControlList.PublicRead.toString());
+
+        return generatePresignedUrlRequest;
+    }
+
+
+    // 원본 사진 전체 경로 생성
+    private String createPath(String fileName) {
+        String fileId = createFileId();
+        return String.format("%s/%s", RAW_PATH_PREFIX, fileId + fileName);
+    }
+
+    // 사진 고유 ID 생성
+    private String createFileId() {
+        return UUID.randomUUID().toString();
+    }
+
+    // 원본 사진의 접근 URL 생성
+    private String generateFileAccessUrl(String fileName) {
+        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName);
+    }
+
+    // PreSigned URL 유효 기간 설정
+    private Date getPreSignedUrlExpiration() {
+        Date expiration = new Date();
+        long expTimeMillis = expiration.getTime();
+        expTimeMillis += 1000 * 60 * 3;
+        expiration.setTime(expTimeMillis);
+        return expiration;
+    }
+
+    // 사진 URL에서 사진 이름을 추출하는 메서드
+    private String extractPhotoNameFromUrl(String photoUrl) {
+        int lastSlashIndex = photoUrl.lastIndexOf('/');
+        return photoUrl.substring(lastSlashIndex + 1);
+    }
+
+    // S3에 객체의 존재 여부 확인 및 저장하는 메서드
+    private boolean checkAndSavePhoto(String photoUrl, String photoName, ShareGroup shareGroup) {
+        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName + "/" + RAW_PATH_PREFIX, photoName));
+        if (s3Object != null) {
+            Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
+            photoRepository.save(photo);
+            return true;
+        } else {
+            throw new BusinessException(PHOTO_NOT_FOUND_S3);
+        }
+    }
+
     private void validateShareGroupAndProfile(Long shareGroupId, Member member) {
         // 해당 공유 그룹이 존재하는지 확인
         shareGroupService.findShareGroup(shareGroupId);
         // 멤버가 해당 공유 그룹에 속해있는지 확인
         shareGroupService.findProfile(shareGroupId, member.getId());
+    }
+
+    private void deletePhoto(Photo photo) {
+        // S3에서 원본 및 변환된 이미지 삭제
+        s3Template.deleteObject(bucketName, RAW_PATH_PREFIX + "/" + photo.getName());
+        s3Template.deleteObject(bucketName, W200_PATH_PREFIX + "/" + photoConverter.convertExtension(photo.getName()));
+        s3Template.deleteObject(bucketName, W400_PATH_PREFIX + "/" + photoConverter.convertExtension(photo.getName()));
+
+        // 데이터베이스에서 사진 삭제
+        photoRepository.delete(photo);
     }
 }
