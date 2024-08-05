@@ -5,6 +5,7 @@ import com.umc.naoman.domain.notification.converter.NotificationConverter;
 import com.umc.naoman.domain.notification.dto.NotificationRequest;
 import com.umc.naoman.domain.notification.dto.NotificationResponse;
 import com.umc.naoman.domain.notification.entity.Notification;
+import com.umc.naoman.domain.notification.service.FcmService;
 import com.umc.naoman.domain.notification.service.NotificationService;
 import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.result.code.NotificationResultCode;
@@ -31,6 +32,8 @@ import java.util.List;
 @Tag(name = "알림 관련 API", description = " 알림 전체 목록 조희, fcm 토큰 업로드, 알림 1개 삭제, 알림 전체 삭제, 읽지 않은 알림 유무,  내 알람 전체 읽음 처리를 하는 API입니다.")
 public class NotificationController {
     private final NotificationService notificationService;
+    private final FcmService fcmService;
+    private final NotificationConverter notificationConverter;
 
     @PostMapping("/token")
     @Operation(
@@ -44,7 +47,7 @@ public class NotificationController {
     )
     public ResultResponse<Void> registerFcmToken(@RequestBody NotificationRequest.FcmToken fcmToken,
                                                  @LoginMember Member member){
-
+        fcmService.saveFcmToken(member, fcmToken.getToken());
         return ResultResponse.of(NotificationResultCode.REGISTER_FCM_TOKEN,null);
     }
 
@@ -59,17 +62,17 @@ public class NotificationController {
                                                                                        @Parameter(hidden = true) Pageable pageable){
         Page<Notification> notificationPage =  notificationService.getNotificationList(member, pageable);
         return ResultResponse.of(NotificationResultCode.GET_MY_NOTIFICATION,
-                NotificationConverter.toNotificationInfo(notificationPage));
+                notificationConverter.toNotificationInfo(notificationPage));
     }
 
     @GetMapping("/unread")
     @Operation(summary = "읽지 않은 알림 유무 조회",
             description = "읽지 않은 알림 유무 조회하는 API입니다.",
             parameters = {})
-    public ResultResponse<NotificationResponse.UnreadNotification> getIsUnread(@LoginMember Member member){
+    public ResultResponse<NotificationResponse.IsUnread> getIsUnread(@LoginMember Member member){
         List<Notification> notificationList =  notificationService.isUnreadNotification(member);
         return ResultResponse.of(NotificationResultCode.CHECK_MY_UNREAD_NOTIFICATION,
-                NotificationConverter.toUnreadNotification(notificationList));
+                notificationConverter.toIsUnread(notificationList));
     }
 
     @PostMapping("/acknowledgements")
@@ -79,12 +82,12 @@ public class NotificationController {
     public ResultResponse<NotificationResponse.NotificationAcknowledgeCount> setMyNotificationRead(@LoginMember Member member){
         List<Notification> notificationList = notificationService.setMyNotificationRead(member);
         return ResultResponse.of(NotificationResultCode.READ_ALL_MY_NOTIFICATION,
-                NotificationConverter.toNotificationAcknowledgedCount(notificationList));
+                notificationConverter.toNotificationAcknowledgedCount(notificationList));
     }
 
     @DeleteMapping("/{notificationId}")
-    @Operation(summary = "특정 알림 1개 삭제",
-            description = "특정 알림 1개를 삭제하는 API입니다.",
+    @Operation(summary = "특정 알림 삭제",
+            description = "특정 알림을 삭제하는 API입니다.",
             parameters = {
             @Parameter(name = "notificationId", description = "삭제할 알림의 Id", required = true, schema = @Schema(type = "long"))
     })
@@ -92,7 +95,7 @@ public class NotificationController {
                                                                                                 @LoginMember Member member){
         long deletedCount = notificationService.deleteNotification(member,notificationId);
         return ResultResponse.of(NotificationResultCode.DELETE_MY_NOTIFICATION,
-                NotificationConverter.toNotificationAcknowledgedCount(deletedCount));
+                notificationConverter.toNotificationAcknowledgedCount(deletedCount));
     }
     @DeleteMapping
     @Operation(summary = "모든 알림 삭제",
@@ -101,6 +104,6 @@ public class NotificationController {
     public ResultResponse<NotificationResponse.NotificationDeletedCount> deleteAllNotification(@LoginMember Member member){
         long deletedCount = notificationService.deleteNotificationAll(member);
         return ResultResponse.of(NotificationResultCode.DELETE_MY_NOTIFICATION,
-                NotificationConverter.toNotificationDeletedCount(deletedCount));
+                notificationConverter.toNotificationDeletedCount(deletedCount));
     }
 }

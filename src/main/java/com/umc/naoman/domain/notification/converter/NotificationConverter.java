@@ -6,13 +6,15 @@ import com.umc.naoman.domain.notification.dto.NotificationResponse;
 import com.umc.naoman.domain.notification.entity.DeviceToken;
 import com.umc.naoman.domain.notification.entity.Notification;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class NotificationConverter {
 
-    public static NotificationResponse.NotificationInfo notificationInfo(Notification notification){
+    public NotificationResponse.NotificationInfo notificationInfo(Notification notification){
         return NotificationResponse.NotificationInfo.builder()
                 .body(notification.getMessage())
                 .createdAt(notification.getCreatedAt())
@@ -20,10 +22,10 @@ public class NotificationConverter {
                 .url(notification.makeNotificationInfoURL()) //다형성으로 각기 다른 알림이 적절한 URL 만들도록 오버라이딩.
                 .build();
     }
-    public static NotificationResponse.PagedNotificationInfo toNotificationInfo(
+    public NotificationResponse.PagedNotificationInfo toNotificationInfo(
             Page<Notification> notificationList){
         List<NotificationResponse.NotificationInfo> notificationInfoList
-                = notificationList.stream().map(NotificationConverter::notificationInfo).collect(Collectors.toList());
+                = notificationList.stream().map(this::notificationInfo).collect(Collectors.toList());
 
         return NotificationResponse.PagedNotificationInfo.builder()
                 .isLast(notificationList.isLast())
@@ -34,30 +36,30 @@ public class NotificationConverter {
                 .build();
     }
 
-    public static NotificationResponse.UnreadNotification toUnreadNotification(List<Notification> notificationList){
-        return NotificationResponse.UnreadNotification.builder()
+    public NotificationResponse.IsUnread toIsUnread(List<Notification> notificationList){
+        return NotificationResponse.IsUnread.builder()
                 .isUnread(!notificationList.isEmpty())
                 .build();
     }
 
-    public static NotificationResponse.NotificationAcknowledgeCount toNotificationAcknowledgedCount(List<Notification> notificationList){
+    public NotificationResponse.NotificationAcknowledgeCount toNotificationAcknowledgedCount(List<Notification> notificationList){
         return NotificationResponse.NotificationAcknowledgeCount.builder()
                 .acknowledgedCount((long)notificationList.size())
                 .build();
     }
-    public static NotificationResponse.NotificationAcknowledgeCount toNotificationAcknowledgedCount(Long updateCount){
+    public NotificationResponse.NotificationAcknowledgeCount toNotificationAcknowledgedCount(Long updateCount){
         return NotificationResponse.NotificationAcknowledgeCount.builder()
                 .acknowledgedCount(updateCount)
                 .build();
     }
 
-    public static NotificationResponse.NotificationDeletedCount toNotificationDeletedCount(Long updateCount){
+    public NotificationResponse.NotificationDeletedCount toNotificationDeletedCount(Long updateCount){
         return NotificationResponse.NotificationDeletedCount.builder()
                 .deletedCount(updateCount)
                 .build();
     }
 
-    public static DeviceToken toDeviceToken(Member member, NotificationRequest.FcmToken fcmToken){
+    public DeviceToken toDeviceToken(Member member, NotificationRequest.FcmToken fcmToken){
         return DeviceToken.builder()
                 .member(member)
                 .fcmToken(fcmToken.getToken())

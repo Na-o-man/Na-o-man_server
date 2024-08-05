@@ -38,7 +38,7 @@ public class NotificationResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UnreadNotification {
+    public static class IsUnread {
         Boolean isUnread;
     }
 
