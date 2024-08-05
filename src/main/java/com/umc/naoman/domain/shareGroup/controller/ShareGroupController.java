@@ -7,7 +7,6 @@ import com.umc.naoman.domain.shareGroup.dto.ShareGroupRequest.createShareGroupRe
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
-import com.umc.naoman.domain.shareGroup.service.OpenAiService;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.result.code.ShareGroupResultCode;
@@ -57,7 +56,7 @@ public class ShareGroupController {
     })
     public ResultResponse<ShareGroupResponse.ShareGroupDetailInfo> getShareGroupDetailInfo(@PathVariable(name = "shareGroupId") Long shareGroupId) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
-        List<Profile> profileList = shareGroupService.findProfileList(shareGroupId);
+        List<Profile> profileList = shareGroupService.findProfileListByShareGroupId(shareGroupId);
 
         return ResultResponse.of(ShareGroupResultCode.SHARE_GROUP_INFO,
                 shareGroupConverter.toShareGroupDetailInfo(shareGroup, profileList));
@@ -70,7 +69,7 @@ public class ShareGroupController {
     })
     public ResultResponse<ShareGroupResponse.ShareGroupDetailInfo> getShareGroupByInviteCode(@RequestParam String inviteCode) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(inviteCode);
-        List<Profile> profileList = shareGroupService.findProfileList(shareGroup.getId());
+        List<Profile> profileList = shareGroupService.findProfileListByShareGroupId(shareGroup.getId());
 
         return ResultResponse.of(ShareGroupResultCode.SHARE_GROUP_INFO,
                 shareGroupConverter.toShareGroupDetailInfo(shareGroup, profileList));

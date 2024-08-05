@@ -142,11 +142,6 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     }
 
     @Override
-    public List<Profile> findProfileList(Long shareGroupId) {
-        return profileRepository.findByShareGroupId(shareGroupId);
-    }
-
-    @Override
     public Profile findProfile(Long profileId) {
         return profileRepository.findById(profileId)
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
@@ -164,7 +159,12 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     }
 
     @Override
-    public List<Profile> findProfileList(Member member) {
-        return profileRepository.findByMember(member);
+    public List<Profile> findProfileListByShareGroupId(Long shareGroupId) {
+        return profileRepository.findByShareGroupId(shareGroupId);
+    }
+
+    @Override
+    public List<Profile> findProfileListByMemberId(Long memberId) {
+        return profileRepository.findByMemberId(memberId);
     }
 }
