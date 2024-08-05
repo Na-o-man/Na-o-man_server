@@ -6,8 +6,6 @@ import com.umc.naoman.domain.agenda.dto.AgendaResponse;
 import com.umc.naoman.domain.agenda.entity.Agenda;
 import com.umc.naoman.domain.agenda.service.AgendaService;
 import com.umc.naoman.domain.member.entity.Member;
-import com.umc.naoman.domain.shareGroup.entity.Profile;
-import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.ErrorResponse;
 import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.result.code.AgendaResultCode;
@@ -29,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AgendaController {
 
     private final AgendaService agendaService;
-    private final ShareGroupService shareGroupService;
     private final AgendaConverter agendaConverter;
 
     @PostMapping("/agendas")
@@ -46,8 +43,7 @@ public class AgendaController {
     })
     public ResultResponse<AgendaResponse.AgendaInfo> createAgenda(@RequestBody @Valid AgendaRequest.CreateAgendaRequest request,
                                                                   @LoginMember Member member) {
-        Profile profile = shareGroupService.findProfile(request.getShareGroupId(),member.getId());
-        Agenda agenda = agendaService.createAgenda(profile,request);
+        Agenda agenda = agendaService.createAgenda(member,request);
         return ResultResponse.of(AgendaResultCode.CREATE_AGENDA, agendaConverter.toAgendaInfo(agenda));
     }
 }
