@@ -9,7 +9,6 @@ import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
 import com.umc.naoman.global.error.BusinessException;
-import com.umc.naoman.global.error.code.MemberErrorCode;
 import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,17 +29,20 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     private final ShareGroupRepository shareGroupRepository;
     private final ProfileRepository profileRepository;
     private final ShareGroupConverter shareGroupConverter;
+    private final OpenAiService openAiService;
 
     @Transactional
     @Override
     public ShareGroup createShareGroup(ShareGroupRequest.createShareGroupRequest request, Member member) {
 
+        // GPT 프롬프트로 groupName 생성
+        String groupName = openAiService.generateGroupName(request.getPlace(), request.getMeetingTypeList());
+
         // 초대링크를 위한 고유번호 생성 (UUID)
         String inviteCode = UUID.randomUUID().toString().replace("-", "").toUpperCase();
 
         // 변환 로직
-        ShareGroup newShareGroup = shareGroupConverter.toEntity(request);
-        newShareGroup.setInviteCode(inviteCode);
+        ShareGroup newShareGroup = shareGroupConverter.toEntity(request, inviteCode, groupName);
 
         // 생성된 공유 그룹 저장
         ShareGroup savedShareGroup = shareGroupRepository.save(newShareGroup);
@@ -140,11 +142,6 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     }
 
     @Override
-    public List<Profile> findProfileList(Long shareGroupId) {
-        return profileRepository.findByShareGroupId(shareGroupId);
-    }
-
-    @Override
     public Profile findProfile(Long profileId) {
         return profileRepository.findById(profileId)
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.PROFILE_NOT_FOUND));
@@ -161,4 +158,13 @@ public class ShareGroupServiceImpl implements ShareGroupService {
         return profileRepository.existsByShareGroupIdAndMemberId(shareGroupId, memberId);
     }
 
+    @Override
+    public List<Profile> findProfileListByShareGroupId(Long shareGroupId) {
+        return profileRepository.findByShareGroupId(shareGroupId);
+    }
+
+    @Override
+    public List<Profile> findProfileListByMemberId(Long memberId) {
+        return profileRepository.findByMemberId(memberId);
+    }
 }

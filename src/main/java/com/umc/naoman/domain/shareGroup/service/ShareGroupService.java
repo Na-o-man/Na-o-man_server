@@ -11,14 +11,15 @@ import java.util.List;
 
 public interface ShareGroupService {
     ShareGroup createShareGroup(ShareGroupRequest.createShareGroupRequest request, Member member);
+    ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member);
+    ShareGroup getInviteInfo(Long shareGroupId, Member member);
+    ShareGroup deleteShareGroup(Long shareGroupId, Member member);
+    Page<ShareGroup> getMyShareGroupList(Member member, Pageable pageable);
     ShareGroup findShareGroup(Long shareGroupId);
     ShareGroup findShareGroup(String inviteCode);
-    List<Profile> findProfileList(Long shareGroupId);
-    ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member);
+    List<Profile> findProfileListByShareGroupId(Long shareGroupId);
+    List<Profile> findProfileListByMemberId(Long memberId);
     Profile findProfile(Long profileId);
     Profile findProfile(Long shareGroupId, Long memberID);
-    Page<ShareGroup> getMyShareGroupList(Member member, Pageable pageable);
-    ShareGroup deleteShareGroup(Long shareGroupId, Member member);
-    ShareGroup getInviteInfo(Long shareGroupId, Member member);
     boolean doesProfileExist(Long shareGroupId, Long memberId);
 }
