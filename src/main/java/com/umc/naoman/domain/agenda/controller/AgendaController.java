@@ -39,7 +39,7 @@ public class AgendaController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SA001",description = "안건 생성 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "EG005",description = "해당 shareGroupId를 가진 그룹이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "EP001",description = "해당 phtoId를 가진 사진이 없습니다.",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ES3005",description = "해당 photoId를 가진 사진이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "EG006",description = "그룹에 속한 회원의 프로필이 없습니다..",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
