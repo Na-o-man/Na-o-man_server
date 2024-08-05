@@ -48,7 +48,7 @@ public class MemberController {
 
     @GetMapping("/my")
     @Operation(summary = "내 회원정보 조회 API", description = "자신의 회원 정보를 조회하는 API입니다.")
-    public ResultResponse<MemberInfo> checkSignup(@LoginMember Member member) {
+    public ResultResponse<MemberInfo> getMyInfo(@LoginMember Member member) {
         return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.getMyInfo(member));
     }
 
