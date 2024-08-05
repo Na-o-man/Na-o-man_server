@@ -29,6 +29,7 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     private final ShareGroupRepository shareGroupRepository;
     private final ProfileRepository profileRepository;
     private final ShareGroupConverter shareGroupConverter;
+    private final OpenAiService openAiService;
 
     @Transactional
     @Override
@@ -36,9 +37,13 @@ public class ShareGroupServiceImpl implements ShareGroupService {
         // 초대링크를 위한 고유번호 생성 (UUID)
         String inviteCode = UUID.randomUUID().toString().replace("-", "").toUpperCase();
 
+        // GPT 프롬프트로 groupName 생성
+        String groupName = openAiService.generateGroupName(request.getPlace(), request.getMeetingTypeList());
+
         // 변환 로직
         ShareGroup newShareGroup = shareGroupConverter.toEntity(request);
         newShareGroup.setInviteCode(inviteCode);
+        newShareGroup.setName(groupName);
 
         // 생성된 공유 그룹 저장
         ShareGroup savedShareGroup = shareGroupRepository.save(newShareGroup);

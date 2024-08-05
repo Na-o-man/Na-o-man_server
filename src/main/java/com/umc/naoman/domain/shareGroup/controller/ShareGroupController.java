@@ -7,6 +7,7 @@ import com.umc.naoman.domain.shareGroup.dto.ShareGroupRequest.createShareGroupRe
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
+import com.umc.naoman.domain.shareGroup.service.OpenAiService;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.result.code.ShareGroupResultCode;
@@ -37,12 +38,14 @@ import java.util.List;
 public class ShareGroupController {
     private final ShareGroupService shareGroupService;
     private final ShareGroupConverter shareGroupConverter;
+    private final OpenAiService openAiService;
 
     @PostMapping
     @Operation(summary = "공유그룹 생성 API", description = "새로운 공유그룹을 생성하는 API입니다.")
     public ResultResponse<ShareGroupResponse
             .ShareGroupInfo> createShareGroup(@Valid @RequestBody createShareGroupRequest request,
                                               @LoginMember Member member) {
+        // OpenAI API를 사용하여 그룹 이름 생성
         ShareGroup shareGroup = shareGroupService.createShareGroup(request, member);
         return ResultResponse.of(ShareGroupResultCode.CREATE_SHARE_GROUP, shareGroupConverter.toShareGroupInfo(shareGroup));
     }
