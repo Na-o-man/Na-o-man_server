@@ -163,4 +163,8 @@ public class ShareGroupServiceImpl implements ShareGroupService {
         return profileRepository.existsByShareGroupIdAndMemberId(shareGroupId, memberId);
     }
 
+    @Override
+    public List<Profile> findProfileList(Member member) {
+        return profileRepository.findByMember(member);
+    }
 }

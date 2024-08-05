@@ -21,4 +21,5 @@ public interface ShareGroupService {
     ShareGroup deleteShareGroup(Long shareGroupId, Member member);
     ShareGroup getInviteInfo(Long shareGroupId, Member member);
     boolean doesProfileExist(Long shareGroupId, Long memberId);
+    List<Profile> findProfileList(Member member);
 }
