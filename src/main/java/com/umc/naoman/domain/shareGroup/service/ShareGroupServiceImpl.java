@@ -9,7 +9,6 @@ import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.repository.ShareGroupRepository;
 import com.umc.naoman.global.error.BusinessException;
-import com.umc.naoman.global.error.code.MemberErrorCode;
 import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,16 +35,14 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     @Override
     public ShareGroup createShareGroup(ShareGroupRequest.createShareGroupRequest request, Member member) {
 
-        // 초대링크를 위한 고유번호 생성 (UUID)
-        String inviteCode = UUID.randomUUID().toString().replace("-", "").toUpperCase();
-
         // GPT 프롬프트로 groupName 생성
         String groupName = openAiService.generateGroupName(request.getPlace(), request.getMeetingTypeList());
 
+        // 초대링크를 위한 고유번호 생성 (UUID)
+        String inviteCode = UUID.randomUUID().toString().replace("-", "").toUpperCase();
+
         // 변환 로직
-        ShareGroup newShareGroup = shareGroupConverter.toEntity(request);
-        newShareGroup.setInviteCode(inviteCode);
-        newShareGroup.setName(groupName);
+        ShareGroup newShareGroup = shareGroupConverter.toEntity(request, inviteCode, groupName);
 
         // 생성된 공유 그룹 저장
         ShareGroup savedShareGroup = shareGroupRepository.save(newShareGroup);

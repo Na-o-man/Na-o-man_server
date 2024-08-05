@@ -13,7 +13,6 @@ import java.util.List;
 @Table(name = "share_groups")
 @SQLRestriction("deleted_at is NULL")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
