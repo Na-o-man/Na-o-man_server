@@ -5,5 +5,5 @@ import com.umc.naoman.domain.agenda.entity.Agenda;
 import java.util.List;
 
 public interface AgendaPhotoService {
-    void saveAgendaPhotos(Agenda agenda, List<Long> photos);
+    void saveAgendaPhotoList(Agenda agenda, List<Long> photos);
 }
