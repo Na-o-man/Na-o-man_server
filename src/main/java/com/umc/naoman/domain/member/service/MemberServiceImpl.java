@@ -36,8 +36,17 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
+    public LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request) {
+        Claims payload = jwtUtils.getPayload(tempMemberInfo);
+        SignupRequest signupRequest = memberConverter.toSignupRequest(payload, request.getMarketingAgreed());
+
+        return signup(signupRequest);
+    }
+
+    @Override
+    @Transactional
     public LoginInfo signup(SignupRequest request) {
-        if (memberRepository.existsByEmail(request.getEmail())) {
+        if (memberRepository.existsBySocialTypeAndAuthId(request.getSocialType(), request.getAuthId())) {
             throw new BusinessException(MEMBER_ALREADY_SIGNUP);
         }
 
@@ -55,14 +64,6 @@ public class MemberServiceImpl implements MemberService {
         return memberConverter.toLoginInfo(memberId, accessToken, refreshToken);
     }
 
-    @Override
-    @Transactional
-    public LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request) {
-        Claims payload = jwtUtils.getPayload(tempMemberInfo);
-        SignupRequest signupRequest = memberConverter.toSignupRequest(payload, request.getMarketingAgreed());
-
-        return signup(signupRequest);
-    }
 
     @Override
     public LoginInfo login(LoginRequest request) {
@@ -100,5 +101,4 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findByAuthIdAndSocialType(authId, socialType)
                 .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_AUTH_ID_AND_SOCIAL_TYPE));
     }
-
 }
