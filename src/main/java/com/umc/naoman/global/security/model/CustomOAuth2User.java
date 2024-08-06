@@ -1,5 +1,6 @@
 package com.umc.naoman.global.security.model;
 
+import com.umc.naoman.domain.member.entity.SocialType;
 import com.umc.naoman.global.security.attribute.OAuthAttribute;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -20,7 +21,11 @@ public class CustomOAuth2User extends DefaultOAuth2User {
         return oAuthAttribute;
     }
 
-    public String getEmail() {
-        return this.oAuthAttribute.getEmail();
+    public SocialType getProvider() {
+        return this.oAuthAttribute.getProvider();
+    }
+
+    public String getAuthId() {
+        return this.oAuthAttribute.getAuthId();
     }
 }
