@@ -49,7 +49,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
         try { // 이미 회원가입된 회원인 경우
-            Member member = memberService.findMember(oAuth2User.getEmail());
+            Member member = memberService.findMember(oAuth2User.getProvider(), oAuth2User.getAuthId());
             handleExistingMemberLogin(request, response, oAuth2User, member);
         } catch (BusinessException e) { // 회원가입되어 있지 않은 경우
             handleMemberSignup(request, response, oAuth2User.getOAuthAttribute());

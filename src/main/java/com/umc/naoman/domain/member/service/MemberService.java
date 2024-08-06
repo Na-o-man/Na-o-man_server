@@ -10,12 +10,11 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
 
 public interface MemberService {
-    Member findMember(Long memberId);
-    Member findMember(String email);
-    Member findMember(String authId, SocialType socialType);
-    CheckMemberRegistration checkRegistration(String email);
-    LoginInfo signup(SignupRequest request);
     LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request);
+    LoginInfo signup(SignupRequest request);
     LoginInfo login(LoginRequest request);
+    CheckMemberRegistration checkRegistration(LoginRequest request);
     MemberInfo getMyInfo(Member member);
+    Member findMember(Long memberId);
+    Member findMember(SocialType socialType, String authId);
 }
