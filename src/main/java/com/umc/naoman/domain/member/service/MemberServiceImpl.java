@@ -53,8 +53,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public CheckMemberRegistration checkRegistration(String email) {
-        boolean isRegistered = memberRepository.existsByEmail(email);
+    public CheckMemberRegistration checkRegistration(LoginRequest request) {
+        boolean isRegistered = memberRepository.existsBySocialTypeAndAuthId(request.getSocialType(), request.getAuthId());
         return new CheckMemberRegistration(isRegistered);
     }
 
