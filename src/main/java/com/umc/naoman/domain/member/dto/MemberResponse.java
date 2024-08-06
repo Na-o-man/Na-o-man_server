@@ -1,8 +1,12 @@
 package com.umc.naoman.domain.member.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import java.time.LocalDateTime;
+
+import java.time.LocalDateTime;
 
 public abstract class MemberResponse {
     @Getter
@@ -40,5 +44,14 @@ public abstract class MemberResponse {
     @AllArgsConstructor
     public static class MarketingAgreed {
         private Boolean marketingAgreed;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class deleteMemberInfo {
+        private Long memberId;
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        private LocalDateTime deletedAt;
     }
 }

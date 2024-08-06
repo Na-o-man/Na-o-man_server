@@ -14,6 +14,7 @@ public enum MemberResultCode implements ResultCode {
     CHECK_MEMBER_REGISTRATION(200, "SM000", "해당 이메일을 가진 회원의 가입 여부를 성공적으로 조회하였습니다."),
     MEMBER_INFO (200,"SM005","회원 정보를 성공적으로 조회하였습니다."),
     CHECK_MARKETING_AGREED(200,"SM006","마케팅동의여부를 성공적으로 조회하였습니다."),
+    DELETE_MEMBER(200,"SM007","회원 탈퇴를 성공적으로 처리하였습니다."),
     ;
     private final int status;
     private final String code;

@@ -54,4 +54,10 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponse.deleteMemberInfo toMemberDeletion(Member member) {
+        return MemberResponse.deleteMemberInfo.builder()
+                .memberId(member.getId())
+                .deletedAt(member.getDeletedAt())
+                .build();
+    }
 }
