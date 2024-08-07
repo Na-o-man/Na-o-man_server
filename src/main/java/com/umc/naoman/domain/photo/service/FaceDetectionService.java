@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface FaceDetectionService {
 
-    void detectFaces(List<String> nameList, Long shareGroupId);
+    void detectFace(List<String> nameList, Long shareGroupId);
 }

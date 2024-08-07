@@ -7,6 +7,7 @@ import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.error.code.AwsLambdaErrorCode;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,7 +37,8 @@ public class FaceDetectionServiceImpl implements FaceDetectionService{
     }
 
     @Override
-    public void detectFaces(List<String> nameList, Long shareGroupId) {
+    @Async
+    public void detectFace(List<String> nameList, Long shareGroupId) {
         List<Long> memberIdList = null; //TODO: shareGroupId로 memberIdList 조회하는 로직 추가
         PayLoad payLoad = new PayLoad(new Body(nameList,memberIdList,shareGroupId));
         String lambdaPayload = null;
