@@ -17,17 +17,24 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+
+	configureEach {
+		exclude group: 'commons-logging', module: 'commons-logging'
+	}
 }
 
 repositories {
 	mavenCentral()
 	maven { url 'https://jitpack.io' }
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	// security
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
@@ -36,6 +43,10 @@ dependencies {
 	implementation 'commons-io:commons-io:2.6'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// GPT 프롬프트
+	implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
+	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
 
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
@@ -51,9 +62,9 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	//firebase
+	// firebase
 	implementation 'com.google.firebase:firebase-admin:8.1.0'
-	//조사 처르를 쉽게 하기 위한 라이브러리
+	// 조사 처르를 쉽게 하기 위한 라이브러리
 	implementation 'com.github.josa-moa:josa-moa:1.0.3'
 
 	// AWS

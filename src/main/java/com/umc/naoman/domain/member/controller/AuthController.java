@@ -63,11 +63,8 @@ public class AuthController {
     }
 
     @GetMapping("/check-registration")
-    @Operation(summary = "회원가입 여부 조회 API", description = "이메일을 통해, 해당 이메일을 가진 회원의 가입 여부를 조회하는 API입니다.")
-    @Parameters(value = {
-            @Parameter(name = "email", description = "회원가입 여부를 확인할 이메일을 입력해 주세요.")
-    })
-    public ResultResponse<CheckMemberRegistration> checkSignup(@RequestParam("email") @Valid @Email String email) {
-        return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.checkRegistration(email));
+    @Operation(summary = "회원가입 여부 조회 API", description = "authId와 플랫폼명을 통해, 해당 정보와 일치하는 회원의 가입 여부를 조회하는 API입니다.")
+    public ResultResponse<CheckMemberRegistration> checkSignup(@Valid @RequestBody LoginRequest request) {
+        return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.checkRegistration(request));
     }
 }

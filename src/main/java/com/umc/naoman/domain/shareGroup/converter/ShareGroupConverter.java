@@ -16,10 +16,11 @@ import java.util.List;
 public class ShareGroupConverter {
     private static final String BASE_URL = "https://naoman/invite/"; //baseUrl 상수
 
-    public ShareGroup toEntity(ShareGroupRequest.createShareGroupRequest request) {
+    public ShareGroup toEntity(ShareGroupRequest.createShareGroupRequest request, String inviteCode, String groupName) {
         return ShareGroup.builder()
-                .memberCount(request.getMemberNameList().size())  // 변경 가능성 있음. memberCount 대신 nameList의 size 사용
-                .name("임시 공유 그룹 이름") //임시 공유 그룹 이름
+                .memberCount(request.getMemberNameList().size())  //nameList의 size 사용
+                .inviteCode(inviteCode) // 생성된 초대 코드
+                .name(groupName) // gpt로 만들어진 공유 그룹 이름
                 .build();
     }
 

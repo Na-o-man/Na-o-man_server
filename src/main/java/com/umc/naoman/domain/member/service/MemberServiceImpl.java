@@ -35,33 +35,18 @@ public class MemberServiceImpl implements MemberService {
     private Long REFRESH_TOKEN_VALIDITY_IN_SECONDS;
 
     @Override
-    public Member findMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_MEMBER_ID));
-    }
+    @Transactional
+    public LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request) {
+        Claims payload = jwtUtils.getPayload(tempMemberInfo);
+        SignupRequest signupRequest = memberConverter.toSignupRequest(payload, request.getMarketingAgreed());
 
-    @Override
-    public Member findMember(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_EMAIL));
-    }
-
-    @Override
-    public Member findMember(String authId, SocialType socialType) {
-        return memberRepository.findByAuthIdAndSocialType(authId, socialType)
-                .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_AUTH_ID_AND_SOCIAL_TYPE));
-    }
-
-    @Override
-    public CheckMemberRegistration checkRegistration(String email) {
-        boolean isRegistered = memberRepository.existsByEmail(email);
-        return new CheckMemberRegistration(isRegistered);
+        return signup(signupRequest);
     }
 
     @Override
     @Transactional
     public LoginInfo signup(SignupRequest request) {
-        if (memberRepository.existsByEmail(request.getEmail())) {
+        if (memberRepository.existsBySocialTypeAndAuthId(request.getSocialType(), request.getAuthId())) {
             throw new BusinessException(MEMBER_ALREADY_SIGNUP);
         }
 
@@ -79,18 +64,10 @@ public class MemberServiceImpl implements MemberService {
         return memberConverter.toLoginInfo(memberId, accessToken, refreshToken);
     }
 
-    @Override
-    @Transactional
-    public LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request) {
-        Claims payload = jwtUtils.getPayload(tempMemberInfo);
-        SignupRequest signupRequest = memberConverter.toSignupRequest(payload, request.getMarketingAgreed());
-
-        return signup(signupRequest);
-    }
 
     @Override
     public LoginInfo login(LoginRequest request) {
-        Member member = findMember(request.getAuthId(), request.getSocialType());
+        Member member = findMember(request.getSocialType(), request.getAuthId());
 
         Long memberId = member.getId();
         String email = member.getEmail();
@@ -103,7 +80,25 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public CheckMemberRegistration checkRegistration(LoginRequest request) {
+        boolean isRegistered = memberRepository.existsBySocialTypeAndAuthId(request.getSocialType(), request.getAuthId());
+        return new CheckMemberRegistration(isRegistered);
+    }
+
+    @Override
     public MemberInfo getMyInfo(Member member) {
         return memberConverter.toMemberInfo(member);
+    }
+
+    @Override
+    public Member findMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_MEMBER_ID));
+    }
+
+    @Override
+    public Member findMember(SocialType socialType, String authId) {
+        return memberRepository.findByAuthIdAndSocialType(authId, socialType)
+                .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_AUTH_ID_AND_SOCIAL_TYPE));
     }
 }

@@ -14,6 +14,7 @@ import com.umc.naoman.global.security.annotation.LoginMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/shareGroups")
+@Tag(name = "공유그룹 관련 API", description = "공유그룹 생성, 참여, 조회, 삭제 등을 처리하는 API입니다.")
 public class ShareGroupController {
     private final ShareGroupService shareGroupService;
     private final ShareGroupConverter shareGroupConverter;
@@ -54,7 +56,7 @@ public class ShareGroupController {
     })
     public ResultResponse<ShareGroupResponse.ShareGroupDetailInfo> getShareGroupDetailInfo(@PathVariable(name = "shareGroupId") Long shareGroupId) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
-        List<Profile> profileList = shareGroupService.findProfileList(shareGroupId);
+        List<Profile> profileList = shareGroupService.findProfileListByShareGroupId(shareGroupId);
 
         return ResultResponse.of(ShareGroupResultCode.SHARE_GROUP_INFO,
                 shareGroupConverter.toShareGroupDetailInfo(shareGroup, profileList));
@@ -67,7 +69,7 @@ public class ShareGroupController {
     })
     public ResultResponse<ShareGroupResponse.ShareGroupDetailInfo> getShareGroupByInviteCode(@RequestParam String inviteCode) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(inviteCode);
-        List<Profile> profileList = shareGroupService.findProfileList(shareGroup.getId());
+        List<Profile> profileList = shareGroupService.findProfileListByShareGroupId(shareGroup.getId());
 
         return ResultResponse.of(ShareGroupResultCode.SHARE_GROUP_INFO,
                 shareGroupConverter.toShareGroupDetailInfo(shareGroup, profileList));

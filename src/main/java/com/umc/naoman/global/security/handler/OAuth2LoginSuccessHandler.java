@@ -37,7 +37,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private Long REFRESH_TOKEN_VALIDITY_IN_SECONDS;
     @Value("${jwt.temp-member-info-validity-in-seconds}")
     private Long TEMP_MEMBER_INFO_VALIDITY_IN_SECONDS;
-    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String ACCESS_TOKEN_KEY = "access-token";
     private static final String REFRESH_TOKEN_KEY = "refresh-token";
     private static final String TEMP_MEMBER_INFO_KEY = "temp-member-info";
     private static final String FRONTEND_BASE_URL = "http://localhost:3000";
@@ -49,7 +49,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
         try { // 이미 회원가입된 회원인 경우
-            Member member = memberService.findMember(oAuth2User.getEmail());
+            Member member = memberService.findMember(oAuth2User.getProvider(), oAuth2User.getAuthId());
             handleExistingMemberLogin(request, response, oAuth2User, member);
         } catch (BusinessException e) { // 회원가입되어 있지 않은 경우
             handleMemberSignup(request, response, oAuth2User.getOAuthAttribute());
@@ -71,7 +71,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         // 로그인 성공 처리를 위해 access token, refresh token 발급
         String accessToken = jwtUtils.createJwt(member.getEmail(), role, ACCESS_TOKEN_VALIDITY_IN_SECONDS);
-        CookieUtils.addCookie(response, AUTHORIZATION_HEADER, accessToken, ACCESS_TOKEN_VALIDITY_IN_SECONDS.intValue());
+        CookieUtils.addCookie(response, ACCESS_TOKEN_KEY, accessToken, ACCESS_TOKEN_VALIDITY_IN_SECONDS.intValue());
 
         String refreshToken = jwtUtils.createJwt(member.getEmail(), role, REFRESH_TOKEN_VALIDITY_IN_SECONDS);
         refreshTokenService.saveRefreshToken(member.getId(), refreshToken);

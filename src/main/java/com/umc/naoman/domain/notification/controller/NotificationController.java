@@ -9,6 +9,8 @@ import com.umc.naoman.domain.notification.service.NotificationService;
 import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.result.code.NotificationResultCode;
 import com.umc.naoman.global.security.annotation.LoginMember;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +35,13 @@ public class NotificationController {
     }
 
     @GetMapping("/my")
+    @Parameters(value = {
+            @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
+            @Parameter(name = "size", description = "한 페이지에 나타낼 알림 개수를 입력해주세요.")
+    })
     public ResultResponse<NotificationResponse.PagedNotificationInfo> getNotifications(@LoginMember Member member,
-                                                                                       @PageableDefault(sort = "createdAt", direction =Sort.Direction.DESC) Pageable pageable){
+                                                                                       @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+                                                                                       @Parameter(hidden = true) Pageable pageable){
         Page<Notification> notificationPage =  notificationService.getNotificationList(member, pageable);
         return ResultResponse.of(NotificationResultCode.GET_MY_NOTIFICATION,
                 NotificationConverter.toNotificationInfo(notificationPage));
