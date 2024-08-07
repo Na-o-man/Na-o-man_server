@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FaceDetectionServiceImpl implements FaceDetectionService{
-    @Value("${spring.lambda.function.name}")
+    @Value("${spring.lambda.function.detect_face}")
     private String lambdaFunctionName;
     private final AWSLambda awsLambda;
     private final ObjectMapper objectMapper = new ObjectMapper();
