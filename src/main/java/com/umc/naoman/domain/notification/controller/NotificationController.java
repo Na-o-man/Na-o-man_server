@@ -57,12 +57,12 @@ public class NotificationController {
             @Parameter(name = "size", description = "한 페이지에 나타낼 알림 개수를 입력해주세요.")
     })
     @Operation(summary = "자신의 모든 알림 조회", description = "자신의 모든 알림을 조회하는 API입니다.")
-    public ResultResponse<NotificationResponse.PagedNotificationInfo> getNotifications(@LoginMember Member member,
+    public ResultResponse<NotificationResponse.PagedNotificationInfo> getNotificationList(@LoginMember Member member,
                                                                                        @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                                                        @Parameter(hidden = true) Pageable pageable){
         Page<Notification> notificationPage =  notificationService.getNotificationList(member, pageable);
         return ResultResponse.of(NotificationResultCode.GET_MY_NOTIFICATION,
-                notificationConverter.toNotificationInfo(notificationPage));
+                notificationConverter.toPagedNotificationInfo(notificationPage));
     }
 
     @GetMapping("/unread")

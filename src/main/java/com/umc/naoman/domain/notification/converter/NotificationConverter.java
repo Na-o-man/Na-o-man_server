@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Component
 public class NotificationConverter {
 
-    public NotificationResponse.NotificationInfo notificationInfo(Notification notification){
+    public NotificationResponse.NotificationInfo toNotificationInfo(Notification notification){
         return NotificationResponse.NotificationInfo.builder()
                 .body(notification.getMessage())
                 .createdAt(notification.getCreatedAt())
@@ -22,10 +22,10 @@ public class NotificationConverter {
                 .url(notification.makeNotificationInfoURL()) //다형성으로 각기 다른 알림이 적절한 URL 만들도록 오버라이딩.
                 .build();
     }
-    public NotificationResponse.PagedNotificationInfo toNotificationInfo(
+    public NotificationResponse.PagedNotificationInfo toPagedNotificationInfo(
             Page<Notification> notificationList){
         List<NotificationResponse.NotificationInfo> notificationInfoList
-                = notificationList.stream().map(this::notificationInfo).collect(Collectors.toList());
+                = notificationList.stream().map(this::toNotificationInfo).collect(Collectors.toList());
 
         return NotificationResponse.PagedNotificationInfo.builder()
                 .isLast(notificationList.isLast())
