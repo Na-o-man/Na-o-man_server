@@ -13,7 +13,7 @@ public interface MemberService {
     LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request);
     LoginInfo signup(SignupRequest request);
     LoginInfo login(LoginRequest request);
-    CheckMemberRegistration checkRegistration(SocialType socialType, String authId);
+    CheckMemberRegistration checkRegistration(LoginRequest request);
     MemberInfo getMyInfo(Member member);
     Member findMember(Long memberId);
     Member findMember(SocialType socialType, String authId);

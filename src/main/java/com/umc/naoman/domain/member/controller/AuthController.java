@@ -63,14 +63,9 @@ public class AuthController {
         return ResultResponse.of(LOGIN, memberService.login(request));
     }
 
-    @GetMapping("/check-registration")
+    @PostMapping("/check-registration")
     @Operation(summary = "회원가입 여부 조회 API", description = "authId와 플랫폼명을 통해, 해당 정보와 일치하는 회원의 가입 여부를 조회하는 API입니다.")
-    @Parameters(value = {
-            @Parameter(name = "socialType", description = "KAKAO, GOOGLE 중 하나를 입력해야 합니다."),
-            @Parameter(name = "authId", description = "로그인한 소셜 플랫폼에서 제공한 회원 번호를 입력해야 합니다.")
-    })
-    public ResultResponse<CheckMemberRegistration> checkSignup(@RequestParam("socialType") SocialType socialType,
-                                                               @RequestParam("authId") String authId) {
-        return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.checkRegistration(socialType, authId));
+    public ResultResponse<CheckMemberRegistration> checkSignup(@Valid @RequestBody LoginRequest request) {
+        return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.checkRegistration(request));
     }
 }
