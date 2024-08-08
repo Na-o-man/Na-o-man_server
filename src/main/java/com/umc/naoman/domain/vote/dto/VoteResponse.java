@@ -1,6 +1,8 @@
 package com.umc.naoman.domain.vote.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse;
+import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse.ProfileInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,9 +36,21 @@ public abstract class VoteResponse {
     public static class VoteInfo {
         private Long voteId;
         private String comment;
-        private Long profileId;
+        private ProfileInfo profileInfo;
         private Long agendaPhotoId;
-        @JsonFormat(pattern = "yyy-MM-dd HH:mm:ss")
+        private Boolean isMine;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime votedAt;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AgendaPhotoVoteDetails {
+        private Long agendaPhotoId;
+        @Builder.Default
+        private List<VoteInfo> voteInfoList = new ArrayList<>();
+        private int voteCount;
     }
 }

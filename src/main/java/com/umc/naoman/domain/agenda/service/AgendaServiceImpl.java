@@ -23,7 +23,6 @@ import static com.umc.naoman.global.error.code.AgendaErrorCode.AGENDA_PHOTO_NOT_
 public class AgendaServiceImpl implements AgendaService {
 
     private final AgendaRepository agendaRepository;
-    private final AgendaPhotoRepository agendaPhotoRepository;
     private final ShareGroupService shareGroupService;
     private final AgendaPhotoService agendaPhotoService;
     private final AgendaConverter agendaConverter;
@@ -45,12 +44,5 @@ public class AgendaServiceImpl implements AgendaService {
         agendaPhotoService.saveAgendaPhotoList(newAgenda,request.getAgendasPhotoList());
 
         return agendaRepository.save(newAgenda);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public AgendaPhoto findAgendaPhoto(Long agendaPhotoId) {
-        return agendaPhotoRepository.findById(agendaPhotoId)
-                .orElseThrow(() -> new BusinessException(AGENDA_PHOTO_NOT_FOUND));
     }
 }

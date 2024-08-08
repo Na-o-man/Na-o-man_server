@@ -2,6 +2,8 @@ package com.umc.naoman.domain.vote.controller;
 
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.vote.dto.VoteRequest.GenerateVoteListRequest;
+import com.umc.naoman.domain.vote.dto.VoteResponse;
+import com.umc.naoman.domain.vote.dto.VoteResponse.AgendaPhotoVoteDetails;
 import com.umc.naoman.domain.vote.dto.VoteResponse.VoteIdList;
 import com.umc.naoman.domain.vote.dto.VoteResponse.VoteInfo;
 import com.umc.naoman.domain.vote.service.VoteService;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import static com.umc.naoman.global.result.code.VoteResultCode.GENERATE_VOTE;
 
@@ -43,10 +47,9 @@ public class VoteController {
     @Parameters(value = {
             @Parameter(name = "agendaId", description = "투표 현황을 조회할 안건의 agendaId를 입력해 주세요.")
     })
-    public ResultResponse<VoteInfo> getVoteList(@PathVariable("agendaId") Long agendaId,
-                                                @LoginMember Member member) {
-//        return ResultResponse.of(GENERATE_VOTE, voteService.getVoteLIst(agendaId, member));
-        return null;
+    public ResultResponse<List<AgendaPhotoVoteDetails>> getVoteList(@PathVariable("agendaId") Long agendaId,
+                                                                    @LoginMember Member member) {
+        return ResultResponse.of(GENERATE_VOTE, voteService.getVoteList(agendaId, member));
     }
 
 }
