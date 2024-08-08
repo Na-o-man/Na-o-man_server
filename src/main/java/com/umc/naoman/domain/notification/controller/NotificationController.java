@@ -11,6 +11,7 @@ import com.umc.naoman.global.result.code.NotificationResultCode;
 import com.umc.naoman.global.security.annotation.LoginMember;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +23,9 @@ import java.util.List;
 
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/notifications")
+@Tag(name = "06. 알림 관련 API", description = "나ㅇ만 서비스의 알림 관련 API입니다.")
+@RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
 

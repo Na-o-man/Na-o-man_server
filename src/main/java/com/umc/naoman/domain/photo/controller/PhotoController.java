@@ -37,7 +37,7 @@ import static com.umc.naoman.global.result.code.PhotoResultCode.*;
 @RestController
 @RequestMapping("/photos")
 @RequiredArgsConstructor
-@Tag(name = "사진 관련 API", description = "사진 업로드, 조회, 삭제, 다운로드를 처리하는 API입니다.")
+@Tag(name = "03. 사진 관련 API", description = "사진 업로드, 조회, 삭제, 다운로드를 처리하는 API입니다.")
 public class PhotoController {
 
     private final PhotoService photoService;

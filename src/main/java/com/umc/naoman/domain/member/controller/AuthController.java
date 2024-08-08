@@ -30,7 +30,7 @@ import static com.umc.naoman.global.result.code.MemberResultCode.*;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "인증,인가 관련 API", description = "회원의 회원가입 및 로그인 등을 처리하는 API입니다.")
+@Tag(name = "00. 인증,인가 관련 API", description = "회원의 회원가입 및 로그인 등을 처리하는 API입니다.")
 @RequiredArgsConstructor
 public class AuthController {
     private final MemberService memberService;
