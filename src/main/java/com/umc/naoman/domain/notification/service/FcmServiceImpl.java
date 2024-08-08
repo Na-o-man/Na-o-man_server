@@ -1,5 +1,6 @@
 package com.umc.naoman.domain.notification.service;
 
+import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.notification.entity.DeviceToken;
 import com.umc.naoman.domain.notification.repository.FcmTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,9 @@ public class FcmServiceImpl implements FcmService{
     private final FcmTokenRepository fcmTokenRepository;
 
     @Override
-    public void saveFcmToken(Long memberId, String fcmToken) {
-        //멤버 리파지토리 개발 후 수정해야됨
+    public void saveFcmToken(Member member, String fcmToken) {
         DeviceToken deviceToken = DeviceToken.builder()
-                                    .member(null)
+                                    .member(member)
                                     .fcmToken(fcmToken)
                                     .build();
         fcmTokenRepository.save(deviceToken);
