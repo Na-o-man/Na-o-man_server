@@ -2,10 +2,8 @@ package com.umc.naoman.domain.vote.controller;
 
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.vote.dto.VoteRequest.GenerateVoteListRequest;
-import com.umc.naoman.domain.vote.dto.VoteResponse;
 import com.umc.naoman.domain.vote.dto.VoteResponse.AgendaPhotoVoteDetails;
 import com.umc.naoman.domain.vote.dto.VoteResponse.VoteIdList;
-import com.umc.naoman.domain.vote.dto.VoteResponse.VoteInfo;
 import com.umc.naoman.domain.vote.service.VoteService;
 import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.security.annotation.LoginMember;

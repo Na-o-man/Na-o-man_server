@@ -3,7 +3,6 @@ package com.umc.naoman.domain.vote.converter;
 import com.umc.naoman.domain.agenda.entity.AgendaPhoto;
 import com.umc.naoman.domain.shareGroup.converter.ShareGroupConverter;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
-import com.umc.naoman.domain.vote.dto.VoteResponse;
 import com.umc.naoman.domain.vote.dto.VoteResponse.AgendaPhotoVoteDetails;
 import com.umc.naoman.domain.vote.dto.VoteResponse.VoteId;
 import com.umc.naoman.domain.vote.dto.VoteResponse.VoteIdList;
