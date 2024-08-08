@@ -27,9 +27,9 @@ import java.util.List;
 
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/notifications")
-@Tag(name = "알림 관련 API", description = " 알림 전체 목록 조희, fcm 토큰 업로드, 알림 1개 삭제, 알림 전체 삭제, 읽지 않은 알림 유무,  내 알람 전체 읽음 처리를 하는 API입니다.")
+@Tag(name = "06. 알림 관련 API", description = "나ㅇ만 서비스의 알림 관련 API입니다.")
+@RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
     private final FcmService fcmService;

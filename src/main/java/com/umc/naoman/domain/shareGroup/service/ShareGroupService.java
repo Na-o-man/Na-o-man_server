@@ -20,6 +20,6 @@ public interface ShareGroupService {
     List<Profile> findProfileListByShareGroupId(Long shareGroupId);
     List<Profile> findProfileListByMemberId(Long memberId);
     Profile findProfile(Long profileId);
-    Profile findProfile(Long shareGroupId, Long memberID);
+    Profile findProfile(Long shareGroupId, Long memberId);
     boolean doesProfileExist(Long shareGroupId, Long memberId);
 }

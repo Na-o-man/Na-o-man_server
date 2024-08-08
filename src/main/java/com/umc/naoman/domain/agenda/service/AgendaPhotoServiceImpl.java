@@ -2,21 +2,25 @@ package com.umc.naoman.domain.agenda.service;
 
 import com.umc.naoman.domain.agenda.converter.AgendaPhotoConverter;
 import com.umc.naoman.domain.agenda.entity.Agenda;
+import com.umc.naoman.domain.agenda.entity.AgendaPhoto;
 import com.umc.naoman.domain.agenda.repository.AgendaPhotoRepository;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.service.PhotoService;
+import com.umc.naoman.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.umc.naoman.global.error.code.AgendaErrorCode.AGENDA_PHOTO_NOT_FOUND;
+
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AgendaPhotoServiceImpl implements AgendaPhotoService {
-
-    private final AgendaPhotoRepository agendaPhotoRepository;
     private final PhotoService photoService;
+    private final AgendaPhotoRepository agendaPhotoRepository;
 
     @Override
     @Transactional
@@ -25,5 +29,16 @@ public class AgendaPhotoServiceImpl implements AgendaPhotoService {
             Photo photo = photoService.findPhoto(photoId);
             agendaPhotoRepository.save(AgendaPhotoConverter.toEntity(agenda, photo));
         }
+    }
+
+    @Override
+    public AgendaPhoto findAgendaPhoto(Long agendaPhotoId) {
+        return agendaPhotoRepository.findById(agendaPhotoId)
+                .orElseThrow(() -> new BusinessException(AGENDA_PHOTO_NOT_FOUND));
+    }
+
+    @Override
+    public List<AgendaPhoto> findAgendaPhotoList(Long agendaId) {
+        return agendaPhotoRepository.findByAgendaId(agendaId);
     }
 }
