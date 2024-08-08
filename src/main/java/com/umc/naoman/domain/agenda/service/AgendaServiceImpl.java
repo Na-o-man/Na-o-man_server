@@ -3,6 +3,8 @@ package com.umc.naoman.domain.agenda.service;
 import com.umc.naoman.domain.agenda.converter.AgendaConverter;
 import com.umc.naoman.domain.agenda.dto.AgendaRequest;
 import com.umc.naoman.domain.agenda.entity.Agenda;
+import com.umc.naoman.domain.agenda.entity.AgendaPhoto;
+import com.umc.naoman.domain.agenda.repository.AgendaPhotoRepository;
 import com.umc.naoman.domain.agenda.repository.AgendaRepository;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
@@ -14,11 +16,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.umc.naoman.global.error.code.AgendaErrorCode.AGENDA_PHOTO_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class AgendaServiceImpl implements AgendaService {
 
     private final AgendaRepository agendaRepository;
+    private final AgendaPhotoRepository agendaPhotoRepository;
     private final ShareGroupService shareGroupService;
     private final AgendaPhotoService agendaPhotoService;
     private final AgendaConverter agendaConverter;
@@ -40,5 +45,12 @@ public class AgendaServiceImpl implements AgendaService {
         agendaPhotoService.saveAgendaPhotoList(newAgenda,request.getAgendasPhotoList());
 
         return agendaRepository.save(newAgenda);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AgendaPhoto findAgendaPhoto(Long agendaPhotoId) {
+        return agendaPhotoRepository.findById(agendaPhotoId)
+                .orElseThrow(() -> new BusinessException(AGENDA_PHOTO_NOT_FOUND));
     }
 }
