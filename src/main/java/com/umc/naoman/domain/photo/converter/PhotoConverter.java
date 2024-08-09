@@ -62,6 +62,7 @@ public class PhotoConverter {
         String rawUrl = photo.getUrl();
 
         return PhotoResponse.PhotoInfo.builder()
+                .photoId(photo.getId())
                 .rawPhotoUrl(rawUrl)
                 .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
                 .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))

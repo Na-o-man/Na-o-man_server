@@ -40,8 +40,8 @@ public class AgendaServiceImpl implements AgendaService {
         Long shareGroupId = request.getShareGroupId();
         ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
         Profile profile = shareGroupService.findProfile(shareGroupId, member.getId());
-        Agenda newAgenda = agendaConverter.toEntity(profile,request.getTitle(),shareGroup);
-        agendaPhotoService.saveAgendaPhotoList(newAgenda,request.getAgendasPhotoList());
+        Agenda newAgenda = agendaConverter.toEntity(profile, request.getTitle(),shareGroup);
+        agendaPhotoService.saveAgendaPhotoList(newAgenda, request.getAgendasPhotoList());
 
         return agendaRepository.save(newAgenda);
     }

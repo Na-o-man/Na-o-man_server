@@ -10,6 +10,7 @@ import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.security.annotation.LoginMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,10 @@ public class PhotoController {
 
     @GetMapping("/all")
     @Operation(summary = "특정 공유그룹의 전체 사진 조회 API", description = "특정 공유 그룹의 전체 사진을 조회하는 API입니다.")
+    @Parameters(value = {
+            @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
+            @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
+    })
     public ResultResponse<PhotoResponse.PagedPhotoInfo> getAllPhotoListByShareGroup(@RequestParam Long shareGroupId,
                                                                                     @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                                                     @Parameter(hidden = true) Pageable pageable,
