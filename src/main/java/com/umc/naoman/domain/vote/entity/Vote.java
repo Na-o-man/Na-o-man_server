@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "votes")
-@SQLRestriction("deleted_at is NULL")
+@SQLRestriction("canceled_at is NULL")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

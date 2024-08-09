@@ -21,6 +21,6 @@ public abstract class AgendaRequest {
         @NotNull
         private String title;
         @Size(min = 2, max = 6, message = "안건에 등록하는 사진은 최소 2개 최대 6개로 한정 시켜 주세요.")
-        private List<Long> agendasPhotoList;
+        private List<Long> photoIdList;
     }
 }
