@@ -87,20 +87,4 @@ public class VoteServiceImpl implements VoteService {
 
         return voteConverter.toAgendaPhotoVoteDetails(agendaPhotoId, voteInfoList);
     }
-
-    @Override
-    public void deleteVoteList(Long agendaId, Member member) {
-        Agenda agenda = agendaService.findAgenda(agendaId); // 안건 존재 여부 확인
-        // 삭제하려는 사람의 프로필 조회
-        Profile removerProfile = shareGroupService.findProfile(agenda.getShareGroup().getId(), member.getId());
-        if (!Role.CREATOR.equals(removerProfile.getRole())) {
-            throw new BusinessException(null);
-        }
-
-        List<Long> agendaPhotoIdList = agendaPhotoService.findAgendaPhotoList(agendaId).stream()
-                .map(agendaPhoto -> agendaPhoto.getId())
-                .toList();
-
-        voteRepository.deleteByAgendaPhotoIdIn(agendaPhotoIdList);
-    }
 }

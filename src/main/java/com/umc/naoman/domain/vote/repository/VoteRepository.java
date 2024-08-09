@@ -13,7 +13,4 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     Boolean existsByProfileIdAndAgendaPhotoId(Long profileId, Long agendaPhotoId);
     List<Vote> findByAgendaPhotoId(Long agendaPhotoId);
     List<Vote> findByAgendaPhotoIdIn(List<Long> agendaPhotoIdList);
-    @Modifying
-    @Query("DELETE FROM Vote AS v WHERE v.agendaPhoto.id IN :agendaPhotoIdList")
-    void deleteByAgendaPhotoIdIn(List<Long> agendaPhotoIdList);
 }
