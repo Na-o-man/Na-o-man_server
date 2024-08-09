@@ -1,5 +1,6 @@
 package com.umc.naoman.domain.shareGroup.entity;
 
+import com.umc.naoman.domain.agenda.entity.Agenda;
 import com.umc.naoman.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,11 +39,17 @@ public class ShareGroup extends BaseTimeEntity {
     private String inviteCode;
     @OneToMany(mappedBy = "shareGroup")
     @Builder.Default
-    private List<Profile> profiles = new ArrayList<>();
+    private List<Profile> profileList = new ArrayList<>();
+    @OneToMany(mappedBy = "shareGroup")
+    @Builder.Default
+    private List<Agenda> agendaList = new ArrayList<>();
 
     public void delete() {
-        for (Profile profile : profiles) {
+        for (Profile profile : profileList) {
             profile.delete();
+        }
+        for (Agenda agenda : agendaList) {
+            agenda.delete();
         }
         super.delete();
     }
