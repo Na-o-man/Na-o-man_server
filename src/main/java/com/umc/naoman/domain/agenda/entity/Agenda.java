@@ -2,6 +2,7 @@ package com.umc.naoman.domain.agenda.entity;
 
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
+import com.umc.naoman.domain.vote.entity.Vote;
 import com.umc.naoman.global.entity.BaseTimeEntity;
 
 import jakarta.persistence.Entity;
@@ -48,4 +49,12 @@ public class Agenda extends BaseTimeEntity {
     @OneToMany(mappedBy = "agenda")
     @Builder.Default
     private List<AgendaPhoto> agendaPhotoList = new ArrayList<>();
+
+    public void delete() {
+        //agendaPhoto 삭제
+        for (AgendaPhoto agendaPhoto : agendaPhotoList) {
+            agendaPhoto.delete();
+        }
+        super.delete();
+    }
 }

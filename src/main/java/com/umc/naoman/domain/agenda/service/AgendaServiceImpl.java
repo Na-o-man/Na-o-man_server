@@ -56,4 +56,13 @@ public class AgendaServiceImpl implements AgendaService {
 
         return agenda;
     }
+
+    @Override
+    @Transactional
+    public Agenda deleteAgenda(Long agendaId) {
+        Agenda agenda = findAgenda(agendaId);
+
+        agenda.delete();
+        return agenda;
+    }
 }

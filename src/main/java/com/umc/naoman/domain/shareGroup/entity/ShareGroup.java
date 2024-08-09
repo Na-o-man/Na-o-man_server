@@ -41,9 +41,9 @@ public class ShareGroup extends BaseTimeEntity {
     private List<Profile> profiles = new ArrayList<>();
 
     public void delete() {
-        super.delete();
         for (Profile profile : profiles) {
             profile.delete();
         }
+        super.delete();
     }
 }

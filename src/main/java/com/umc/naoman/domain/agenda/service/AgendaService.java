@@ -9,4 +9,5 @@ public interface AgendaService {
     Agenda createAgenda(Member member, AgendaRequest.CreateAgendaRequest request);
     Agenda findAgenda(Long agendaId);
     Agenda getAgendaDetailInfo(Long agendaId, Member member);
+    Agenda deleteAgenda(Long agendaId);
 }
