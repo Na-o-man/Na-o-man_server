@@ -11,6 +11,8 @@ import com.umc.naoman.global.result.ResultResponse;
 import com.umc.naoman.global.result.code.AgendaResultCode;
 import com.umc.naoman.global.security.annotation.LoginMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,11 +20,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/agendas")
 @Tag(name = "04. 안건 관련 API", description = "안건 관련 API입니다.")
 @RequiredArgsConstructor
 @Slf4j
@@ -31,7 +37,7 @@ public class AgendaController {
     private final AgendaService agendaService;
     private final AgendaConverter agendaConverter;
 
-    @PostMapping("/agendas")
+    @PostMapping
     @Operation(summary = "안건 생성 API", description = "[request]\n shareGroupId, title, 안건에 올릴 PhotoId 리스트" +
             "\n[response]\n 생성된 안건의 agendaId, 생성시간 createdAt")
     @ApiResponses({
@@ -47,6 +53,19 @@ public class AgendaController {
                                                                   @LoginMember Member member) {
         Agenda agenda = agendaService.createAgenda(member,request);
         return ResultResponse.of(AgendaResultCode.CREATE_AGENDA, agendaConverter.toAgendaInfo(agenda));
+    }
+
+    @GetMapping("/{agendaId}")
+    @Operation(summary = "안건 상세 조회 API", description = "agendaId로 안건 상세를 조회하는 API입니다.")
+    @Parameters(value = {
+            @Parameter(name = "agendaId", description = "특정 안건 id를 입력해 주세요.")
+    })
+    public ResultResponse<AgendaResponse.AgendaDetailInfo> getAgendaDetail(@PathVariable(name = "agendaId") Long agendaId,
+                                                                           @LoginMember Member member) {
+        Agenda agenda = agendaService.getAgendaDetailInfo(agendaId, member);
+
+        return ResultResponse.of(AgendaResultCode.AGENDA_DETAIL,
+                agendaConverter.toAgendaDetailInfo(agenda));
     }
 }
 

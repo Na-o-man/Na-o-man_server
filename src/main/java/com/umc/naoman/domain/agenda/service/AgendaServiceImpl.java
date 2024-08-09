@@ -2,9 +2,9 @@ package com.umc.naoman.domain.agenda.service;
 
 import com.umc.naoman.domain.agenda.converter.AgendaConverter;
 import com.umc.naoman.domain.agenda.dto.AgendaRequest;
+import com.umc.naoman.domain.agenda.dto.AgendaRequest.CreateAgendaRequest;
 import com.umc.naoman.domain.agenda.entity.Agenda;
 import com.umc.naoman.domain.agenda.entity.AgendaPhoto;
-import com.umc.naoman.domain.agenda.repository.AgendaPhotoRepository;
 import com.umc.naoman.domain.agenda.repository.AgendaRepository;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.umc.naoman.global.error.code.AgendaErrorCode.AGENDA_PHOTO_NOT_FOUND;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,13 +36,24 @@ public class AgendaServiceImpl implements AgendaService {
 
     @Override
     @Transactional
-    public Agenda createAgenda(Member member, AgendaRequest.CreateAgendaRequest request) {
+    public Agenda createAgenda(Member member, CreateAgendaRequest request) {
         Long shareGroupId = request.getShareGroupId();
         ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
         Profile profile = shareGroupService.findProfile(shareGroupId, member.getId());
         Agenda newAgenda = agendaConverter.toEntity(profile, request.getTitle(),shareGroup);
-        agendaPhotoService.saveAgendaPhotoList(newAgenda, request.getAgendasPhotoList());
+        agendaPhotoService.saveAgendaPhotoList(newAgenda, request.getPhotoIdList());
 
         return agendaRepository.save(newAgenda);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Agenda getAgendaDetailInfo(Long agendaId, Member member) {
+        Agenda agenda = findAgenda(agendaId);
+
+        shareGroupService.findProfile(agenda.getShareGroup().getId(),
+                member.getId());
+
+        return agenda;
     }
 }
