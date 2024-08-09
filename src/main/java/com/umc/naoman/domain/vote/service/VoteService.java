@@ -10,4 +10,5 @@ import java.util.List;
 public interface VoteService {
     VoteIdList generateVoteList(Long agendaId, GenerateVoteListRequest request, Member member);
     List<AgendaPhotoVoteDetails> getVoteList(Long agendaId, Member member);
+    void deleteVoteList(Long agendaId, Member member);
 }

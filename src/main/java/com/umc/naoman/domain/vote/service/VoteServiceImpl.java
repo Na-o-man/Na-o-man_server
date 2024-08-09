@@ -6,6 +6,7 @@ import com.umc.naoman.domain.agenda.service.AgendaPhotoService;
 import com.umc.naoman.domain.agenda.service.AgendaService;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
+import com.umc.naoman.domain.shareGroup.entity.Role;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.domain.vote.converter.VoteConverter;
 import com.umc.naoman.domain.vote.dto.VoteRequest.GenerateVoteListRequest;
@@ -56,6 +57,13 @@ public class VoteServiceImpl implements VoteService {
         return voteConverter.toEntity(request.getComment(), profile, agendaPhoto);
     }
 
+    // 해당 사진에 대한 투표를 이미 했는지 확인한다
+    private void checkDuplicateVote(Profile profile, AgendaPhoto agendaPhoto) {
+        if (voteRepository.existsByProfileIdAndAgendaPhotoId(profile.getId(), agendaPhoto.getId())) {
+            throw new BusinessException(DUPLICATE_VOTE);
+        }
+    }
+
     @Override
     public List<AgendaPhotoVoteDetails> getVoteList(Long agendaId, Member member) {
         Agenda agenda = agendaService.findAgenda(agendaId); // 안건 존재 여부 확인
@@ -80,10 +88,19 @@ public class VoteServiceImpl implements VoteService {
         return voteConverter.toAgendaPhotoVoteDetails(agendaPhotoId, voteInfoList);
     }
 
-    // 해당 사진에 대한 투표를 이미 했는지 확인한다
-    private void checkDuplicateVote(Profile profile, AgendaPhoto agendaPhoto) {
-        if (voteRepository.existsByProfileIdAndAgendaPhotoId(profile.getId(), agendaPhoto.getId())) {
-            throw new BusinessException(DUPLICATE_VOTE);
+    @Override
+    public void deleteVoteList(Long agendaId, Member member) {
+        Agenda agenda = agendaService.findAgenda(agendaId); // 안건 존재 여부 확인
+        // 삭제하려는 사람의 프로필 조회
+        Profile removerProfile = shareGroupService.findProfile(agenda.getShareGroup().getId(), member.getId());
+        if (!Role.CREATOR.equals(removerProfile.getRole())) {
+            throw new BusinessException(null);
         }
+
+        List<Long> agendaPhotoIdList = agendaPhotoService.findAgendaPhotoList(agendaId).stream()
+                .map(agendaPhoto -> agendaPhoto.getId())
+                .toList();
+
+        voteRepository.deleteByAgendaPhotoIdIn(agendaPhotoIdList);
     }
 }
