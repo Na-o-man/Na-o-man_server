@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
+import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.error.code.ElasticsearchErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -26,24 +27,25 @@ import java.util.stream.Collectors;
 public class PhotoEsClientRepository {
     private final ElasticsearchClient elasticsearchClient;
 
-    // 사진 업로드 시 ES에 벌크로 업로드
-    public void savePhotoBulk(List<String> url, List<String> nameList, Long shareGroupId) {
-        List<PhotoEs> photoEsList = new ArrayList<>();
-        for (int i = 0; i < url.size(); i++) {
-            PhotoEs photoEs = PhotoEs.builder()
-                    .shareGroupId(shareGroupId)
-                    .url(url.get(i))
-                    .name(nameList.get(i))
-                    .createdAt(esTimeFormat(LocalDateTime.now()))
-                    .build();
-            photoEsList.add(photoEs);
-        }
+    //사진 업로드 시 ES에 벌크로 업로드
+    public void savePhotoBulk(List<Photo> photoList) {
+        List<PhotoEs> photoEsList = photoList.stream()
+                .map(photo -> PhotoEs.builder()
+                        .rdsId(photo.getId())
+                        .shareGroupId(photo.getShareGroup().getId())
+                        .faceTag(new ArrayList<>())
+                        .downloadTag(new ArrayList<>())
+                        .url(photo.getUrl())
+                        .name(photo.getName())
+                        .createdAt(esTimeFormat(photo.getCreatedAt()))
+                        .build())
+                .toList();
         BulkRequest.Builder bulkBuilder = new BulkRequest.Builder();
-        for (PhotoEs photoEs : photoEsList) {
-            bulkBuilder.operations(op -> op
+        for(PhotoEs photoEs :photoEsList){
+            bulkBuilder.operations(op ->op
                     .index(idx -> idx
                             .index("photos_es")
-                            .routing(shareGroupId.toString())
+                            .routing(photoEs.getShareGroupId().toString())
                             .document(photoEs)
                     )
             );
@@ -55,22 +57,22 @@ public class PhotoEsClientRepository {
         }
     }
 
-    // 특정 공유 그룹의 모든 사진 검색
+    //특정 공유 그룹의 모든 사진 검색
     public Page<PhotoEs> findPhotoEsByShareGroupId(Long shareGroupId, Pageable pageable) {
         SearchResponse<PhotoEs> response = null;
 
         pageable.getPageNumber();
-        try {
-            response = elasticsearchClient.search(s -> s
+        try{
+            response = elasticsearchClient.search(s->s
                             .index("photos_es")
                             .routing(shareGroupId.toString())
                             .from(getFrom(pageable))
                             .size(pageable.getPageSize())
                             .sort(sort -> sort
-                                    .field(f -> f
-                                            .field("createdAt")))
-                            .query(q -> q
-                                    .term(t -> t
+                                        .field(f -> f
+                                                .field("createdAt")))
+                            .query(q->q
+                                    .term(t->t
                                             .field("shareGroupId")
                                             .value(shareGroupId)
                                     )
@@ -83,11 +85,11 @@ public class PhotoEsClientRepository {
         return toPagePhotoEs(response.hits().hits(), pageable);
     }
 
-    // 특정 공유 그룹의 얼굴이 태그된 사진 검색
-    public Page<PhotoEs> findPhotoEsByShareGroupIdAndFaceTag(Long shareGroupId, Long faceTag, Pageable pageable) throws IOException {
+    //특정 공유 그룹의 얼굴이 태그된 사진 검색
+    public Page<PhotoEs> findPhotoEsByShareGroupIdAndFaceTag(Long shareGroupId,Long faceTag, Pageable pageable) {
         SearchResponse<PhotoEs> response = null;
-        try {
-            response = elasticsearchClient.search(s -> s
+        try{
+            response = elasticsearchClient.search(s->s
                             .index("photos_es")
                             .routing(shareGroupId.toString())
                             .from(getFrom(pageable))
@@ -95,16 +97,16 @@ public class PhotoEsClientRepository {
                             .sort(sort -> sort
                                     .field(f -> f
                                             .field("createdAt")))
-                            .query(q -> q
-                                    .bool(b -> b
-                                            .must(m -> m
-                                                    .term(t -> t
+                            .query(q->q
+                                    .bool(b->b
+                                            .must(m->m
+                                                    .term(t->t
                                                             .field("shareGroupId")
                                                             .value(shareGroupId)
                                                     )
                                             )
-                                            .must(m -> m
-                                                    .term(t -> t
+                                            .must(m->m
+                                                    .term(t->t
                                                             .field("faceTag")
                                                             .value(faceTag)
                                                     )
@@ -120,11 +122,11 @@ public class PhotoEsClientRepository {
         return toPagePhotoEs(response.hits().hits(), pageable);
     }
 
-    // 특정 공유 그룹의 얼굴이 태그되지 않은 사진 검색
-    public Page<PhotoEs> findPhotoEsByShareGroupIdAndNotFaceTag(Long shareGroupId, Pageable pageable) {
+    //특정 공유 그룹의 얼굴이 태그되지 않은 사진 검색
+    public Page<PhotoEs> findPhotoEsByShareGroupIdAndNotFaceTag(Long shareGroupId, Pageable pageable){
         SearchResponse<PhotoEs> response = null;
-        try {
-            response = elasticsearchClient.search(s -> s
+        try{
+            response = elasticsearchClient.search(s->s
                             .index("photos_es")
                             .routing(shareGroupId.toString())
                             .from(getFrom(pageable))
@@ -132,7 +134,7 @@ public class PhotoEsClientRepository {
                             .sort(sort -> sort
                                     .field(f -> f
                                             .field("createdAt")))
-                            .query(q -> q
+                            .query(q->q
                                     .bool(b -> b
                                             .must(m -> m
                                                     .term(t -> t
@@ -149,24 +151,24 @@ public class PhotoEsClientRepository {
                             ),
                     PhotoEs.class
             );
-        } catch (IOException e) {
+        }catch (IOException e){
             throw new BusinessException(ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION, e);
         }
 
         return toPagePhotoEs(response.hits().hits(), pageable);
     }
 
-    String esTimeFormat(LocalDateTime localDateTime) {
+    String esTimeFormat(LocalDateTime localDateTime){
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return localDateTime.format(dateTimeFormatter);
     }
 
-    private Page<PhotoEs> toPagePhotoEs(List<Hit<PhotoEs>> hits, Pageable pageable) {
+    private Page<PhotoEs> toPagePhotoEs(List<Hit<PhotoEs>> hits, Pageable pageable){
         List<PhotoEs> photoEsList = hits.stream().map(Hit::source).collect(Collectors.toList());
         return new PageImpl<>(photoEsList, pageable, hits.size());
     }
 
-    private int getFrom(Pageable pageable) {
+    private int getFrom(Pageable pageable){
         return pageable.getPageNumber() * pageable.getPageSize();
     }
 }

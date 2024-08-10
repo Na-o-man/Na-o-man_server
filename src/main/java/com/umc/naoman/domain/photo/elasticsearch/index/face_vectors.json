@@ -14,7 +14,7 @@
       "shareGroupId" : {
         "type" : "long"
       },
-      "keyValue" : {
+      "name" : {
         "type" : "keyword"
       },
       "createdAt" : {
@@ -23,7 +23,7 @@
       },
       "faceVector" : {
         "type": "dense_vector",
-        "dims": 128,
+        "dims": 512,
         "index": true,
         "similarity" : "dot_product"
       }
