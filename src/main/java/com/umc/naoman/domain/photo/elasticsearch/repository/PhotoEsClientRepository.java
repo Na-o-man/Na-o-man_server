@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class PhotoEsClientRepository {
     private final ElasticsearchClient elasticsearchClient;
 
-    //사진 업로드 시 ES에 벌크로 업로드
+    // 사진 업로드 시 ES에 벌크로 업로드
     public void savePhotoBulk(List<String> url, List<String> nameList, Long shareGroupId) {
         List<PhotoEs> photoEsList = new ArrayList<>();
         for (int i = 0; i < url.size(); i++) {
@@ -55,7 +55,7 @@ public class PhotoEsClientRepository {
         }
     }
 
-    //특정 공유 그룹의 모든 사진 검색
+    // 특정 공유 그룹의 모든 사진 검색
     public Page<PhotoEs> findPhotoEsByShareGroupId(Long shareGroupId, Pageable pageable) {
         SearchResponse<PhotoEs> response = null;
 
@@ -83,7 +83,7 @@ public class PhotoEsClientRepository {
         return toPagePhotoEs(response.hits().hits(), pageable);
     }
 
-    //특정 공유 그룹의 얼굴이 태그된 사진 검색
+    // 특정 공유 그룹의 얼굴이 태그된 사진 검색
     public Page<PhotoEs> findPhotoEsByShareGroupIdAndFaceTag(Long shareGroupId, Long faceTag, Pageable pageable) throws IOException {
         SearchResponse<PhotoEs> response = null;
         try {

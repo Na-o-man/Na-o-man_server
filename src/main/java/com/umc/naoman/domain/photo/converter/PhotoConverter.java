@@ -46,33 +46,33 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PhotoResponse.PagedPhotoInfo toPhotoListInfo(Page<Photo> photoList) {
-        List<PhotoResponse.PhotoInfo> photoInfoList = photoList.stream()
-                .map(this::toPhotoInfo)
-                .collect(Collectors.toList());
+//    public PhotoResponse.PagedPhotoInfo toPagedPhotoInfo(Page<Photo> photoList) {
+//        List<PhotoResponse.PhotoInfo> photoInfoList = photoList.stream()
+//                .map(this::toPhotoInfo)
+//                .collect(Collectors.toList());
+//
+//        return PhotoResponse.PagedPhotoInfo.builder()
+//                .isLast(photoList.isLast())
+//                .isFirst(photoList.isFirst())
+//                .totalPages(photoList.getTotalPages())
+//                .totalElements(photoList.getTotalElements())
+//                .photoInfoList(photoInfoList)
+//                .build();
+//    }
+//
+//    public PhotoResponse.PhotoInfo toPhotoInfo(Photo photo) {
+//        String rawUrl = photo.getUrl();
+//
+//        return PhotoResponse.PhotoInfo.builder()
+//                .photoId(photo.getId())
+//                .rawPhotoUrl(rawUrl)
+//                .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
+//                .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))
+//                .createdAt(photo.getCreatedAt())
+//                .build();
+//    }
 
-        return PhotoResponse.PagedPhotoInfo.builder()
-                .isLast(photoList.isLast())
-                .isFirst(photoList.isFirst())
-                .totalPage(photoList.getTotalPages())
-                .totalElements(photoList.getTotalElements())
-                .photoInfoList(photoInfoList)
-                .build();
-    }
-
-    public PhotoResponse.PhotoInfo toPhotoInfo(Photo photo) {
-        String rawUrl = photo.getUrl();
-
-        return PhotoResponse.PhotoInfo.builder()
-                .photoId(photo.getId())
-                .rawPhotoUrl(rawUrl)
-                .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
-                .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))
-                .createdAt(photo.getCreatedAt())
-                .build();
-    }
-
-    public PhotoResponse.PagedPhotoEsInfo toPhotoEsListInfo(Page<PhotoEs> photoEsList) {
+    public PhotoResponse.PagedPhotoEsInfo toPagedPhotoEsInfo(Page<PhotoEs> photoEsList) {
         List<PhotoResponse.PhotoEsInfo> photoEsInfoList = photoEsList.stream()
                 .map(this::toPhotoEsInfo)
                 .collect(Collectors.toList());
@@ -80,7 +80,7 @@ public class PhotoConverter {
         return PhotoResponse.PagedPhotoEsInfo.builder()
                 .isLast(photoEsList.isLast())
                 .isFirst(photoEsList.isFirst())
-                .totalPage(photoEsList.getTotalPages())
+                .totalPages(photoEsList.getTotalPages())
                 .totalElements(photoEsList.getTotalElements())
                 .photoEsInfoList(photoEsInfoList)
                 .build();
@@ -94,7 +94,6 @@ public class PhotoConverter {
                 .rawPhotoUrl(rawUrl)
                 .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
                 .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))
-                .faceTag(photoEs.getFaceTag())
                 .downloadTag(photoEs.getDownloadTag())
                 .createdAt(LocalDateTime.parse(photoEs.getCreatedAt()))
                 .build();

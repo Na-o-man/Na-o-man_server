@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -19,6 +20,14 @@ public class PhotoEsServiceImpl implements PhotoEsService {
     private final ShareGroupService shareGroupService;
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<PhotoEs> getPhotoEsListByShareGroupId(Long shareGroupId, Member member, Pageable pageable) {
+        validateShareGroupAndProfile(shareGroupId, member);
+        return photoEsClientRepository.findPhotoEsByShareGroupId(shareGroupId, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<PhotoEs> getPhotoEsListByShareGroupIdAndFaceTag(Long shareGroupId, Long faceTag, Member member, Pageable pageable) throws IOException {
         validateShareGroupAndProfile(shareGroupId, member);
         return photoEsClientRepository.findPhotoEsByShareGroupIdAndFaceTag(shareGroupId, faceTag, pageable);

@@ -43,10 +43,10 @@ public abstract class PhotoResponse {
     @NoArgsConstructor
     public static class PagedPhotoInfo {
         private List<PhotoInfo> photoInfoList;
-        Integer totalPage;
-        Long totalElements;
-        Boolean isFirst;
-        Boolean isLast;
+        private Integer totalPages;
+        private Long totalElements;
+        private Boolean isFirst;
+        private Boolean isLast;
     }
 
     @Getter
@@ -67,10 +67,10 @@ public abstract class PhotoResponse {
     @NoArgsConstructor
     public static class PagedPhotoEsInfo {
         private List<PhotoEsInfo> photoEsInfoList;
-        Integer totalPage;
-        Long totalElements;
-        Boolean isFirst;
-        Boolean isLast;
+        private Integer totalPages;
+        private Long totalElements;
+        private Boolean isFirst;
+        private Boolean isLast;
     }
 
     @Getter
@@ -82,7 +82,6 @@ public abstract class PhotoResponse {
         private String rawPhotoUrl;
         private String w200PhotoUrl;
         private String w400PhotoUrl;
-        private List<Long> faceTag;
         private List<Long> downloadTag;
         private LocalDateTime createdAt;
     }
