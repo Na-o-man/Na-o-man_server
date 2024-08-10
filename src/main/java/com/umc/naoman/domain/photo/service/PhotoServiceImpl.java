@@ -11,6 +11,7 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import com.umc.naoman.domain.photo.elasticsearch.repository.PhotoEsClientRepository;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +39,7 @@ public class PhotoServiceImpl implements PhotoService {
     private final S3Template s3Template;
     private final PhotoRepository photoRepository;
     private final ShareGroupService shareGroupService;
+    private final PhotoEsClientRepository photoEsClientRepository;
     private final PhotoConverter photoConverter;
 
     @Value("${spring.cloud.aws.s3.bucket}")
@@ -69,13 +72,20 @@ public class PhotoServiceImpl implements PhotoService {
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
         validateShareGroupAndProfile(request.getShareGroupId(), member);
         int uploadCount = 0;
+        List<Photo> photoList = new ArrayList<>();
 
         for (String photoUrl : request.getPhotoUrlList()) {
             String photoName = extractPhotoNameFromUrl(photoUrl);
-            if (checkAndSavePhoto(photoUrl, photoName, request.getShareGroupId())) {
+            // DB에 사진 저장 및 객체 반환
+            Photo photo = checkAndSavePhotoInRDB(photoUrl, photoName, request.getShareGroupId());
+            if (photo != null) {
                 uploadCount++;
+                photoList.add(photo);
             }
         }
+
+        // Elasticsearch에 벌크 저장
+        photoEsClientRepository.savePhotoBulk(photoList);
 
         return new PhotoResponse.PhotoUploadInfo(request.getShareGroupId(), uploadCount);
     }
@@ -166,14 +176,16 @@ public class PhotoServiceImpl implements PhotoService {
         return photoUrl.substring(lastSlashIndex + 1);
     }
 
-    // S3에 객체의 존재 여부 확인 및 저장하는 메서드
-    private boolean checkAndSavePhoto(String photoUrl, String photoName, Long shareGroupId) {
-        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName + "/" + RAW_PATH_PREFIX, photoName));
+    // S3에 객체의 존재 여부 확인 및 DB에 사진을 저장하고 객체를 반환하는 메서드
+    private Photo checkAndSavePhotoInRDB(String photoUrl, String photoName, Long shareGroupId) {
         ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
+        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName + "/" + RAW_PATH_PREFIX, photoName));
+
         if (s3Object != null) {
+            // Photo 객체 생성 및 저장
             Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
             photoRepository.save(photo);
-            return true;
+            return photo;
         } else {
             throw new BusinessException(PHOTO_NOT_FOUND_S3);
         }
