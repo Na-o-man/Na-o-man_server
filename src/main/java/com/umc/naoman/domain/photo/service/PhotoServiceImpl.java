@@ -11,6 +11,7 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
@@ -85,11 +86,15 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Photo> getAllPhotoList(Long shareGroupId, Member member, Pageable pageable) {
-        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
-        shareGroupService.findProfile(shareGroup.getId(), member.getId());
+    public Page<PhotoEs> getPhotoList(Long shareGroupId, Long faceTag, Member member, Pageable pageable) {
+        validateShareGroupAndProfile(shareGroupId, );
+    }
 
-        return photoRepository.findAllByShareGroupId(shareGroup.getId(), pageable);
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Photo> getAllPhotoList(Long shareGroupId, Member member, Pageable pageable) {
+        validateShareGroupAndProfile(shareGroupId, member);
+        return photoRepository.findAllByShareGroupId(shareGroupId, pageable);
     }
 
     @Override

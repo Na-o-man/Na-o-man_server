@@ -1,11 +1,13 @@
 package com.umc.naoman.domain.photo.converter;
 
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,6 +71,35 @@ public class PhotoConverter {
                 .createdAt(photo.getCreatedAt())
                 .build();
     }
+
+    public PhotoResponse.PagedPhotoEsInfo toPhotoEsListInfo(Page<PhotoEs> photoEsList) {
+        List<PhotoResponse.PhotoEsInfo> photoEsInfoList = photoEsList.stream()
+                .map(this::toPhotoEsInfo)
+                .collect(Collectors.toList());
+
+        return PhotoResponse.PagedPhotoEsInfo.builder()
+                .isLast(photoEsList.isLast())
+                .isFirst(photoEsList.isFirst())
+                .totalPage(photoEsList.getTotalPages())
+                .totalElements(photoEsList.getTotalElements())
+                .photoEsInfoList(photoEsInfoList)
+                .build();
+    }
+
+    public PhotoResponse.PhotoEsInfo toPhotoEsInfo(PhotoEs photoEs) {
+        String rawUrl = photoEs.getUrl();
+
+        return PhotoResponse.PhotoEsInfo.builder()
+                .photoId(Long.valueOf(photoEs.getId()))
+                .rawPhotoUrl(rawUrl)
+                .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
+                .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))
+                .faceTag(photoEs.getFaceTag())
+                .downloadTag(photoEs.getDownloadTag())
+                .createdAt(LocalDateTime.parse(photoEs.getCreatedAt()))
+                .build();
+    }
+
 
     private String createResizedPhotoUrl(String photoUrl, String size) {
         String resizedUrl = getResizedUrl(photoUrl, size);

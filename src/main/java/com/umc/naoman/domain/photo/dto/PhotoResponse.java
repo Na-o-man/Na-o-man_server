@@ -67,6 +67,32 @@ public abstract class PhotoResponse {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class PagedPhotoEsInfo {
+        private List<PhotoEsInfo> photoEsInfoList;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PhotoEsInfo {
+        private Long photoId;
+        private String rawPhotoUrl;
+        private String w200PhotoUrl;
+        private String w400PhotoUrl;
+        private List<Long> faceTag;
+        private List<Long> downloadTag;
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class PhotoDeleteInfo {
         private List<Long> photoIdList;
     }

@@ -4,6 +4,8 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
+import com.umc.naoman.domain.photo.elasticsearch.service.PhotoEsService;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.service.PhotoService;
 import com.umc.naoman.global.result.ResultResponse;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.umc.naoman.global.result.code.PhotoResultCode.*;
@@ -37,6 +40,7 @@ import static com.umc.naoman.global.result.code.PhotoResultCode.*;
 public class PhotoController {
 
     private final PhotoService photoService;
+    private final PhotoEsService photoEsService;
     private final PhotoConverter photoConverter;
 
     @PostMapping("/preSignedUrl")
@@ -53,6 +57,21 @@ public class PhotoController {
                                                                          @LoginMember Member member) {
         PhotoResponse.PhotoUploadInfo photoUploadInfo = photoService.uploadPhotoList(request, member);
         return ResultResponse.of(UPLOAD_PHOTO, photoUploadInfo);
+    }
+
+    @GetMapping("/")
+    @Operation(summary = "특정 공유그룹의 특정 앨범 사진 조회 API", description = "특정 공유 그룹의 특정 앨범의 사진을 조회하는 API입니다.")
+    @Parameters(value = {
+            @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
+            @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
+    })
+    public ResultResponse<PhotoResponse.PagedPhotoEsInfo> getAllPhotoListByShareGroup(@RequestParam Long shareGroupId,
+                                                                                    @RequestParam Long faceTag,
+                                                                                    @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+                                                                                    @Parameter(hidden = true) Pageable pageable,
+                                                                                    @LoginMember Member member) throws IOException {
+        Page<PhotoEs> photoEsListByShareGroupIdAndFaceTag = photoEsService.getPhotoEsListByShareGroupIdAndFaceTag(shareGroupId, faceTag, member, pageable);
+        return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPhotoEsListInfo(photoEsListByShareGroupIdAndFaceTag));
     }
 
     @GetMapping("/all")
