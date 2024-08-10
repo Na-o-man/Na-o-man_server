@@ -3,15 +3,12 @@ package com.umc.naoman.domain.photo.elasticsearch.service;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.elasticsearch.repository.PhotoEsClientRepository;
-import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
