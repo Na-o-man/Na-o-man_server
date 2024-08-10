@@ -15,12 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "sample_face_vectors")
 public class SampleFaceVector {
-    @Id
-    private String id;
-    @Field(type = FieldType.Long)
     private Long memberId;
-    @Field(type = FieldType.Dense_Vector)
     private List<Float> faceVector;
 }

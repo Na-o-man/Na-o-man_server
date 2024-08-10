@@ -13,8 +13,8 @@
       },
       "faceVector" : {
         "type": "dense_vector",
-        "dims": 128,
-        "index": true,
+        "dims": 512,
+        "index": false,
         "similarity" : "dot_product"
       }
     }
