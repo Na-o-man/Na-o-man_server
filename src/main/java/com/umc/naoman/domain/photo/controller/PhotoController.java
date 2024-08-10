@@ -59,14 +59,14 @@ public class PhotoController {
     }
 
     @GetMapping
-    @Operation(summary = "특정 공유그룹의 특정 앨범 사진 조회 API", description = "특정 공유 그룹의 특정 앨범의 사진을 조회하는 API입니다.")
+    @Operation(summary = "특정 공유그룹의 특정 앨범 사진 조회 API", description = "특정 공유그룹의 특정 앨범의 사진을 조회하는 API입니다.")
     @Parameters(value = {
-            @Parameter(name = "shareGroupId", description = "조회할 공유 그룹의 아이디를 입력해주세요."),
+            @Parameter(name = "shareGroupId", description = "조회할 공유그룹의 아이디를 입력해주세요."),
             @Parameter(name = "profileId", description = "조회할 프로필의 아이디를 입력해주세요."),
             @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
             @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
     })
-    public ResultResponse<PhotoResponse.PagedPhotoEsInfo> getAllPhotoListByShareGroup(@RequestParam Long shareGroupId,
+    public ResultResponse<PhotoResponse.PagedPhotoEsInfo> getPhotoListByShareGroupAndProfile(@RequestParam Long shareGroupId,
                                                                                       @RequestParam Long profileId,
                                                                                       @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                                                       @Parameter(hidden = true) Pageable pageable,
@@ -76,9 +76,9 @@ public class PhotoController {
     }
 
     @GetMapping("/all")
-    @Operation(summary = "특정 공유그룹의 전체 사진 조회 API", description = "특정 공유 그룹의 전체 사진을 조회하는 API입니다.")
+    @Operation(summary = "특정 공유그룹의 전체 사진 조회 API", description = "특정 공유그룹의 전체 사진을 조회하는 API입니다.")
     @Parameters(value = {
-            @Parameter(name = "shareGroupId", description = "조회할 공유 그룹의 아이디를 입력해주세요."),
+            @Parameter(name = "shareGroupId", description = "조회할 공유그룹의 아이디를 입력해주세요."),
             @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
             @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
     })
@@ -86,7 +86,22 @@ public class PhotoController {
                                                                                       @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                                                       @Parameter(hidden = true) Pageable pageable,
                                                                                       @LoginMember Member member) {
-        Page<PhotoEs> photoEsList = photoEsService.getPhotoEsListByShareGroupId(shareGroupId, member, pageable);
+        Page<PhotoEs> photoEsList = photoEsService.getAllPhotoEsListByShareGroupId(shareGroupId, member, pageable);
+        return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsList, member));
+    }
+
+    @GetMapping("/etc")
+    @Operation(summary = "특정 공유그룹의 아무도 인식되지 않은 사진 조회 API", description = "특정 공유그룹의 아무도 인식되지 않은 사진을 조회하는 API입니다.")
+    @Parameters(value = {
+            @Parameter(name = "shareGroupId", description = "조회할 공유그룹의 아이디를 입력해주세요."),
+            @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
+            @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
+    })
+    public ResultResponse<PhotoResponse.PagedPhotoEsInfo> getEtcPhotoListByShareGroup(@RequestParam Long shareGroupId,
+                                                                            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+                                                                            @Parameter(hidden = true) Pageable pageable,
+                                                                            @LoginMember Member member) {
+        Page<PhotoEs> photoEsList = photoEsService.getEtcPhotoEsListByShareGroupId(shareGroupId, member, pageable);
         return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsList, member));
     }
 
