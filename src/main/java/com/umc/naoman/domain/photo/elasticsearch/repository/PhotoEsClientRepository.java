@@ -120,7 +120,7 @@ public class PhotoEsClientRepository {
         return toPagePhotoEs(response.hits().hits(), pageable);
     }
 
-    //특정 공유 그룹의 얼굴이 태그되지 않은 사진 검색
+    // 특정 공유 그룹의 얼굴이 태그되지 않은 사진 검색
     public Page<PhotoEs> findPhotoEsByShareGroupIdAndNotFaceTag(Long shareGroupId, Pageable pageable) {
         SearchResponse<PhotoEs> response = null;
         try {

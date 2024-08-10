@@ -59,7 +59,7 @@ public class PhotoController {
         return ResultResponse.of(UPLOAD_PHOTO, photoUploadInfo);
     }
 
-    @GetMapping("/")
+    @GetMapping
     @Operation(summary = "특정 공유그룹의 특정 앨범 사진 조회 API", description = "특정 공유 그룹의 특정 앨범의 사진을 조회하는 API입니다.")
     @Parameters(value = {
             @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
