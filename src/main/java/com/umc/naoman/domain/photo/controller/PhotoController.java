@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.umc.naoman.global.result.code.PhotoResultCode.*;
@@ -71,7 +70,7 @@ public class PhotoController {
                                                                                       @RequestParam Long profileId,
                                                                                       @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                                                       @Parameter(hidden = true) Pageable pageable,
-                                                                                      @LoginMember Member member) throws IOException {
+                                                                                      @LoginMember Member member) {
         Page<PhotoEs> photoEsListByShareGroupIdAndProfileId = photoEsService.getPhotoEsListByShareGroupIdAndFaceTag(shareGroupId, profileId, member, pageable);
         return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsListByShareGroupIdAndProfileId, member));
     }
