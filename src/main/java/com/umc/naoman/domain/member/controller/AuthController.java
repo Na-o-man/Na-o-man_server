@@ -5,6 +5,7 @@ import com.umc.naoman.domain.member.dto.MemberRequest.MarketingAgreedRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
+import com.umc.naoman.domain.member.entity.SocialType;
 import com.umc.naoman.domain.member.service.MemberService;
 import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.result.ResultResponse;
@@ -30,7 +31,7 @@ import static com.umc.naoman.global.result.code.MemberResultCode.*;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "인증,인가 관련 API", description = "회원의 회원가입 및 로그인 등을 처리하는 API입니다.")
+@Tag(name = "00. 인증,인가 관련 API", description = "회원의 회원가입 및 로그인 등을 처리하는 API입니다.")
 @RequiredArgsConstructor
 public class AuthController {
     private final MemberService memberService;
@@ -62,7 +63,7 @@ public class AuthController {
         return ResultResponse.of(LOGIN, memberService.login(request));
     }
 
-    @GetMapping("/check-registration")
+    @PostMapping("/check-registration")
     @Operation(summary = "회원가입 여부 조회 API", description = "authId와 플랫폼명을 통해, 해당 정보와 일치하는 회원의 가입 여부를 조회하는 API입니다.")
     public ResultResponse<CheckMemberRegistration> checkSignup(@Valid @RequestBody LoginRequest request) {
         return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.checkRegistration(request));

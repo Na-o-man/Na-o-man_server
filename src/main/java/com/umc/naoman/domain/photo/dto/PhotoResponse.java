@@ -56,6 +56,7 @@ public abstract class PhotoResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PhotoInfo {
+        private Long photoId;
         private String rawPhotoUrl;
         private String w200PhotoUrl;
         private String w400PhotoUrl;

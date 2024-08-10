@@ -1,7 +1,7 @@
 package com.umc.naoman.domain.vote.entity;
 
 import com.umc.naoman.domain.agenda.entity.AgendaPhoto;
-import com.umc.naoman.domain.member.entity.Member;
+import com.umc.naoman.domain.shareGroup.entity.Profile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "votes")
-@SQLRestriction("deleted_at is NULL")
+@SQLRestriction("canceled_at is NULL")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -38,8 +38,8 @@ public class Vote {
     private Long id;
     private String comment;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agendas_photos_id")
     private AgendaPhoto agendaPhoto;

@@ -24,7 +24,7 @@ import static com.umc.naoman.global.result.code.MemberResultCode.CHECK_MEMBER_RE
 
 @RestController
 @RequestMapping("/members")
-@Tag(name = "회원 API", description = "회원 도메인의 API입니다.")
+@Tag(name = "01. 회원 API", description = "회원 도메인의 API입니다.")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
