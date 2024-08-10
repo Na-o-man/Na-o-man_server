@@ -1,9 +1,14 @@
 package com.umc.naoman.domain.photo.elasticsearch.service;
 
 import com.umc.naoman.domain.member.entity.Member;
+import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.elasticsearch.repository.PhotoEsClientRepository;
+import com.umc.naoman.domain.shareGroup.entity.Profile;
+import com.umc.naoman.domain.shareGroup.repository.ProfileRepository;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
+import com.umc.naoman.global.error.BusinessException;
+import com.umc.naoman.global.error.code.ShareGroupErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+
+import static com.umc.naoman.global.error.code.S3ErrorCode.PHOTO_NOT_FOUND;
+import static com.umc.naoman.global.error.code.ShareGroupErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +29,17 @@ public class PhotoEsServiceImpl implements PhotoEsService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PhotoEs> getPhotoEsListByShareGroupId(Long shareGroupId, Member member, Pageable pageable) {
+    public Page<PhotoEs> getPhotoEsListByShareGroupIdAndFaceTag(Long shareGroupId, Long profileId, Member member, Pageable pageable) {
         validateShareGroupAndProfile(shareGroupId, member);
-        return photoEsClientRepository.findPhotoEsByShareGroupId(shareGroupId, pageable);
+        Long findMemberId = shareGroupService.findProfile(profileId).getMember().getId();
+        return photoEsClientRepository.findPhotoEsByShareGroupIdAndFaceTag(shareGroupId, findMemberId, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PhotoEs> getPhotoEsListByShareGroupIdAndFaceTag(Long shareGroupId, Long faceTag, Member member, Pageable pageable) throws IOException {
+    public Page<PhotoEs> getPhotoEsListByShareGroupId(Long shareGroupId, Member member, Pageable pageable) {
         validateShareGroupAndProfile(shareGroupId, member);
-        return photoEsClientRepository.findPhotoEsByShareGroupIdAndFaceTag(shareGroupId, faceTag, pageable);
+        return photoEsClientRepository.findPhotoEsByShareGroupId(shareGroupId, pageable);
     }
 
     private void validateShareGroupAndProfile(Long shareGroupId, Member member) {

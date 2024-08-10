@@ -1,5 +1,6 @@
 package com.umc.naoman.domain.photo.converter;
 
+import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.entity.Photo;
@@ -46,9 +47,9 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PhotoResponse.PagedPhotoEsInfo toPagedPhotoEsInfo(Page<PhotoEs> photoEsList) {
+    public PhotoResponse.PagedPhotoEsInfo toPagedPhotoEsInfo(Page<PhotoEs> photoEsList, Member member) {
         List<PhotoResponse.PhotoEsInfo> photoEsInfoList = photoEsList.stream()
-                .map(this::toPhotoEsInfo)
+                .map(photoEs -> toPhotoEsInfo(photoEs, member))
                 .collect(Collectors.toList());
 
         return PhotoResponse.PagedPhotoEsInfo.builder()
@@ -60,15 +61,17 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PhotoResponse.PhotoEsInfo toPhotoEsInfo(PhotoEs photoEs) {
+    public PhotoResponse.PhotoEsInfo toPhotoEsInfo(PhotoEs photoEs, Member member) {
         String rawUrl = photoEs.getUrl();
+        Boolean isDownload = photoEs.getDownloadTag() != null && photoEs.getDownloadTag().contains(member.getId());
 
         return PhotoResponse.PhotoEsInfo.builder()
-                .photoId(Long.valueOf(photoEs.getId()))
+                .photoId(photoEs.getRdsId())
                 .rawPhotoUrl(rawUrl)
                 .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
                 .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))
                 .downloadTag(photoEs.getDownloadTag())
+                .isDownload(isDownload)
                 .createdAt(LocalDateTime.parse(photoEs.getCreatedAt()))
                 .build();
     }

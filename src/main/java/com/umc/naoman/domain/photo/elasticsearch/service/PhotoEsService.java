@@ -8,8 +8,6 @@ import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 
 public interface PhotoEsService {
-
     Page<PhotoEs> getPhotoEsListByShareGroupId(Long shareGroupId, Member member, Pageable pageable);
-
-    Page<PhotoEs> getPhotoEsListByShareGroupIdAndFaceTag(Long shareGroupId, Long faceTag, Member member, Pageable pageable) throws IOException;
+    Page<PhotoEs> getPhotoEsListByShareGroupIdAndFaceTag(Long shareGroupId, Long profileId, Member member, Pageable pageable) throws IOException;
 }

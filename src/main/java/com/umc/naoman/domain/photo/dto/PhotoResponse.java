@@ -59,6 +59,7 @@ public abstract class PhotoResponse {
         private String w200PhotoUrl;
         private String w400PhotoUrl;
         private List<Long> downloadTag;
+        private Boolean isDownload;
         private LocalDateTime createdAt;
     }
 
