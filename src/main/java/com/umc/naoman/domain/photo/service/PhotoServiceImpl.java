@@ -69,18 +69,17 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
-        ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
-        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
+        validateShareGroupAndProfile(request.getShareGroupId(), member);
         int uploadCount = 0;
 
         for (String photoUrl : request.getPhotoUrlList()) {
             String photoName = extractPhotoNameFromUrl(photoUrl);
-            if (checkAndSavePhoto(photoUrl, photoName, shareGroup)) {
+            if (checkAndSavePhoto(photoUrl, photoName, request.getShareGroupId())) {
                 uploadCount++;
             }
         }
 
-        return new PhotoResponse.PhotoUploadInfo(shareGroup.getId(), uploadCount);
+        return new PhotoResponse.PhotoUploadInfo(request.getShareGroupId(), uploadCount);
     }
 
     @Override
@@ -177,8 +176,9 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     // S3에 객체의 존재 여부 확인 및 저장하는 메서드
-    private boolean checkAndSavePhoto(String photoUrl, String photoName, ShareGroup shareGroup) {
+    private boolean checkAndSavePhoto(String photoUrl, String photoName, Long shareGroupId) {
         S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName + "/" + RAW_PATH_PREFIX, photoName));
+        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
         if (s3Object != null) {
             Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
             photoRepository.save(photo);
