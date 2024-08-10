@@ -11,7 +11,6 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
-import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
