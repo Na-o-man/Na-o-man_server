@@ -62,6 +62,8 @@ public class PhotoController {
     @GetMapping
     @Operation(summary = "특정 공유그룹의 특정 앨범 사진 조회 API", description = "특정 공유 그룹의 특정 앨범의 사진을 조회하는 API입니다.")
     @Parameters(value = {
+            @Parameter(name = "shareGroupId", description = "조회할 공유 그룹의 아이디를 입력해주세요."),
+            @Parameter(name = "size", description = "조회할 프로필의 아이디를 입력해주세요."),
             @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
             @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
     })
@@ -77,6 +79,7 @@ public class PhotoController {
     @GetMapping("/all")
     @Operation(summary = "특정 공유그룹의 전체 사진 조회 API", description = "특정 공유 그룹의 전체 사진을 조회하는 API입니다.")
     @Parameters(value = {
+            @Parameter(name = "shareGroupId", description = "조회할 공유 그룹의 아이디를 입력해주세요."),
             @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
             @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
     })

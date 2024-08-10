@@ -83,13 +83,6 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Page<Photo> getAllPhotoList(Long shareGroupId, Member member, Pageable pageable) {
-        validateShareGroupAndProfile(shareGroupId, member);
-        return photoRepository.findAllByShareGroupId(shareGroupId, pageable);
-    }
-
-    @Override
     @Transactional
     public List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member) {
         validateShareGroupAndProfile(request.getShareGroupId(), member);

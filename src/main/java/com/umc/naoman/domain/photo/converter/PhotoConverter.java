@@ -46,32 +46,6 @@ public class PhotoConverter {
                 .build();
     }
 
-//    public PhotoResponse.PagedPhotoInfo toPagedPhotoInfo(Page<Photo> photoList) {
-//        List<PhotoResponse.PhotoInfo> photoInfoList = photoList.stream()
-//                .map(this::toPhotoInfo)
-//                .collect(Collectors.toList());
-//
-//        return PhotoResponse.PagedPhotoInfo.builder()
-//                .isLast(photoList.isLast())
-//                .isFirst(photoList.isFirst())
-//                .totalPages(photoList.getTotalPages())
-//                .totalElements(photoList.getTotalElements())
-//                .photoInfoList(photoInfoList)
-//                .build();
-//    }
-//
-//    public PhotoResponse.PhotoInfo toPhotoInfo(Photo photo) {
-//        String rawUrl = photo.getUrl();
-//
-//        return PhotoResponse.PhotoInfo.builder()
-//                .photoId(photo.getId())
-//                .rawPhotoUrl(rawUrl)
-//                .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
-//                .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))
-//                .createdAt(photo.getCreatedAt())
-//                .build();
-//    }
-
     public PhotoResponse.PagedPhotoEsInfo toPagedPhotoEsInfo(Page<PhotoEs> photoEsList) {
         List<PhotoResponse.PhotoEsInfo> photoEsInfoList = photoEsList.stream()
                 .map(this::toPhotoEsInfo)
