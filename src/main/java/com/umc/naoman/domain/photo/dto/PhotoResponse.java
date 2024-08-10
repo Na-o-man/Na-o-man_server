@@ -1,5 +1,6 @@
 package com.umc.naoman.domain.photo.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,8 +59,8 @@ public abstract class PhotoResponse {
         private String rawPhotoUrl;
         private String w200PhotoUrl;
         private String w400PhotoUrl;
-        private List<Long> downloadTag;
         private Boolean isDownload;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
     }
 

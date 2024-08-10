@@ -63,14 +63,13 @@ public class PhotoConverter {
 
     public PhotoResponse.PhotoEsInfo toPhotoEsInfo(PhotoEs photoEs, Member member) {
         String rawUrl = photoEs.getUrl();
-        Boolean isDownload = photoEs.getDownloadTag() != null && photoEs.getDownloadTag().contains(member.getId());
+        Boolean isDownload = !photoEs.getDownloadTag().isEmpty() && photoEs.getDownloadTag().contains(member.getId());
 
         return PhotoResponse.PhotoEsInfo.builder()
                 .photoId(photoEs.getRdsId())
                 .rawPhotoUrl(rawUrl)
                 .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
                 .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))
-                .downloadTag(photoEs.getDownloadTag())
                 .isDownload(isDownload)
                 .createdAt(LocalDateTime.parse(photoEs.getCreatedAt()))
                 .build();

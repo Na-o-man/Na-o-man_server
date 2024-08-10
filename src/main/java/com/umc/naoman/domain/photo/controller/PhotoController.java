@@ -71,8 +71,8 @@ public class PhotoController {
                                                                                       @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                                                       @Parameter(hidden = true) Pageable pageable,
                                                                                       @LoginMember Member member) {
-        Page<PhotoEs> photoEsListByShareGroupIdAndProfileId = photoEsService.getPhotoEsListByShareGroupIdAndFaceTag(shareGroupId, profileId, member, pageable);
-        return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsListByShareGroupIdAndProfileId, member));
+        Page<PhotoEs> photoEsList = photoEsService.getPhotoEsListByShareGroupIdAndFaceTag(shareGroupId, profileId, member, pageable);
+        return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsList, member));
     }
 
     @GetMapping("/all")
@@ -86,8 +86,8 @@ public class PhotoController {
                                                                                       @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                                                       @Parameter(hidden = true) Pageable pageable,
                                                                                       @LoginMember Member member) {
-        Page<PhotoEs> photoEsListByShareGroupId = photoEsService.getPhotoEsListByShareGroupId(shareGroupId, member, pageable);
-        return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsListByShareGroupId, member));
+        Page<PhotoEs> photoEsList = photoEsService.getPhotoEsListByShareGroupId(shareGroupId, member, pageable);
+        return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsList, member));
     }
 
     @DeleteMapping
