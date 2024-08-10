@@ -19,8 +19,6 @@ import com.umc.naoman.global.error.BusinessException;
 import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,27 +67,17 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
-        ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
-        shareGroupService.findProfile(request.getShareGroupId(), member.getId());
+        validateShareGroupAndProfile(request.getShareGroupId(), member);
         int uploadCount = 0;
 
         for (String photoUrl : request.getPhotoUrlList()) {
             String photoName = extractPhotoNameFromUrl(photoUrl);
-            if (checkAndSavePhoto(photoUrl, photoName, shareGroup)) {
+            if (checkAndSavePhoto(photoUrl, photoName, request.getShareGroupId())) {
                 uploadCount++;
             }
         }
 
-        return new PhotoResponse.PhotoUploadInfo(shareGroup.getId(), uploadCount);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Photo> getAllPhotoList(Long shareGroupId, Member member, Pageable pageable) {
-        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
-        shareGroupService.findProfile(shareGroup.getId(), member.getId());
-
-        return photoRepository.findAllByShareGroupId(shareGroup.getId(), pageable);
+        return new PhotoResponse.PhotoUploadInfo(request.getShareGroupId(), uploadCount);
     }
 
     @Override
@@ -179,8 +167,9 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     // S3에 객체의 존재 여부 확인 및 저장하는 메서드
-    private boolean checkAndSavePhoto(String photoUrl, String photoName, ShareGroup shareGroup) {
+    private boolean checkAndSavePhoto(String photoUrl, String photoName, Long shareGroupId) {
         S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName + "/" + RAW_PATH_PREFIX, photoName));
+        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
         if (s3Object != null) {
             Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
             photoRepository.save(photo);

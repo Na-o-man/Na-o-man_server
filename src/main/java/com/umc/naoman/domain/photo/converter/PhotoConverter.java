@@ -1,11 +1,14 @@
 package com.umc.naoman.domain.photo.converter;
 
+import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,31 +47,34 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PhotoResponse.PagedPhotoInfo toPhotoListInfo(Page<Photo> photoList) {
-        List<PhotoResponse.PhotoInfo> photoInfoList = photoList.stream()
-                .map(this::toPhotoInfo)
+    public PhotoResponse.PagedPhotoEsInfo toPagedPhotoEsInfo(Page<PhotoEs> photoEsList, Member member) {
+        List<PhotoResponse.PhotoEsInfo> photoEsInfoList = photoEsList.stream()
+                .map(photoEs -> toPhotoEsInfo(photoEs, member))
                 .collect(Collectors.toList());
 
-        return PhotoResponse.PagedPhotoInfo.builder()
-                .isLast(photoList.isLast())
-                .isFirst(photoList.isFirst())
-                .totalPage(photoList.getTotalPages())
-                .totalElements(photoList.getTotalElements())
-                .photoInfoList(photoInfoList)
+        return PhotoResponse.PagedPhotoEsInfo.builder()
+                .isLast(photoEsList.isLast())
+                .isFirst(photoEsList.isFirst())
+                .totalPages(photoEsList.getTotalPages())
+                .totalElements(photoEsList.getTotalElements())
+                .photoEsInfoList(photoEsInfoList)
                 .build();
     }
 
-    public PhotoResponse.PhotoInfo toPhotoInfo(Photo photo) {
-        String rawUrl = photo.getUrl();
+    public PhotoResponse.PhotoEsInfo toPhotoEsInfo(PhotoEs photoEs, Member member) {
+        String rawUrl = photoEs.getUrl();
+        Boolean isDownload = !photoEs.getDownloadTag().isEmpty() && photoEs.getDownloadTag().contains(member.getId());
 
-        return PhotoResponse.PhotoInfo.builder()
-                .photoId(photo.getId())
+        return PhotoResponse.PhotoEsInfo.builder()
+                .photoId(photoEs.getRdsId())
                 .rawPhotoUrl(rawUrl)
                 .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
                 .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))
-                .createdAt(photo.getCreatedAt())
+                .isDownload(isDownload)
+                .createdAt(LocalDateTime.parse(photoEs.getCreatedAt()))
                 .build();
     }
+
 
     private String createResizedPhotoUrl(String photoUrl, String size) {
         String resizedUrl = getResizedUrl(photoUrl, size);

@@ -1,7 +1,6 @@
 package com.umc.naoman.domain.photo.entity;
 
 import com.umc.naoman.domain.member.entity.Member;
-import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

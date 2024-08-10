@@ -4,6 +4,8 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
+import com.umc.naoman.domain.photo.elasticsearch.service.PhotoEsService;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.service.PhotoService;
 import com.umc.naoman.global.result.ResultResponse;
@@ -37,6 +39,7 @@ import static com.umc.naoman.global.result.code.PhotoResultCode.*;
 public class PhotoController {
 
     private final PhotoService photoService;
+    private final PhotoEsService photoEsService;
     private final PhotoConverter photoConverter;
 
     @PostMapping("/preSignedUrl")
@@ -55,18 +58,36 @@ public class PhotoController {
         return ResultResponse.of(UPLOAD_PHOTO, photoUploadInfo);
     }
 
-    @GetMapping("/all")
-    @Operation(summary = "특정 공유그룹의 전체 사진 조회 API", description = "특정 공유 그룹의 전체 사진을 조회하는 API입니다.")
+    @GetMapping
+    @Operation(summary = "특정 공유그룹의 특정 앨범 사진 조회 API", description = "특정 공유 그룹의 특정 앨범의 사진을 조회하는 API입니다.")
     @Parameters(value = {
+            @Parameter(name = "shareGroupId", description = "조회할 공유 그룹의 아이디를 입력해주세요."),
+            @Parameter(name = "profileId", description = "조회할 프로필의 아이디를 입력해주세요."),
             @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
             @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
     })
-    public ResultResponse<PhotoResponse.PagedPhotoInfo> getAllPhotoListByShareGroup(@RequestParam Long shareGroupId,
-                                                                                    @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
-                                                                                    @Parameter(hidden = true) Pageable pageable,
-                                                                                    @LoginMember Member member) {
-        Page<Photo> allPhotoListByShareGroup = photoService.getAllPhotoList(shareGroupId, member, pageable);
-        return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPhotoListInfo(allPhotoListByShareGroup));
+    public ResultResponse<PhotoResponse.PagedPhotoEsInfo> getAllPhotoListByShareGroup(@RequestParam Long shareGroupId,
+                                                                                      @RequestParam Long profileId,
+                                                                                      @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+                                                                                      @Parameter(hidden = true) Pageable pageable,
+                                                                                      @LoginMember Member member) {
+        Page<PhotoEs> photoEsList = photoEsService.getPhotoEsListByShareGroupIdAndFaceTag(shareGroupId, profileId, member, pageable);
+        return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsList, member));
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "특정 공유그룹의 전체 사진 조회 API", description = "특정 공유 그룹의 전체 사진을 조회하는 API입니다.")
+    @Parameters(value = {
+            @Parameter(name = "shareGroupId", description = "조회할 공유 그룹의 아이디를 입력해주세요."),
+            @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
+            @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
+    })
+    public ResultResponse<PhotoResponse.PagedPhotoEsInfo> getAllPhotoListByShareGroup(@RequestParam Long shareGroupId,
+                                                                                      @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+                                                                                      @Parameter(hidden = true) Pageable pageable,
+                                                                                      @LoginMember Member member) {
+        Page<PhotoEs> photoEsList = photoEsService.getPhotoEsListByShareGroupId(shareGroupId, member, pageable);
+        return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsList, member));
     }
 
     @DeleteMapping
