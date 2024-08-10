@@ -2,10 +2,7 @@ package com.umc.naoman.domain.photo.elasticsearch.service;
 
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
-import com.umc.naoman.domain.photo.elasticsearch.repository.FaceVectorRepository;
 import com.umc.naoman.domain.photo.elasticsearch.repository.PhotoEsClientRepository;
-import com.umc.naoman.domain.photo.elasticsearch.repository.PhotoEsRepository;
-import com.umc.naoman.domain.photo.service.PhotoService;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

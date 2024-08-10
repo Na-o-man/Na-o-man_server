@@ -86,12 +86,6 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PhotoEs> getPhotoList(Long shareGroupId, Long faceTag, Member member, Pageable pageable) {
-        validateShareGroupAndProfile(shareGroupId, );
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Page<Photo> getAllPhotoList(Long shareGroupId, Member member, Pageable pageable) {
         validateShareGroupAndProfile(shareGroupId, member);
         return photoRepository.findAllByShareGroupId(shareGroupId, pageable);
