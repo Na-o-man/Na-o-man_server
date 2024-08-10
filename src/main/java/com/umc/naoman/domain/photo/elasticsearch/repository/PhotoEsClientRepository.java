@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
+import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.error.code.ElasticsearchErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -27,23 +28,24 @@ public class PhotoEsClientRepository {
     private final ElasticsearchClient elasticsearchClient;
 
     //사진 업로드 시 ES에 벌크로 업로드
-    public void savePhotoBulk(List<String> url, List<String> nameList, Long shareGroupId) {
-        List<PhotoEs> photoEsList = new ArrayList<>();
-        for(int i=0; i<url.size(); i++){
-            PhotoEs photoEs = PhotoEs.builder()
-                    .shareGroupId(shareGroupId)
-                    .url(url.get(i))
-                    .name(nameList.get(i))
-                    .createdAt(esTimeFormat(LocalDateTime.now()))
-                    .build();
-            photoEsList.add(photoEs);
-        }
+    public void savePhotoBulk(List<Photo> photoList) {
+        List<PhotoEs> photoEsList = photoList.stream()
+                .map(photo -> PhotoEs.builder()
+                        .rdsId(photo.getId())
+                        .shareGroupId(photo.getShareGroup().getId())
+                        .faceTag(new ArrayList<>())
+                        .downloadTag(new ArrayList<>())
+                        .url(photo.getUrl())
+                        .name(photo.getName())
+                        .createdAt(esTimeFormat(photo.getCreatedAt()))
+                        .build())
+                .toList();
         BulkRequest.Builder bulkBuilder = new BulkRequest.Builder();
         for(PhotoEs photoEs :photoEsList){
             bulkBuilder.operations(op ->op
                     .index(idx -> idx
                             .index("photos_es")
-                            .routing(shareGroupId.toString())
+                            .routing(photoEs.getShareGroupId().toString())
                             .document(photoEs)
                     )
             );
@@ -84,7 +86,7 @@ public class PhotoEsClientRepository {
     }
 
     //특정 공유 그룹의 얼굴이 태그된 사진 검색
-    public Page<PhotoEs> findPhotoEsByShareGroupIdAndFaceTag(Long shareGroupId,Long faceTag, Pageable pageable) throws IOException{
+    public Page<PhotoEs> findPhotoEsByShareGroupIdAndFaceTag(Long shareGroupId,Long faceTag, Pageable pageable) {
         SearchResponse<PhotoEs> response = null;
         try{
             response = elasticsearchClient.search(s->s
