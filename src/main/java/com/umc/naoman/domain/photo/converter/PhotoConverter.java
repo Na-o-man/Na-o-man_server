@@ -54,13 +54,6 @@ public class PhotoConverter {
                 .build();
     }
 
-    public SamplePhotoUploadInfo toSamplePhotoUploadInfo(Long memberId, int uploadCount) {
-        return SamplePhotoUploadInfo.builder()
-                .memberId(memberId)
-                .uploadCount(uploadCount)
-                .build();
-    }
-
     public PhotoUploadInfo toPhotoUploadInfo(Long shareGroupId, int uploadCount) {
         return PhotoUploadInfo.builder()
                 .shareGroupId(shareGroupId)

@@ -130,7 +130,7 @@ public class PhotoServiceImpl implements PhotoService {
         // =================경호님이 작업하실 라인================
         // dummyFunction(samplePhotoNameList, member.getId());
 
-        return photoConverter.toSamplePhotoUploadInfo(member.getId(), samplePhotoList.size());
+        return samplePhotoConverter.toSamplePhotoUploadInfo(member.getId(), samplePhotoList.size());
     }
 
     private SamplePhoto checkAndSaveSamplePhotoInDB(String photoUrl, String photoName, Member member) {
