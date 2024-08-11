@@ -27,9 +27,16 @@ public class PhotoEsServiceImpl implements PhotoEsService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PhotoEs> getPhotoEsListByShareGroupId(Long shareGroupId, Member member, Pageable pageable) {
+    public Page<PhotoEs> getAllPhotoEsListByShareGroupId(Long shareGroupId, Member member, Pageable pageable) {
         validateShareGroupAndProfile(shareGroupId, member);
         return photoEsClientRepository.findPhotoEsByShareGroupId(shareGroupId, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PhotoEs> getEtcPhotoEsListByShareGroupId(Long shareGroupId, Member member, Pageable pageable) {
+        validateShareGroupAndProfile(shareGroupId, member);
+        return photoEsClientRepository.findPhotoEsByShareGroupIdAndNotFaceTag(shareGroupId, pageable);
     }
 
     private void validateShareGroupAndProfile(Long shareGroupId, Member member) {
