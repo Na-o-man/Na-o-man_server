@@ -127,8 +127,7 @@ public class PhotoServiceImpl implements PhotoService {
                 .toList();
 
         // Elasticsearch에 sample_face_vector를 저장하기 위한 트리거 실행
-        // =================경호님이 작업하실 라인================
-        // dummyFunction(samplePhotoNameList, member.getId());
+        faceDetectionService.detectFaceSamplePhoto(member.getId(), samplePhotoNameList);
 
         return samplePhotoConverter.toSamplePhotoUploadInfo(member.getId(), samplePhotoList.size());
     }
