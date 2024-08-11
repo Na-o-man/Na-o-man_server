@@ -1,10 +1,10 @@
 package com.umc.naoman.domain.photo.converter;
 
 import com.umc.naoman.domain.member.entity.Member;
-import com.umc.naoman.domain.photo.dto.PhotoResponse.PagedPhotoEsInfo;
+import com.umc.naoman.domain.photo.dto.PhotoResponse.PagedPhotoInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDeleteInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDownloadUrlListInfo;
-import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoEsInfo;
+import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoUploadInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlListInfo;
@@ -68,27 +68,27 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PagedPhotoEsInfo toPagedPhotoEsInfo(Page<PhotoEs> photoEsList, Member member) {
-        List<PhotoEsInfo> photoEsInfoList = photoEsList.stream()
-                .map(photoEs -> toPhotoEsInfo(photoEs, member))
+    public PagedPhotoInfo toPagedPhotoInfo(Page<PhotoEs> photoEsList, Member member) {
+        List<PhotoInfo> photoInfoList = photoEsList.stream()
+                .map(photoEs -> toPhotoInfo(photoEs, member))
                 .collect(Collectors.toList());
 
-        return PagedPhotoEsInfo.builder()
+        return PagedPhotoInfo.builder()
                 .isLast(photoEsList.isLast())
                 .isFirst(photoEsList.isFirst())
                 .totalPages(photoEsList.getTotalPages())
                 .totalElements(photoEsList.getTotalElements())
-                .photoEsInfoList(photoEsInfoList)
+                .photoInfoList(photoInfoList)
                 .build();
     }
 
-    public PhotoEsInfo toPhotoEsInfo(PhotoEs photoEs, Member member) {
+    public PhotoInfo toPhotoInfo(PhotoEs photoEs, Member member) {
         String rawUrl = photoEs.getUrl();
         Boolean isDownload = !photoEs.getDownloadTag().isEmpty() && photoEs.getDownloadTag().contains(member.getId());
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime createdAt = LocalDateTime.parse(photoEs.getCreatedAt(), dateTimeFormatter);
 
-        return PhotoEsInfo.builder()
+        return PhotoInfo.builder()
                 .photoId(photoEs.getRdsId())
                 .rawPhotoUrl(rawUrl)
                 .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))

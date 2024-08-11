@@ -51,8 +51,8 @@ public abstract class PhotoResponse {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PagedPhotoEsInfo {
-        private List<PhotoEsInfo> photoEsInfoList;
+    public static class PagedPhotoInfo {
+        private List<PhotoInfo> photoInfoList;
         private Integer totalPages;
         private Long totalElements;
         private Boolean isFirst;
@@ -63,7 +63,7 @@ public abstract class PhotoResponse {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PhotoEsInfo {
+    public static class PhotoInfo {
         private Long photoId;
         private String rawPhotoUrl;
         private String w200PhotoUrl;
