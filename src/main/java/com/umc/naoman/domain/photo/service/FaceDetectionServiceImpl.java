@@ -22,6 +22,8 @@ public class FaceDetectionServiceImpl implements FaceDetectionService {
     private String detectFaceUploadPhotoLambda;
     @Value("${spring.lambda.function.detect_face_join_share_group}")
     private String detectFaceJoinShareGroupLambda;
+    @Value("${spring.lambda.function.detect_face_sample_photo}")
+    private String detectFaceSamplePhotoLambda;
     private final AWSLambda awsLambda;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -38,6 +40,13 @@ public class FaceDetectionServiceImpl implements FaceDetectionService {
     private class DetectFaceShareGroupPayload {
         private Long memberId;
         private Long shareGroupId;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private class DetectFaceSamplePhotoPayload {
+        private long memberId;
+        private List<String> photoNameList;
     }
 
     @Override
@@ -71,6 +80,23 @@ public class FaceDetectionServiceImpl implements FaceDetectionService {
         InvokeRequest invokeRequest = new InvokeRequest()
                 .withInvocationType(InvocationType.Event) //비동기 호출
                 .withFunctionName(detectFaceJoinShareGroupLambda)
+                .withPayload(lambdaPayload);
+
+        awsLambda.invoke(invokeRequest);
+    }
+
+    @Override
+    public void detectFaceSamplePhoto(Long memberId, List<String> photoNameList) {
+        DetectFaceSamplePhotoPayload photoPayload = new DetectFaceSamplePhotoPayload(memberId,photoNameList);
+        String lambdaPayload = null;
+        try{
+            lambdaPayload = objectMapper.writeValueAsString(photoPayload);
+        } catch (JsonProcessingException e) {
+            throw new BusinessException(AwsLambdaErrorCode.AWS_JsonProcessing_Exception, e);
+        }
+        InvokeRequest invokeRequest = new InvokeRequest()
+                .withInvocationType(InvocationType.Event) //비동기 호출
+                .withFunctionName(detectFaceSamplePhotoLambda)
                 .withPayload(lambdaPayload);
 
         awsLambda.invoke(invokeRequest);
