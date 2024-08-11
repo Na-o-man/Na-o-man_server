@@ -67,10 +67,10 @@ public class PhotoController {
             @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
     })
     public ResultResponse<PhotoResponse.PagedPhotoEsInfo> getPhotoListByShareGroupAndProfile(@RequestParam Long shareGroupId,
-                                                                                      @RequestParam Long profileId,
-                                                                                      @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
-                                                                                      @Parameter(hidden = true) Pageable pageable,
-                                                                                      @LoginMember Member member) {
+                                                                                             @RequestParam Long profileId,
+                                                                                             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+                                                                                             @Parameter(hidden = true) Pageable pageable,
+                                                                                             @LoginMember Member member) {
         Page<PhotoEs> photoEsList = photoEsService.getPhotoEsListByShareGroupIdAndFaceTag(shareGroupId, profileId, member, pageable);
         return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsList, member));
     }
@@ -98,9 +98,9 @@ public class PhotoController {
             @Parameter(name = "size", description = "한 페이지에 나타낼 사진 개수를 입력해주세요.")
     })
     public ResultResponse<PhotoResponse.PagedPhotoEsInfo> getEtcPhotoListByShareGroup(@RequestParam Long shareGroupId,
-                                                                            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
-                                                                            @Parameter(hidden = true) Pageable pageable,
-                                                                            @LoginMember Member member) {
+                                                                                      @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+                                                                                      @Parameter(hidden = true) Pageable pageable,
+                                                                                      @LoginMember Member member) {
         Page<PhotoEs> photoEsList = photoEsService.getEtcPhotoEsListByShareGroupId(shareGroupId, member, pageable);
         return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoEsInfo(photoEsList, member));
     }
@@ -114,10 +114,20 @@ public class PhotoController {
     }
 
     @GetMapping("/download")
-    @Operation(summary = "사진 다운로드 API", description = "여러장의 사진을 다운로드할 주소를 받는  API입니다. 해당 공유그룹에 속해있는 회원만 다운로드 요청할 수 있습니다.")
-    public ResultResponse<PhotoResponse.PhotoDownloadUrlListInfo> getPhotoDownloadUrlList(@RequestParam List<Long> photoIdList, @RequestParam Long shareGroupId,
+    @Operation(summary = "사진 다운로드 API", description = "선택한 여러장의 사진을 다운로드할 주소를 받는 API입니다. 해당 공유그룹에 속해있는 회원만 다운로드 요청할 수 있습니다.")
+    public ResultResponse<PhotoResponse.PhotoDownloadUrlListInfo> getPhotoDownloadUrlList(@RequestParam List<Long> photoIdList,
+                                                                                          @RequestParam Long shareGroupId,
                                                                                           @LoginMember Member member) {
         PhotoResponse.PhotoDownloadUrlListInfo photoDownloadUrlList = photoService.getPhotoDownloadUrlList(photoIdList, shareGroupId, member);
         return ResultResponse.of(DOWNLOAD_PHOTO, photoDownloadUrlList);
+    }
+
+    @GetMapping("/downloadAll")
+    @Operation(summary = "특정 앨범 사진 전체 다운로드 API", description = "선택한 앨범에 속한 사진을 다운로드할 주소를 받는 API입니다. 해당 공유그룹에 속해있는 회원만 다운로드 요청할 수 있습니다.")
+    public ResultResponse<PhotoResponse.PhotoEsDownloadUrlListInfo> getPhotoDownloadUrlListByProfile(@RequestParam Long shareGroupId,
+                                                                                                     @RequestParam Long profileId,
+                                                                                                     @LoginMember Member member) {
+        PhotoResponse.PhotoEsDownloadUrlListInfo photoEsDownloadUrlList = photoService.getPhotoEsDownloadUrlList(shareGroupId, profileId, member);
+        return ResultResponse.of(DOWNLOAD_PHOTO, photoEsDownloadUrlList);
     }
 }

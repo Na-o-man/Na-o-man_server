@@ -79,4 +79,12 @@ public abstract class PhotoResponse {
     public static class PhotoDownloadUrlListInfo {
         private List<String> photoDownloadUrlList;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PhotoEsDownloadUrlListInfo {
+        private List<String> photoEsDownloadUrlList;
+    }
 }

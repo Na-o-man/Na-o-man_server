@@ -112,4 +112,14 @@ public class PhotoConverter {
                 .photoDownloadUrlList(photoDownloadUrlList)
                 .build();
     }
+
+    public PhotoResponse.PhotoEsDownloadUrlListInfo toPhotoEsDownloadUrlListInfo(List<PhotoEs> photoEsList) {
+        List<String> photoEsDownloadUrlList = photoEsList.stream()
+                .map(PhotoEs::getUrl)
+                .collect(Collectors.toList());
+
+        return PhotoResponse.PhotoEsDownloadUrlListInfo.builder()
+                .photoEsDownloadUrlList(photoEsDownloadUrlList)
+                .build();
+    }
 }

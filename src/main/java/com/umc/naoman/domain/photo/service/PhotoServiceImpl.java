@@ -9,6 +9,7 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.elasticsearch.repository.PhotoEsClientRepository;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
@@ -18,10 +19,13 @@ import com.umc.naoman.global.error.BusinessException;
 import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -130,6 +134,27 @@ public class PhotoServiceImpl implements PhotoService {
         }
 
         return photoConverter.toPhotoDownloadUrlListInfo(photoList);
+    }
+
+    @Override
+    public PhotoResponse.PhotoEsDownloadUrlListInfo getPhotoEsDownloadUrlList(Long shareGroupId, Long profileId, Member member) {
+        validateShareGroupAndProfile(shareGroupId, member);
+        Long memberId = shareGroupService.findProfile(profileId).getMember().getId();
+
+        List<PhotoEs> photoEsList = new ArrayList<>();
+        Pageable pageable = Pageable.ofSize(50000);
+        boolean isLastPage = false;
+
+        while (!isLastPage) {
+            Page<PhotoEs> photoEsPage = photoEsClientRepository.findPhotoEsByShareGroupIdAndFaceTag(shareGroupId, memberId, pageable);
+            photoEsList.addAll(photoEsPage.getContent());
+            isLastPage = photoEsPage.isLast();
+
+            // 다음 페이지로 이동
+            pageable = pageable.next();
+        }
+
+        return photoConverter.toPhotoEsDownloadUrlListInfo(photoEsList);
     }
 
     // 해당 공유 그룹이 존재하는지 확인 & 멤버가 해당 공유 그룹에 속해있는지 확인
