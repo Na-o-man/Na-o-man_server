@@ -114,7 +114,7 @@ public class PhotoServiceImpl implements PhotoService {
                 .map(Photo::getId)
                 .toList();
 
-        photoRepository.deleteAllByIdList(photoIdList);
+        photoRepository.deleteAllByPhotoIdList(photoIdList);
 
         return photoList; // 삭제된 사진 목록 반환
     }

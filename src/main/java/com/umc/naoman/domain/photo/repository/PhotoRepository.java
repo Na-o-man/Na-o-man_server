@@ -14,6 +14,6 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
     List<Photo> findByIdInAndShareGroupId(List<Long> photoIdList, Long shareGroupId);
     List<Photo> findByIdIn(List<Long> photoIdList);
     @Modifying
-    @Query("DELETE FROM Photo p WHERE p.id IN :idList")
-    void deleteAllByIdList(@Param("idList") List<Long> idList);
+    @Query("DELETE FROM Photo p WHERE p.id IN :photoIdList")
+    void deleteAllByPhotoIdList(@Param("photoIdList") List<Long> photoIdList);
 }
