@@ -14,6 +14,7 @@ public interface ShareGroupService {
     ShareGroup joinShareGroup(Long shareGroupId, Long profileId, Member member);
     ShareGroup getInviteInfo(Long shareGroupId, Member member);
     ShareGroup deleteShareGroup(Long shareGroupId, Member member);
+    ShareGroup deleteShareGroup(Profile profile);
     Page<ShareGroup> getMyShareGroupList(Member member, Pageable pageable);
     ShareGroup findShareGroup(Long shareGroupId);
     ShareGroup findShareGroup(String inviteCode);

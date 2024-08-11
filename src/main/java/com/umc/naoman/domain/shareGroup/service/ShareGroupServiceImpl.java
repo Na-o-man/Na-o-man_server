@@ -135,6 +135,16 @@ public class ShareGroupServiceImpl implements ShareGroupService {
     }
 
     @Override
+    public ShareGroup deleteShareGroup(Profile profile) {
+        if (!profile.getRole().equals(Role.CREATOR)) {
+            throw new BusinessException(ShareGroupErrorCode.UNAUTHORIZED_DELETE);
+        }
+        ShareGroup shareGroup = profile.getShareGroup();
+        shareGroup.delete();
+        return shareGroup;
+    }
+
+    @Override
     public ShareGroup findShareGroup(Long shareGroupId) {
         return shareGroupRepository.findById(shareGroupId)
                 .orElseThrow(() -> new BusinessException(ShareGroupErrorCode.SHARE_GROUP_NOT_FOUND));
