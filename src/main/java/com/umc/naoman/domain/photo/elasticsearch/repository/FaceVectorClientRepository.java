@@ -20,7 +20,7 @@ public class FaceVectorClientRepository {
         List<FieldValue> fieldValuePhotoNameList = photoNameList.stream()
                 .map(FieldValue::of)
                 .toList();
-        try{
+        try {
             elasticsearchClient.deleteByQuery(delete -> delete
                     .index("face_vectors")
                     .query(q -> q

@@ -15,7 +15,7 @@ public class SampleFaceVectorClientRepository {
     private final ElasticsearchClient elasticsearchClient;
 
     public void deleteSampleFaceVectorByMemberId(Long memberId) {
-        try{
+        try {
             elasticsearchClient.deleteByQuery(d -> d
                     .index("sample_face_vectors")
                     .query(q -> q
