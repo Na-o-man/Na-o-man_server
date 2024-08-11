@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,8 @@ public class PhotoConverter {
     public PhotoResponse.PhotoEsInfo toPhotoEsInfo(PhotoEs photoEs, Member member) {
         String rawUrl = photoEs.getUrl();
         Boolean isDownload = !photoEs.getDownloadTag().isEmpty() && photoEs.getDownloadTag().contains(member.getId());
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime createdAt = LocalDateTime.parse(photoEs.getCreatedAt(), dateTimeFormatter);
 
         return PhotoResponse.PhotoEsInfo.builder()
                 .photoId(photoEs.getRdsId())
@@ -71,10 +74,9 @@ public class PhotoConverter {
                 .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
                 .w400PhotoUrl(createResizedPhotoUrl(rawUrl, W400_PATH_PREFIX))
                 .isDownload(isDownload)
-                .createdAt(LocalDateTime.parse(photoEs.getCreatedAt()))
+                .createdAt(createdAt)
                 .build();
     }
-
 
     private String createResizedPhotoUrl(String photoUrl, String size) {
         String resizedUrl = getResizedUrl(photoUrl, size);

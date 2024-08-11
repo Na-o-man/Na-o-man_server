@@ -185,7 +185,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     // S3에 객체의 존재 여부 확인 및 DB에 사진을 저장하고 객체를 반환하는 메서드
     private Photo checkAndSavePhotoInDB(String photoUrl, String photoName, ShareGroup shareGroup) {
-        if (amazonS3.doesObjectExist(bucketName, RAW_PATH_PREFIX + "/" + photoName)) {
+        if (!amazonS3.doesObjectExist(bucketName, RAW_PATH_PREFIX + "/" + photoName)) {
             throw new BusinessException(PHOTO_NOT_FOUND_S3);
         }
 
