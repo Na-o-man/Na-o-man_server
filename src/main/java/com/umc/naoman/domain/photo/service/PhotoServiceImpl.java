@@ -106,8 +106,15 @@ public class PhotoServiceImpl implements PhotoService {
 
         // 각 사진에 대해 S3에서 객체 삭제 및 데이터베이스에서 삭제
         for (Photo photo : photoList) {
-            deletePhoto(photo);
+            deletePhoto(photo.getName());
         }
+
+        // ID 목록을 추출하여 삭제 쿼리 실행
+        List<Long> photoIdList = photoList.stream()
+                .map(Photo::getId)
+                .toList();
+
+        photoRepository.deleteAllByPhotoIdList(photoIdList);
 
         return photoList; // 삭제된 사진 목록 반환
     }
@@ -151,7 +158,6 @@ public class PhotoServiceImpl implements PhotoService {
         return generatePresignedUrlRequest;
     }
 
-
     // 원본 사진 전체 경로 생성
     private String createPath(String fileName) {
         String fileId = createFileId();
@@ -193,13 +199,10 @@ public class PhotoServiceImpl implements PhotoService {
         return photoRepository.save(photo); // 저장된 Photo 객체 반환
     }
 
-    private void deletePhoto(Photo photo) {
+    private void deletePhoto(String photoName) {
         // S3에서 원본 및 변환된 이미지 삭제
-        s3Template.deleteObject(bucketName, RAW_PATH_PREFIX + "/" + photo.getName());
-        s3Template.deleteObject(bucketName, W200_PATH_PREFIX + "/" + photoConverter.convertExtension(photo.getName()));
-        s3Template.deleteObject(bucketName, W400_PATH_PREFIX + "/" + photoConverter.convertExtension(photo.getName()));
-
-        // 데이터베이스에서 사진 삭제
-        photoRepository.delete(photo);
+        s3Template.deleteObject(bucketName, RAW_PATH_PREFIX + "/" + photoName);
+        s3Template.deleteObject(bucketName, W200_PATH_PREFIX + "/" + photoConverter.convertExtension(photoName));
+        s3Template.deleteObject(bucketName, W400_PATH_PREFIX + "/" + photoConverter.convertExtension(photoName));
     }
 }
