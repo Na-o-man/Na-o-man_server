@@ -27,7 +27,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.umc.naoman.global.error.code.S3ErrorCode.*;
+import static com.umc.naoman.global.error.code.S3ErrorCode.PHOTO_NOT_FOUND;
+import static com.umc.naoman.global.error.code.S3ErrorCode.PHOTO_NOT_FOUND_S3;
 
 @Service
 @Transactional(readOnly = true)

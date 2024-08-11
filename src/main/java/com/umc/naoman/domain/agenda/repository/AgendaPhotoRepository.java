@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface AgendaPhotoRepository extends JpaRepository<AgendaPhoto, Long> {
     List<AgendaPhoto> findByAgendaId(Long agendaId);
+    List<AgendaPhoto> findByPhotoId(Long photoId);
 }
