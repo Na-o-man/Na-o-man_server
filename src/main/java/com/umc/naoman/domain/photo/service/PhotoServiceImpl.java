@@ -5,8 +5,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
@@ -24,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +38,7 @@ public class PhotoServiceImpl implements PhotoService {
     private final ShareGroupService shareGroupService;
     private final PhotoEsClientRepository photoEsClientRepository;
     private final PhotoConverter photoConverter;
+    private final FaceDetectionService faceDetectionService;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
@@ -70,31 +68,35 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
+
         validateShareGroupAndProfile(request.getShareGroupId(), member);
-        int uploadCount = 0;
-        List<Photo> photoList = new ArrayList<>();
 
-        for (String photoUrl : request.getPhotoUrlList()) {
-            String photoName = extractPhotoNameFromUrl(photoUrl);
-            // DB에 사진 저장 및 객체 반환
-            Photo photo = checkAndSavePhotoInRDB(photoUrl, photoName, request.getShareGroupId());
-            if (photo != null) {
-                uploadCount++;
-                photoList.add(photo);
-            }
-        }
+        // 사진 URL 리스트를 기반으로 사진 엔티티를 생성하고 DB에 저장
+        List<Photo> photoList = request.getPhotoUrlList().stream()
+                .map(photoUrl -> {
+                    String photoName = extractPhotoNameFromUrl(photoUrl);
+                    return checkAndSavePhotoInDB(photoUrl, photoName, request.getShareGroupId());
+                })
+                .toList();
 
-        // Elasticsearch에 벌크 저장
+        // 사진 이름 리스트 생성
+        List<String> photoNameList = photoList.stream()
+                .map(Photo::getName)
+                .toList();
+
+        // Elasticsearch 벌크 저장
         photoEsClientRepository.savePhotoBulk(photoList);
 
-        return new PhotoResponse.PhotoUploadInfo(request.getShareGroupId(), uploadCount);
+        // 얼굴 인식 서비스 호출
+        faceDetectionService.detectFaceUploadPhoto(photoNameList, request.getShareGroupId());
+
+        return new PhotoResponse.PhotoUploadInfo(request.getShareGroupId(), photoList.size());
     }
 
     @Override
     @Transactional
     public List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member) {
         validateShareGroupAndProfile(request.getShareGroupId(), member);
-
         // 요청된 사진 ID 목록과 공유 그룹 ID를 기반으로 사진 목록 조회
         List<Photo> photoList = photoRepository.findByIdInAndShareGroupId(request.getPhotoIdList(), request.getShareGroupId());
 
@@ -112,6 +114,8 @@ public class PhotoServiceImpl implements PhotoService {
         return photoList; // 삭제된 사진 목록 반환
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member) {
         validateShareGroupAndProfile(shareGroupId, member);
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
@@ -122,6 +126,12 @@ public class PhotoServiceImpl implements PhotoService {
         }
 
         return photoConverter.toPhotoDownloadUrlListInfo(photoList);
+    }
+
+    // 해당 공유 그룹이 존재하는지 확인 & 멤버가 해당 공유 그룹에 속해있는지 확인
+    private void validateShareGroupAndProfile(Long shareGroupId, Member member) {
+        shareGroupService.findShareGroup(shareGroupId);
+        shareGroupService.findProfile(shareGroupId, member.getId());
     }
 
     private PhotoResponse.PreSignedUrlInfo getPreSignedUrl(String originalFilename) {
@@ -177,25 +187,14 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     // S3에 객체의 존재 여부 확인 및 DB에 사진을 저장하고 객체를 반환하는 메서드
-    private Photo checkAndSavePhotoInRDB(String photoUrl, String photoName, Long shareGroupId) {
-        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
-        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName + "/" + RAW_PATH_PREFIX, photoName));
-
-        if (s3Object != null) {
-            // Photo 객체 생성 및 저장
-            Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
-            photoRepository.save(photo);
-            return photo;
-        } else {
+    private Photo checkAndSavePhotoInDB(String photoUrl, String photoName, Long shareGroupId) {
+        if (amazonS3.doesObjectExist(bucketName, RAW_PATH_PREFIX + "/" + photoName)) {
             throw new BusinessException(PHOTO_NOT_FOUND_S3);
         }
-    }
 
-    private void validateShareGroupAndProfile(Long shareGroupId, Member member) {
-        // 해당 공유 그룹이 존재하는지 확인
-        shareGroupService.findShareGroup(shareGroupId);
-        // 멤버가 해당 공유 그룹에 속해있는지 확인
-        shareGroupService.findProfile(shareGroupId, member.getId());
+        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
+        Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
+        return photoRepository.save(photo); // 저장된 Photo 객체 반환
     }
 
     private void deletePhoto(Photo photo) {
