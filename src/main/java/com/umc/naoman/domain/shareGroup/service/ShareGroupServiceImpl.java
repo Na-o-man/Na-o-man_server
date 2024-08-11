@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ShareGroupServiceImpl implements ShareGroupService {
-
     private final ShareGroupRepository shareGroupRepository;
     private final ProfileRepository profileRepository;
     private final ShareGroupConverter shareGroupConverter;
