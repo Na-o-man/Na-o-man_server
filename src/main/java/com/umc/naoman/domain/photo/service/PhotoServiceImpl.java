@@ -5,12 +5,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import com.umc.naoman.domain.photo.elasticsearch.repository.PhotoEsClientRepository;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
@@ -31,13 +30,16 @@ import java.util.stream.Collectors;
 import static com.umc.naoman.global.error.code.S3ErrorCode.*;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
     private final AmazonS3 amazonS3;
     private final S3Template s3Template;
     private final PhotoRepository photoRepository;
     private final ShareGroupService shareGroupService;
+    private final PhotoEsClientRepository photoEsClientRepository;
     private final PhotoConverter photoConverter;
+    private final FaceDetectionService faceDetectionService;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
@@ -49,7 +51,6 @@ public class PhotoServiceImpl implements PhotoService {
     public static final String W400_PATH_PREFIX = "w400";
 
     @Override
-    @Transactional(readOnly = true)
     public Photo findPhoto(Long photoId) {
         return photoRepository.findById(photoId).orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND));
     }
@@ -67,24 +68,33 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     @Transactional
     public PhotoResponse.PhotoUploadInfo uploadPhotoList(PhotoRequest.PhotoUploadRequest request, Member member) {
+
         validateShareGroupAndProfile(request.getShareGroupId(), member);
-        int uploadCount = 0;
+        ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
 
-        for (String photoUrl : request.getPhotoUrlList()) {
-            String photoName = extractPhotoNameFromUrl(photoUrl);
-            if (checkAndSavePhoto(photoUrl, photoName, request.getShareGroupId())) {
-                uploadCount++;
-            }
-        }
+        // 사진 URL 리스트를 기반으로 사진 엔티티를 생성하고 DB에 저장
+        List<Photo> photoList = request.getPhotoUrlList().stream()
+                .map(photoUrl -> checkAndSavePhotoInDB(photoUrl, extractPhotoNameFromUrl(photoUrl), shareGroup))
+                .toList();
 
-        return new PhotoResponse.PhotoUploadInfo(request.getShareGroupId(), uploadCount);
+        // Elasticsearch 벌크 저장
+        photoEsClientRepository.savePhotoBulk(photoList);
+
+        // 사진 이름 리스트 생성
+        List<String> photoNameList = photoList.stream()
+                .map(Photo::getName)
+                .toList();
+
+        // 얼굴 인식 서비스 호출
+        faceDetectionService.detectFaceUploadPhoto(photoNameList, request.getShareGroupId());
+
+        return new PhotoResponse.PhotoUploadInfo(request.getShareGroupId(), photoList.size());
     }
 
     @Override
     @Transactional
     public List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member) {
         validateShareGroupAndProfile(request.getShareGroupId(), member);
-
         // 요청된 사진 ID 목록과 공유 그룹 ID를 기반으로 사진 목록 조회
         List<Photo> photoList = photoRepository.findByIdInAndShareGroupId(request.getPhotoIdList(), request.getShareGroupId());
 
@@ -102,6 +112,7 @@ public class PhotoServiceImpl implements PhotoService {
         return photoList; // 삭제된 사진 목록 반환
     }
 
+    @Override
     public PhotoResponse.PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member) {
         validateShareGroupAndProfile(shareGroupId, member);
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
@@ -112,6 +123,12 @@ public class PhotoServiceImpl implements PhotoService {
         }
 
         return photoConverter.toPhotoDownloadUrlListInfo(photoList);
+    }
+
+    // 해당 공유 그룹이 존재하는지 확인 & 멤버가 해당 공유 그룹에 속해있는지 확인
+    private void validateShareGroupAndProfile(Long shareGroupId, Member member) {
+        shareGroupService.findShareGroup(shareGroupId);
+        shareGroupService.findProfile(shareGroupId, member.getId());
     }
 
     private PhotoResponse.PreSignedUrlInfo getPreSignedUrl(String originalFilename) {
@@ -166,24 +183,14 @@ public class PhotoServiceImpl implements PhotoService {
         return photoUrl.substring(lastSlashIndex + 1);
     }
 
-    // S3에 객체의 존재 여부 확인 및 저장하는 메서드
-    private boolean checkAndSavePhoto(String photoUrl, String photoName, Long shareGroupId) {
-        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName + "/" + RAW_PATH_PREFIX, photoName));
-        ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
-        if (s3Object != null) {
-            Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
-            photoRepository.save(photo);
-            return true;
-        } else {
+    // S3에 객체의 존재 여부 확인 및 DB에 사진을 저장하고 객체를 반환하는 메서드
+    private Photo checkAndSavePhotoInDB(String photoUrl, String photoName, ShareGroup shareGroup) {
+        if (amazonS3.doesObjectExist(bucketName, RAW_PATH_PREFIX + "/" + photoName)) {
             throw new BusinessException(PHOTO_NOT_FOUND_S3);
         }
-    }
 
-    private void validateShareGroupAndProfile(Long shareGroupId, Member member) {
-        // 해당 공유 그룹이 존재하는지 확인
-        shareGroupService.findShareGroup(shareGroupId);
-        // 멤버가 해당 공유 그룹에 속해있는지 확인
-        shareGroupService.findProfile(shareGroupId, member.getId());
+        Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
+        return photoRepository.save(photo); // 저장된 Photo 객체 반환
     }
 
     private void deletePhoto(Photo photo) {
