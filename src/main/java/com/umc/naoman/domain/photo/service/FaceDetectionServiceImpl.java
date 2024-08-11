@@ -1,18 +1,19 @@
 package com.umc.naoman.domain.photo.service;
+
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.model.InvocationType;
 import com.amazonaws.services.lambda.model.InvokeRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.error.code.AwsLambdaErrorCode;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,6 @@ public class FaceDetectionServiceImpl implements FaceDetectionService {
     private String detectFaceJoinShareGroupLambda;
     private final AWSLambda awsLambda;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final ShareGroupService shareGroupService;
 
     @Getter
     @AllArgsConstructor
@@ -41,10 +41,7 @@ public class FaceDetectionServiceImpl implements FaceDetectionService {
     }
 
     @Override
-    public void detectFaceUploadPhoto(List<String> photoNameList, Long shareGroupId) {
-        List<Long> memberIdList = shareGroupService.findProfileListByShareGroupId(shareGroupId).stream()
-                .map(profile -> profile.getMember().getId())
-                .collect(Collectors.toList());
+    public void detectFaceUploadPhoto(List<String> photoNameList, Long shareGroupId, List<Long> memberIdList) {
         DetectFacePhotoPayload payLoad = new DetectFacePhotoPayload(photoNameList, memberIdList, shareGroupId);
         String lambdaPayload = null;
 

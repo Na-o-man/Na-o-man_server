@@ -42,6 +42,15 @@ public abstract class PhotoResponse {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class SamplePhotoUploadInfo {
+        private Long memberId;
+        private int uploadCount;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class PagedPhotoEsInfo {
         private List<PhotoEsInfo> photoEsInfoList;
         private Integer totalPages;

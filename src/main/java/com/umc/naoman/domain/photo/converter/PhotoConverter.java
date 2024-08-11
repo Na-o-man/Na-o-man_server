@@ -1,7 +1,14 @@
 package com.umc.naoman.domain.photo.converter;
 
 import com.umc.naoman.domain.member.entity.Member;
-import com.umc.naoman.domain.photo.dto.PhotoResponse;
+import com.umc.naoman.domain.photo.dto.PhotoResponse.PagedPhotoEsInfo;
+import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDeleteInfo;
+import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDownloadUrlListInfo;
+import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoEsInfo;
+import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoUploadInfo;
+import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlInfo;
+import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlListInfo;
+import com.umc.naoman.domain.photo.dto.PhotoResponse.SamplePhotoUploadInfo;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
@@ -17,29 +24,6 @@ import static com.umc.naoman.domain.photo.service.PhotoServiceImpl.*;
 
 @Component
 public class PhotoConverter {
-
-    public PhotoResponse.PreSignedUrlListInfo toPreSignedUrlListInfo(List<PhotoResponse.PreSignedUrlInfo> preSignedUrlList) {
-        List<PhotoResponse.PreSignedUrlInfo> preSignedUrlInfoList = preSignedUrlList.stream()
-                .map(preSignedUrlInfo -> toPreSignedUrlInfo(
-                        preSignedUrlInfo.getPreSignedUrl(),
-                        preSignedUrlInfo.getPhotoUrl(),
-                        preSignedUrlInfo.getPhotoName()
-                ))
-                .collect(Collectors.toList());
-
-        return PhotoResponse.PreSignedUrlListInfo.builder()
-                .preSignedUrlInfoList(preSignedUrlInfoList)
-                .build();
-    }
-
-    public PhotoResponse.PreSignedUrlInfo toPreSignedUrlInfo(String preSignedUrl, String photoUrl, String photoName) {
-        return PhotoResponse.PreSignedUrlInfo.builder()
-                .preSignedUrl(preSignedUrl)
-                .photoUrl(photoUrl)
-                .photoName(photoName)
-                .build();
-    }
-
     public Photo toEntity(String photoUrl, String photoName, ShareGroup shareGroup) {
         return Photo.builder()
                 .url(photoUrl)
@@ -48,12 +32,48 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PhotoResponse.PagedPhotoEsInfo toPagedPhotoEsInfo(Page<PhotoEs> photoEsList, Member member) {
-        List<PhotoResponse.PhotoEsInfo> photoEsInfoList = photoEsList.stream()
+    public PreSignedUrlListInfo toPreSignedUrlListInfo(List<PreSignedUrlInfo> preSignedUrlList) {
+        List<PreSignedUrlInfo> preSignedUrlInfoList = preSignedUrlList.stream()
+                .map(preSignedUrlInfo -> toPreSignedUrlInfo(
+                        preSignedUrlInfo.getPreSignedUrl(),
+                        preSignedUrlInfo.getPhotoUrl(),
+                        preSignedUrlInfo.getPhotoName()
+                ))
+                .collect(Collectors.toList());
+
+        return PreSignedUrlListInfo.builder()
+                .preSignedUrlInfoList(preSignedUrlInfoList)
+                .build();
+    }
+
+    public PreSignedUrlInfo toPreSignedUrlInfo(String preSignedUrl, String photoUrl, String photoName) {
+        return PreSignedUrlInfo.builder()
+                .preSignedUrl(preSignedUrl)
+                .photoUrl(photoUrl)
+                .photoName(photoName)
+                .build();
+    }
+
+    public SamplePhotoUploadInfo toSamplePhotoUploadInfo(Long memberId, int uploadCount) {
+        return SamplePhotoUploadInfo.builder()
+                .memberId(memberId)
+                .uploadCount(uploadCount)
+                .build();
+    }
+
+    public PhotoUploadInfo toPhotoUploadInfo(Long shareGroupId, int uploadCount) {
+        return PhotoUploadInfo.builder()
+                .shareGroupId(shareGroupId)
+                .uploadCount(uploadCount)
+                .build();
+    }
+
+    public PagedPhotoEsInfo toPagedPhotoEsInfo(Page<PhotoEs> photoEsList, Member member) {
+        List<PhotoEsInfo> photoEsInfoList = photoEsList.stream()
                 .map(photoEs -> toPhotoEsInfo(photoEs, member))
                 .collect(Collectors.toList());
 
-        return PhotoResponse.PagedPhotoEsInfo.builder()
+        return PagedPhotoEsInfo.builder()
                 .isLast(photoEsList.isLast())
                 .isFirst(photoEsList.isFirst())
                 .totalPages(photoEsList.getTotalPages())
@@ -62,13 +82,13 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PhotoResponse.PhotoEsInfo toPhotoEsInfo(PhotoEs photoEs, Member member) {
+    public PhotoEsInfo toPhotoEsInfo(PhotoEs photoEs, Member member) {
         String rawUrl = photoEs.getUrl();
         Boolean isDownload = !photoEs.getDownloadTag().isEmpty() && photoEs.getDownloadTag().contains(member.getId());
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime createdAt = LocalDateTime.parse(photoEs.getCreatedAt(), dateTimeFormatter);
 
-        return PhotoResponse.PhotoEsInfo.builder()
+        return PhotoEsInfo.builder()
                 .photoId(photoEs.getRdsId())
                 .rawPhotoUrl(rawUrl)
                 .w200PhotoUrl(createResizedPhotoUrl(rawUrl, W200_PATH_PREFIX))
@@ -93,22 +113,22 @@ public class PhotoConverter {
         return photoUrl.replace(".HEIC", ".jpg");
     }
 
-    public PhotoResponse.PhotoDeleteInfo toPhotoDeleteInfo(List<Photo> photoList) {
+    public PhotoDeleteInfo toPhotoDeleteInfo(List<Photo> photoList) {
         List<Long> photoIdList = photoList.stream()
                 .map(Photo::getId)
                 .collect(Collectors.toList());
 
-        return PhotoResponse.PhotoDeleteInfo.builder()
+        return PhotoDeleteInfo.builder()
                 .photoIdList(photoIdList)
                 .build();
     }
 
-    public PhotoResponse.PhotoDownloadUrlListInfo toPhotoDownloadUrlListInfo(List<Photo> photoList) {
+    public PhotoDownloadUrlListInfo toPhotoDownloadUrlListInfo(List<Photo> photoList) {
         List<String> photoDownloadUrlList = photoList.stream()
                 .map(Photo::getUrl)
                 .collect(Collectors.toList());
 
-        return PhotoResponse.PhotoDownloadUrlListInfo.builder()
+        return PhotoDownloadUrlListInfo.builder()
                 .photoDownloadUrlList(photoDownloadUrlList)
                 .build();
     }
