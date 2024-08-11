@@ -16,9 +16,9 @@ public class CookieUtils {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
                 .maxAge(maxAge)
-                //.httpOnly(false)
-                //.secure(true)
-                //.sameSite("None")
+                .httpOnly(false)
+                .secure(true)
+                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
