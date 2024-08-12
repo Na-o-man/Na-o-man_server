@@ -14,8 +14,7 @@
       "faceVector" : {
         "type": "dense_vector",
         "dims": 512,
-        "index": false,
-        "similarity" : "dot_product"
+        "index": false
       }
     }
   }
