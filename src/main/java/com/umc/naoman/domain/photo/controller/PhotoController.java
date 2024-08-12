@@ -134,9 +134,17 @@ public class PhotoController {
     @GetMapping("/download/all")
     @Operation(summary = "특정 앨범 사진 전체 다운로드 API", description = "선택한 앨범에 속한 사진을 다운로드할 주소를 받는 API입니다. 해당 공유그룹에 속해있는 회원만 다운로드 요청할 수 있습니다.")
     public ResultResponse<PhotoDownloadUrlListInfo> getPhotoDownloadUrlListByProfile(@RequestParam Long shareGroupId,
-                                                                                                     @RequestParam Long profileId,
-                                                                                                     @LoginMember Member member) {
-        PhotoResponse.PhotoDownloadUrlListInfo photoEsDownloadUrlList = photoService.getPhotoEsDownloadUrlList(shareGroupId, profileId, member);
+                                                                                     @RequestParam Long profileId,
+                                                                                     @LoginMember Member member) {
+        PhotoResponse.PhotoDownloadUrlListInfo photoEsDownloadUrlList = photoService.getPhotoDownloadUrlListByProfile(shareGroupId, profileId, member);
+        return ResultResponse.of(DOWNLOAD_PHOTO, photoEsDownloadUrlList);
+    }
+
+    @GetMapping("/download/etc")
+    @Operation(summary = "아무도 인식되지 않은 사진 전체 다운로드 API", description = "아무도 인식되지 않은 사진 전체를 다운로드할 주소를 받는 API입니다. 해당 공유그룹에 속해있는 회원만 다운로드 요청할 수 있습니다.")
+    public ResultResponse<PhotoDownloadUrlListInfo> getEtcPhotoDownloadUrlList(@RequestParam Long shareGroupId,
+                                                                               @LoginMember Member member) {
+        PhotoResponse.PhotoDownloadUrlListInfo photoEsDownloadUrlList = photoService.getEtcPhotoDownloadUrlList(shareGroupId, member);
         return ResultResponse.of(DOWNLOAD_PHOTO, photoEsDownloadUrlList);
     }
 
