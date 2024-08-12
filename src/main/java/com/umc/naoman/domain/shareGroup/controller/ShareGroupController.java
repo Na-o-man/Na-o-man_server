@@ -68,6 +68,12 @@ public class ShareGroupController {
             @Parameter(name = "inviteCode", description = "참여하려는 공유그룹의 초대 코드")
     })
     public ResultResponse<ShareGroupResponse.ShareGroupDetailInfo> getShareGroupByInviteCode(@RequestParam String inviteCode) {
+
+        // 만약 inviteCode가 URL 형태라면, 마지막 슬래시 이후의 부분만 추출
+        if (inviteCode.contains("/")) {
+            inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
+        }
+
         ShareGroup shareGroup = shareGroupService.findShareGroup(inviteCode);
         List<Profile> profileList = shareGroupService.findProfileListByShareGroupId(shareGroup.getId());
 

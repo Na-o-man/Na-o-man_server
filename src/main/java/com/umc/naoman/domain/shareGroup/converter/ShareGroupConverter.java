@@ -32,6 +32,7 @@ public class ShareGroupConverter {
                 .image(shareGroup.getImage())
                 .memberCount(shareGroup.getMemberCount())
                 .inviteUrl(BASE_URL + shareGroup.getInviteCode())
+                .inviteCode(shareGroup.getInviteCode())
                 .createdAt(shareGroup.getCreatedAt())
                 .build();
     }

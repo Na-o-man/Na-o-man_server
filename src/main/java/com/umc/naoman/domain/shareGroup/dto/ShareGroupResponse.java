@@ -21,7 +21,8 @@ public abstract class ShareGroupResponse {
         private String name; //공유그룹 이름 반환
         private String image; //공유그룹 대표 이미지 반환. 처음 공유 그룹 생성 시에는 null
         private int memberCount; //공유 그룹의 프로필 개수
-        private String inviteUrl; //공유그룹 초대 코드 반환
+        private String inviteUrl; //공유그룹 초대 url 반환
+        private String inviteCode; //공유그룹 초대 코드 반환
 
         @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDateTime createdAt;
