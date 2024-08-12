@@ -107,19 +107,19 @@ public class ShareGroupConverter {
     }
 
     // 내가 참여한 공유 그룹 이름 목록 반환 DTO
-    public PagedShareGroupNameInfo toPagedShareGroupNameInfo(Page<ShareGroup> shareGroupNameList) {
+    public PagedShareGroupNameInfo toPagedShareGroupNameInfo(Page<ShareGroup> shareGroupList) {
         // 각 공유 그룹에 대한 상세 정보를 가져오기 (DetailInfo response 재사용)
-        List<ShareGroupResponse.ShareGroupNameInfo> shareGroupNameInfoList = shareGroupNameList
+        List<ShareGroupResponse.ShareGroupNameInfo> shareGroupNameInfoList = shareGroupList
                 .stream()
                 .map(this::toShareGroupNameInfo)
                 .toList();
 
         return PagedShareGroupNameInfo.builder()
                 .shareGroupNameInfoList(shareGroupNameInfoList) // 만든 info 리스트
-                .page(shareGroupNameList.getNumber())
-                .totalElements(shareGroupNameList.getTotalElements())
-                .isFirst(shareGroupNameList.isFirst())
-                .isLast(shareGroupNameList.isLast())
+                .page(shareGroupList.getNumber())
+                .totalElements(shareGroupList.getTotalElements())
+                .isFirst(shareGroupList.isFirst())
+                .isLast(shareGroupList.isLast())
                 .build();
     }
 }

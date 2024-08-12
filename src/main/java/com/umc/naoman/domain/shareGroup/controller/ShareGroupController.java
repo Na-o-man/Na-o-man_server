@@ -116,9 +116,9 @@ public class ShareGroupController {
     public ResultResponse<ShareGroupResponse.PagedShareGroupNameInfo> getMyShareGroupNameList(@LoginMember Member member,
                                                                                       @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                                                                                       @Parameter(hidden = true) Pageable pageable) {
-        Page<ShareGroup> shareGroupNameList = shareGroupService.getMyShareGroupList(member, pageable);
+        Page<ShareGroup> shareGroupList = shareGroupService.getMyShareGroupList(member, pageable);
         return ResultResponse.of(ShareGroupResultCode.SHARE_GROUP_INFO_LIST,
-                shareGroupConverter.toPagedShareGroupNameInfo(shareGroupNameList));
+                shareGroupConverter.toPagedShareGroupNameInfo(shareGroupList));
     }
 
     @PostMapping("/join")
