@@ -11,7 +11,6 @@ import com.umc.naoman.domain.photo.converter.SamplePhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoRequest.PhotoUploadRequest;
 import com.umc.naoman.domain.photo.dto.PhotoRequest.UploadSamplePhotoRequest;
-import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDownloadUrlListInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoUploadInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlInfo;
