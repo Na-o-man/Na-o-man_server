@@ -6,6 +6,7 @@ import com.umc.naoman.domain.photo.dto.PhotoRequest.PhotoDeletedRequest;
 import com.umc.naoman.domain.photo.dto.PhotoRequest.PhotoUploadRequest;
 import com.umc.naoman.domain.photo.dto.PhotoRequest.PreSignedUrlRequest;
 import com.umc.naoman.domain.photo.dto.PhotoRequest.UploadSamplePhotoRequest;
+import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PagedPhotoInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDeleteInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDownloadUrlListInfo;
@@ -85,7 +86,7 @@ public class PhotoController {
     public ResultResponse<PagedPhotoInfo> getPhotoListByShareGroupAndProfile(@RequestParam Long shareGroupId,
                                                                              @RequestParam Long profileId,
                                                                              @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
-                                                                               @Parameter(hidden = true) Pageable pageable,
+                                                                             @Parameter(hidden = true) Pageable pageable,
                                                                              @LoginMember Member member) {
         Page<PhotoEs> photoEsList = photoEsService.getPhotoEsListByShareGroupIdAndFaceTag(shareGroupId, profileId, member, pageable);
         return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoInfo(photoEsList, member));
@@ -100,7 +101,7 @@ public class PhotoController {
     })
     public ResultResponse<PagedPhotoInfo> getAllPhotoListByShareGroup(@RequestParam Long shareGroupId,
                                                                       @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
-                                                                        @Parameter(hidden = true) Pageable pageable,
+                                                                      @Parameter(hidden = true) Pageable pageable,
                                                                       @LoginMember Member member) {
         Page<PhotoEs> photoEsList = photoEsService.getAllPhotoEsListByShareGroupId(shareGroupId, member, pageable);
         return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoInfo(photoEsList, member));
@@ -115,7 +116,7 @@ public class PhotoController {
     })
     public ResultResponse<PagedPhotoInfo> getEtcPhotoListByShareGroup(@RequestParam Long shareGroupId,
                                                                       @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
-                                                                        @Parameter(hidden = true) Pageable pageable,
+                                                                      @Parameter(hidden = true) Pageable pageable,
                                                                       @LoginMember Member member) {
         Page<PhotoEs> photoEsList = photoEsService.getEtcPhotoEsListByShareGroupId(shareGroupId, member, pageable);
         return ResultResponse.of(RETRIEVE_PHOTO, photoConverter.toPagedPhotoInfo(photoEsList, member));
@@ -128,6 +129,15 @@ public class PhotoController {
                                                                             @LoginMember Member member) {
         PhotoDownloadUrlListInfo photoDownloadUrlList = photoService.getPhotoDownloadUrlList(photoIdList, shareGroupId, member);
         return ResultResponse.of(DOWNLOAD_PHOTO, photoDownloadUrlList);
+    }
+
+    @GetMapping("/download/all")
+    @Operation(summary = "특정 앨범 사진 전체 다운로드 API", description = "선택한 앨범에 속한 사진을 다운로드할 주소를 받는 API입니다. 해당 공유그룹에 속해있는 회원만 다운로드 요청할 수 있습니다.")
+    public ResultResponse<PhotoDownloadUrlListInfo> getPhotoDownloadUrlListByProfile(@RequestParam Long shareGroupId,
+                                                                                                     @RequestParam Long profileId,
+                                                                                                     @LoginMember Member member) {
+        PhotoResponse.PhotoDownloadUrlListInfo photoEsDownloadUrlList = photoService.getPhotoEsDownloadUrlList(shareGroupId, profileId, member);
+        return ResultResponse.of(DOWNLOAD_PHOTO, photoEsDownloadUrlList);
     }
 
     @DeleteMapping
