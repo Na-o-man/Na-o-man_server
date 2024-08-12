@@ -7,6 +7,7 @@ import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
 import com.umc.naoman.domain.member.dto.MemberResponse.HasSamplePhoto;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
+import com.umc.naoman.domain.member.dto.MemberResponse.MemberId;
 import com.umc.naoman.domain.member.dto.MemberResponse.MemberInfo;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
@@ -97,6 +98,11 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberInfo getMyInfo(Member member) {
         return memberConverter.toMemberInfo(member);
+    }
+
+    @Override
+    public MemberId getMyMemberId(Member member) {
+        return memberConverter.toMemberId(member.getId());
     }
 
     @Override

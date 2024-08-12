@@ -3,6 +3,7 @@ package com.umc.naoman.domain.member.controller;
 import com.umc.naoman.domain.member.converter.MemberConverter;
 import com.umc.naoman.domain.member.dto.MemberResponse;
 import com.umc.naoman.domain.member.dto.MemberResponse.HasSamplePhoto;
+import com.umc.naoman.domain.member.dto.MemberResponse.MemberId;
 import com.umc.naoman.domain.member.dto.MemberResponse.MemberInfo;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.service.MemberService;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.umc.naoman.global.result.code.MemberResultCode.CHECK_MEMBER_REGISTRATION;
+import static com.umc.naoman.global.result.code.MemberResultCode.*;
 
 @RestController
 @RequestMapping("/members")
@@ -52,6 +53,12 @@ public class MemberController {
         return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.getMyInfo(member));
     }
 
+    @GetMapping("/my-memberId")
+    @Operation(summary = "내 memberId 조회 API", description = "자신의 memberId를 조회하는 API입니다.")
+    public ResultResponse<MemberId> getMyMemberId(@LoginMember Member member) {
+        return ResultResponse.of(GET_MY_MEMBERID, memberService.getMyMemberId(member));
+    }
+
     @GetMapping("/terms/{memberId}")
     @Operation(summary = "마케팅 약관 동의 여부 조회 API", description = "[PathVariable]\n memberId\n[request]\n" +
             "[response]\n 마케팅 동의 여부 -> 동의 => true, 비동의 => false")
@@ -68,6 +75,6 @@ public class MemberController {
     @GetMapping("/samplePhoto")
     @Operation(summary = "샘플 사진 업로드 여부 조회", description = "자신이 샘플 사진을 업로드했는지 여부를 확인하는 API입니다.")
     public ResultResponse<HasSamplePhoto> hasSamplePhoto(@LoginMember Member member) {
-        return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.hasSamplePhoto(member));
+        return ResultResponse.of(CHECK_HAS_SAMPLE_PHOTO, memberService.hasSamplePhoto(member));
     }
 }

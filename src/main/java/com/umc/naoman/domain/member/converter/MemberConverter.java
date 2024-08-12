@@ -1,10 +1,12 @@
 package com.umc.naoman.domain.member.converter;
 
 import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
-import com.umc.naoman.domain.member.dto.MemberResponse;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
 import com.umc.naoman.domain.member.dto.MemberResponse.HasSamplePhoto;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
+import com.umc.naoman.domain.member.dto.MemberResponse.MarketingAgreed;
+import com.umc.naoman.domain.member.dto.MemberResponse.MemberId;
+import com.umc.naoman.domain.member.dto.MemberResponse.MemberInfo;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
 import io.jsonwebtoken.Claims;
@@ -42,13 +44,17 @@ public class MemberConverter {
                 .build();
     }
 
-    public MemberResponse.MemberInfo toMemberInfo(Member member) {
-        return MemberResponse.MemberInfo.builder()
+    public MemberInfo toMemberInfo(Member member) {
+        return MemberInfo.builder()
                 .memberId(member.getId())
                 .name(member.getName())
                 .email(member.getEmail())
                 .image(member.getImage())
                 .build();
+    }
+
+    public MemberId toMemberId(Long memberId) {
+        return new MemberId(memberId);
     }
 
     public CheckMemberRegistration toCheckMemberRegistration(boolean isRegistered) {
@@ -59,8 +65,8 @@ public class MemberConverter {
         return new HasSamplePhoto(hasSamplePhoto);
     }
 
-    public MemberResponse.MarketingAgreed toMarketingAgreed(Member member) {
-        return MemberResponse.MarketingAgreed.builder()
+    public MarketingAgreed toMarketingAgreed(Member member) {
+        return MarketingAgreed.builder()
                 .marketingAgreed(member.getMarketingAgreed())
                 .build();
     }
