@@ -2,6 +2,7 @@ package com.umc.naoman.domain.photo.elasticsearch.repository;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -72,7 +73,8 @@ public class PhotoEsClientRepository {
                             .size(pageable.getPageSize())
                             .sort(sort -> sort
                                     .field(f -> f
-                                            .field("createdAt")))
+                                            .field("createdAt")
+                                            .order(SortOrder.Desc)))
                             .query(q -> q
                                     .term(t -> t
                                             .field("shareGroupId")
@@ -98,7 +100,8 @@ public class PhotoEsClientRepository {
                             .size(pageable.getPageSize())
                             .sort(sort -> sort
                                     .field(f -> f
-                                            .field("createdAt")))
+                                            .field("createdAt")
+                                            .order(SortOrder.Desc)))
                             .query(q -> q
                                     .bool(b -> b
                                             .must(m -> m
@@ -135,7 +138,8 @@ public class PhotoEsClientRepository {
                             .size(pageable.getPageSize())
                             .sort(sort -> sort
                                     .field(f -> f
-                                            .field("createdAt")))
+                                            .field("createdAt")
+                                            .order(SortOrder.Desc)))
                             .query(q -> q
                                     .bool(b -> b
                                             .must(m -> m
