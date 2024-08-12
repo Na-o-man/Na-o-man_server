@@ -27,4 +27,5 @@ public interface PhotoService {
     List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member);
 
     Photo findPhoto(Long photoId);
+    boolean hasSamplePhoto(Member member);
 }

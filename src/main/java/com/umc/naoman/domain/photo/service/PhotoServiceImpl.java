@@ -8,8 +8,9 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.converter.SamplePhotoConverter;
-import com.umc.naoman.domain.photo.dto.PhotoRequest;
+import com.umc.naoman.domain.photo.dto.PhotoRequest.PhotoDeletedRequest;
 import com.umc.naoman.domain.photo.dto.PhotoRequest.PhotoUploadRequest;
+import com.umc.naoman.domain.photo.dto.PhotoRequest.PreSignedUrlRequest;
 import com.umc.naoman.domain.photo.dto.PhotoRequest.UploadSamplePhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDownloadUrlListInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoUploadInfo;
@@ -67,9 +68,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional
-    public List<PreSignedUrlInfo> getPreSignedUrlList(PhotoRequest.PreSignedUrlRequest request, Member member) {
-        validateShareGroupAndProfile(request.getShareGroupId(), member);
-
+    public List<PreSignedUrlInfo> getPreSignedUrlList(PreSignedUrlRequest request, Member member) {
         return request.getPhotoNameList().stream()
                 .map(this::getPreSignedUrl)
                 .collect(Collectors.toList());
@@ -260,7 +259,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional
-    public List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member) {
+    public List<Photo> deletePhotoList(PhotoDeletedRequest request, Member member) {
         validateShareGroupAndProfile(request.getShareGroupId(), member);
         // 요청된 사진 ID 목록과 공유 그룹 ID를 기반으로 사진 목록 조회
         List<Photo> photoList = photoRepository.findByIdInAndShareGroupId(request.getPhotoIdList(), request.getShareGroupId());
@@ -304,5 +303,10 @@ public class PhotoServiceImpl implements PhotoService {
     public Photo findPhoto(Long photoId) {
         return photoRepository.findById(photoId)
                 .orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND));
+    }
+
+    @Override
+    public boolean hasSamplePhoto(Member member) {
+        return samplePhotoRepository.existsByMemberId(member.getId());
     }
 }

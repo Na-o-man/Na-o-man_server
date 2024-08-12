@@ -30,6 +30,7 @@ public abstract class MemberResponse {
     @Getter
     @AllArgsConstructor
     public static class MemberInfo { //특정 회원 조회
+        private Long memberId;
         private String name;
         private String email;
         private String image;
@@ -40,5 +41,11 @@ public abstract class MemberResponse {
     @AllArgsConstructor
     public static class MarketingAgreed {
         private Boolean marketingAgreed;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class HasSamplePhoto {
+        private Boolean hasSamplePhoto;
     }
 }
