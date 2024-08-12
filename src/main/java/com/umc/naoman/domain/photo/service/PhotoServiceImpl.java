@@ -298,7 +298,17 @@ public class PhotoServiceImpl implements PhotoService {
         }
     }
 
+    @Override
+    @Transactional
+    public void deletePhotoEsByShareGroupIdList(List<Long> shareGroupIdList) {
+        List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByShareGroupIdList(shareGroupIdList);
+        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
+        photoRepository.deleteAllByPhotoIdList(photoIdList);
 
+        for (Photo photo : photoList) {
+            deletePhoto(photo.getName());
+        }
+    }
 
     private void deletePhoto(String photoName) {
         // S3에서 원본 및 변환된 이미지 삭제
