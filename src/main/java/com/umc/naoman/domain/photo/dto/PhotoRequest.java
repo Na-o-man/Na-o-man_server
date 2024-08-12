@@ -2,6 +2,7 @@ package com.umc.naoman.domain.photo.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +23,15 @@ public abstract class PhotoRequest {
         @NotEmpty(message = "사진의 이름은 하나 이상이어야 합니다.")
         private List<String> photoNameList;
 
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UploadSamplePhotoRequest {
+        @Size(min = 2, message = "샘플 사진의 개수는 최소 2개 이상이어야 합니다.")
+        private List<String> photoUrlList;
     }
 
     @Getter

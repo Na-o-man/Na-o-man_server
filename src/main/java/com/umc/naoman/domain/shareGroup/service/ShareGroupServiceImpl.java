@@ -1,6 +1,7 @@
 package com.umc.naoman.domain.shareGroup.service;
 
 import com.umc.naoman.domain.member.entity.Member;
+import com.umc.naoman.domain.photo.service.FaceDetectionService;
 import com.umc.naoman.domain.shareGroup.converter.ShareGroupConverter;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupRequest;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
@@ -25,11 +26,11 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ShareGroupServiceImpl implements ShareGroupService {
-
     private final ShareGroupRepository shareGroupRepository;
     private final ProfileRepository profileRepository;
     private final ShareGroupConverter shareGroupConverter;
     private final OpenAiService openAiService;
+    private final FaceDetectionService faceDetectionService;
 
     @Transactional
     @Override
@@ -86,6 +87,9 @@ public class ShareGroupServiceImpl implements ShareGroupService {
         //해당 멤버(본인)을 선택한 profile에 세팅, 저장
         profile.setInfo(member);
         profileRepository.save(profile);
+
+        //자신의 얼굴을 기존에 올라온 사진에서 찾아서 태그해주는 로직(비동기)
+        faceDetectionService.detectFaceJoinShareGroup(member.getId(), shareGroupId);
 
         return shareGroup;
     }

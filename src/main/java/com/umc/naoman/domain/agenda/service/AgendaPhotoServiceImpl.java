@@ -41,4 +41,9 @@ public class AgendaPhotoServiceImpl implements AgendaPhotoService {
     public List<AgendaPhoto> findAgendaPhotoList(Long agendaId) {
         return agendaPhotoRepository.findByAgendaId(agendaId);
     }
+
+    @Override
+    public List<AgendaPhoto> findAgendaPhotoListByPhotoId(Long photoId) {
+        return agendaPhotoRepository.findByPhotoId(photoId);
+    }
 }

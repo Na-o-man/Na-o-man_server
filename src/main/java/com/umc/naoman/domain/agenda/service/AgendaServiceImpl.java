@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -75,5 +76,14 @@ public class AgendaServiceImpl implements AgendaService {
 
         agenda.delete();
         return agenda;
+    }
+
+    // 특정 사진이 안건 후보로 담겨 있는 안건 목록을 조회하는 함수
+    @Override
+    public List<Agenda> findAgendaListByPhotoId(Long photoId) {
+        List<AgendaPhoto> agendaPhotoList = agendaPhotoService.findAgendaPhotoListByPhotoId(photoId);
+        return agendaPhotoList.stream()
+                .map(agendaPhoto -> agendaPhoto.getAgenda())
+                .collect(Collectors.toList());
     }
 }
