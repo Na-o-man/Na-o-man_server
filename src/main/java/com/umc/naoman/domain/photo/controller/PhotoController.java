@@ -144,8 +144,8 @@ public class PhotoController {
     public ResultResponse<PhotoDownloadUrlListInfo> getPhotoDownloadUrlListByProfile(@RequestParam Long shareGroupId,
                                                                                      @RequestParam Long profileId,
                                                                                      @LoginMember Member member) {
-        PhotoResponse.PhotoDownloadUrlListInfo photoEsDownloadUrlList = photoService.getPhotoDownloadUrlListByProfile(shareGroupId, profileId, member);
-        return ResultResponse.of(DOWNLOAD_PHOTO, photoEsDownloadUrlList);
+        PhotoResponse.PhotoDownloadUrlListInfo photoDownloadUrlList = photoService.getPhotoDownloadUrlListByProfile(shareGroupId, profileId, member);
+        return ResultResponse.of(DOWNLOAD_PHOTO, photoDownloadUrlList);
     }
 
     @GetMapping("/download/etc")
@@ -155,8 +155,8 @@ public class PhotoController {
     })
     public ResultResponse<PhotoDownloadUrlListInfo> getEtcPhotoDownloadUrlList(@RequestParam Long shareGroupId,
                                                                                @LoginMember Member member) {
-        PhotoResponse.PhotoDownloadUrlListInfo photoEsDownloadUrlList = photoService.getEtcPhotoDownloadUrlList(shareGroupId, member);
-        return ResultResponse.of(DOWNLOAD_PHOTO, photoEsDownloadUrlList);
+        PhotoResponse.PhotoDownloadUrlListInfo photoDownloadUrlList = photoService.getEtcPhotoDownloadUrlList(shareGroupId, member);
+        return ResultResponse.of(DOWNLOAD_PHOTO, photoDownloadUrlList);
     }
 
     @DeleteMapping
