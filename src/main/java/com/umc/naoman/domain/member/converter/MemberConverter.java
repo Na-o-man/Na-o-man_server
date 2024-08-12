@@ -42,6 +42,7 @@ public class MemberConverter {
 
     public MemberResponse.MemberInfo toMemberInfo(Member member) {
         return MemberResponse.MemberInfo.builder()
+                .memberId(member.getId())
                 .name(member.getName())
                 .email(member.getEmail())
                 .image(member.getImage())

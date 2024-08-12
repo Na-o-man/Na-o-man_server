@@ -30,6 +30,7 @@ public abstract class MemberResponse {
     @Getter
     @AllArgsConstructor
     public static class MemberInfo { //특정 회원 조회
+        private Long memberId;
         private String name;
         private String email;
         private String image;
