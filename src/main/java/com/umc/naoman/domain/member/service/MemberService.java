@@ -4,6 +4,7 @@ import com.umc.naoman.domain.member.dto.MemberRequest.LoginRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.MarketingAgreedRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
+import com.umc.naoman.domain.member.dto.MemberResponse.HasSamplePhoto;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
 import com.umc.naoman.domain.member.dto.MemberResponse.MemberInfo;
 import com.umc.naoman.domain.member.entity.Member;
@@ -14,7 +15,9 @@ public interface MemberService {
     LoginInfo signup(SignupRequest request);
     LoginInfo login(LoginRequest request);
     CheckMemberRegistration checkRegistration(LoginRequest request);
+    HasSamplePhoto hasSamplePhoto(Member member);
     MemberInfo getMyInfo(Member member);
     Member findMember(Long memberId);
     Member findMember(SocialType socialType, String authId);
+
 }

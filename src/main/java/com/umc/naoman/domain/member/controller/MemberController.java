@@ -2,6 +2,7 @@ package com.umc.naoman.domain.member.controller;
 
 import com.umc.naoman.domain.member.converter.MemberConverter;
 import com.umc.naoman.domain.member.dto.MemberResponse;
+import com.umc.naoman.domain.member.dto.MemberResponse.HasSamplePhoto;
 import com.umc.naoman.domain.member.dto.MemberResponse.MemberInfo;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.service.MemberService;
@@ -62,5 +63,11 @@ public class MemberController {
     public ResultResponse<MemberResponse.MarketingAgreed> getMarketingAgreed(@PathVariable(name = "memberId") Long memberId) {
         Member member = memberService.findMember(memberId);
         return ResultResponse.of(MemberResultCode.CHECK_MARKETING_AGREED, memberConverter.toMarketingAgreed(member));
+    }
+
+    @GetMapping("/samplePhoto")
+    @Operation(summary = "샘플 사진 업로드 여부 조회", description = "자신이 샘플 사진을 업로드했는지 여부를 확인하는 API입니다.")
+    public ResultResponse<HasSamplePhoto> hasSamplePhoto(@LoginMember Member member) {
+        return ResultResponse.of(CHECK_MEMBER_REGISTRATION, memberService.hasSamplePhoto(member));
     }
 }

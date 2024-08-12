@@ -42,4 +42,10 @@ public abstract class MemberResponse {
     public static class MarketingAgreed {
         private Boolean marketingAgreed;
     }
+
+    @Getter
+    @AllArgsConstructor
+    public static class HasSamplePhoto {
+        private Boolean hasSamplePhoto;
+    }
 }

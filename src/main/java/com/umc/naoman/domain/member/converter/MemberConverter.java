@@ -2,6 +2,8 @@ package com.umc.naoman.domain.member.converter;
 
 import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse;
+import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
+import com.umc.naoman.domain.member.dto.MemberResponse.HasSamplePhoto;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
@@ -47,6 +49,14 @@ public class MemberConverter {
                 .email(member.getEmail())
                 .image(member.getImage())
                 .build();
+    }
+
+    public CheckMemberRegistration toCheckMemberRegistration(boolean isRegistered) {
+        return new CheckMemberRegistration(isRegistered);
+    }
+
+    public HasSamplePhoto toHasSamplePhoto(boolean hasSamplePhoto) {
+        return new HasSamplePhoto(hasSamplePhoto);
     }
 
     public MemberResponse.MarketingAgreed toMarketingAgreed(Member member) {

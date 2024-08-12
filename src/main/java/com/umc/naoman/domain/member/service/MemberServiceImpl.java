@@ -5,12 +5,14 @@ import com.umc.naoman.domain.member.dto.MemberRequest.LoginRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.MarketingAgreedRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
 import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
+import com.umc.naoman.domain.member.dto.MemberResponse.HasSamplePhoto;
 import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
 import com.umc.naoman.domain.member.dto.MemberResponse.MemberInfo;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
 import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.member.service.redis.RefreshTokenService;
+import com.umc.naoman.domain.photo.service.PhotoService;
 import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.security.util.JwtUtils;
 import io.jsonwebtoken.Claims;
@@ -26,6 +28,7 @@ import static com.umc.naoman.global.error.code.MemberErrorCode.*;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final RefreshTokenService refreshTokenService;
+    private final PhotoService photoService;
     private final MemberRepository memberRepository;
     private final MemberConverter memberConverter;
     private final JwtUtils jwtUtils;
@@ -82,7 +85,13 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public CheckMemberRegistration checkRegistration(LoginRequest request) {
         boolean isRegistered = memberRepository.existsBySocialTypeAndAuthId(request.getSocialType(), request.getAuthId());
-        return new CheckMemberRegistration(isRegistered);
+        return memberConverter.toCheckMemberRegistration(isRegistered);
+    }
+
+    @Override
+    public HasSamplePhoto hasSamplePhoto(Member member) {
+        boolean hasSamplePhoto = photoService.hasSamplePhoto(member);
+        return memberConverter.toHasSamplePhoto(hasSamplePhoto);
     }
 
     @Override

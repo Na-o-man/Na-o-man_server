@@ -280,4 +280,9 @@ public class PhotoServiceImpl implements PhotoService {
         return photoRepository.findById(photoId)
                 .orElseThrow(() -> new BusinessException(PHOTO_NOT_FOUND));
     }
+
+    @Override
+    public boolean hasSamplePhoto(Member member) {
+        return samplePhotoRepository.existsByMemberId(member.getId());
+    }
 }
