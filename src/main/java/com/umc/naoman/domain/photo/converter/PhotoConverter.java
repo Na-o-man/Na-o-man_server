@@ -117,23 +117,9 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PhotoDownloadUrlListInfo toPhotoDownloadUrlListInfo(List<Photo> photoList) {
-        List<String> photoDownloadUrlList = photoList.stream()
-                .map(Photo::getUrl)
-                .collect(Collectors.toList());
-
+    public PhotoDownloadUrlListInfo toPhotoDownloadUrlListInfo(List<String> photoUrlList) {
         return PhotoDownloadUrlListInfo.builder()
-                .photoDownloadUrlList(photoDownloadUrlList)
-                .build();
-    }
-
-    public PhotoResponse.PhotoEsDownloadUrlListInfo toPhotoEsDownloadUrlListInfo(List<PhotoEs> photoEsList) {
-        List<String> photoEsDownloadUrlList = photoEsList.stream()
-                .map(PhotoEs::getUrl)
-                .collect(Collectors.toList());
-
-        return PhotoResponse.PhotoEsDownloadUrlListInfo.builder()
-                .photoEsDownloadUrlList(photoEsDownloadUrlList)
+                .photoDownloadUrlList(photoUrlList)
                 .build();
     }
 }

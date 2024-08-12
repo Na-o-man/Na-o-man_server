@@ -22,7 +22,7 @@ public interface PhotoService {
 
     PhotoDownloadUrlListInfo getPhotoDownloadUrlList(List<Long> photoIdList, Long shareGroupId, Member member);
 
-    PhotoEsDownloadUrlListInfo getPhotoEsDownloadUrlList(Long shareGroupId, Long profileId, Member member);
+    PhotoDownloadUrlListInfo getPhotoEsDownloadUrlList(Long shareGroupId, Long profileId, Member member);
 
     List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member);
 
