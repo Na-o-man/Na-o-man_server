@@ -11,10 +11,12 @@ import com.umc.naoman.domain.photo.converter.SamplePhotoConverter;
 import com.umc.naoman.domain.photo.dto.PhotoRequest;
 import com.umc.naoman.domain.photo.dto.PhotoRequest.PhotoUploadRequest;
 import com.umc.naoman.domain.photo.dto.PhotoRequest.UploadSamplePhotoRequest;
+import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDownloadUrlListInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoUploadInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.SamplePhotoUploadInfo;
+import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.elasticsearch.repository.PhotoEsClientRepository;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.entity.SamplePhoto;
@@ -26,10 +28,13 @@ import com.umc.naoman.global.error.BusinessException;
 import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -53,9 +58,9 @@ public class PhotoServiceImpl implements PhotoService {
     private final S3Template s3Template;
 
     @Value("${spring.cloud.aws.s3.bucket}")
-    private String bucketName;
+    private String BUCKET_NAME;
     @Value("${spring.cloud.aws.region.static}")
-    private String region;
+    private String REGION;
 
     public static final String RAW_PATH_PREFIX = "raw";
     public static final String W200_PATH_PREFIX = "w200";
@@ -76,7 +81,7 @@ public class PhotoServiceImpl implements PhotoService {
         String photoName = fileName.split("/")[1];
         String photoUrl = generateFileAccessUrl(fileName);
 
-        URL preSignedUrl = amazonS3.generatePresignedUrl(getGeneratePreSignedUrlRequest(bucketName, fileName));
+        URL preSignedUrl = amazonS3.generatePresignedUrl(getGeneratePreSignedUrlRequest(BUCKET_NAME, fileName));
         return photoConverter.toPreSignedUrlInfo(preSignedUrl.toString(), photoUrl, photoName);
     }
 
@@ -112,7 +117,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     // 원본 사진의 접근 URL 생성
     private String generateFileAccessUrl(String fileName) {
-        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName);
+        return String.format("https://%s.s3.%s.amazonaws.com/%s", BUCKET_NAME, REGION, fileName);
     }
 
     @Override
@@ -133,7 +138,7 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     private SamplePhoto checkAndSaveSamplePhotoInDB(String photoUrl, String photoName, Member member) {
-        if (!amazonS3.doesObjectExist(bucketName, RAW_PATH_PREFIX + "/" + photoName)) {
+        if (!amazonS3.doesObjectExist(BUCKET_NAME, RAW_PATH_PREFIX + "/" + photoName)) {
             throw new BusinessException(PHOTO_NOT_FOUND_S3);
         }
 
@@ -165,6 +170,7 @@ public class PhotoServiceImpl implements PhotoService {
                 .filter(profile -> profile.getMember() != null)
                 .map(profile -> profile.getMember().getId())
                 .collect(Collectors.toList());
+
         // 얼굴 인식 서비스 호출
         faceDetectionService.detectFaceUploadPhoto(photoNameList, shareGroup.getId(), memberIdList);
 
@@ -173,7 +179,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     // S3에 객체의 존재 여부 확인 및 DB에 사진을 저장하고 객체를 반환하는 메서드
     private Photo checkAndSavePhotoInDB(String photoUrl, String photoName, ShareGroup shareGroup) {
-        if (!amazonS3.doesObjectExist(bucketName, RAW_PATH_PREFIX + "/" + photoName)) {
+        if (!amazonS3.doesObjectExist(BUCKET_NAME, RAW_PATH_PREFIX + "/" + photoName)) {
             throw new BusinessException(PHOTO_NOT_FOUND_S3);
         }
 
@@ -197,7 +203,36 @@ public class PhotoServiceImpl implements PhotoService {
             throw new BusinessException(PHOTO_NOT_FOUND);
         }
 
-        return photoConverter.toPhotoDownloadUrlListInfo(photoList);
+        List<String> photoUrlList = photoList.stream()
+                .map(Photo::getUrl)
+                .collect(Collectors.toList());
+
+        return photoConverter.toPhotoDownloadUrlListInfo(photoUrlList);
+    }
+
+    @Override
+    public PhotoDownloadUrlListInfo getPhotoEsDownloadUrlList(Long shareGroupId, Long profileId, Member member) {
+        validateShareGroupAndProfile(shareGroupId, member);
+        Long memberId = shareGroupService.findProfile(profileId).getMember().getId();
+
+        List<PhotoEs> photoEsList = new ArrayList<>();
+        Pageable pageable = Pageable.ofSize(5000);
+        boolean isLastPage = false;
+
+        while (!isLastPage) {
+            Page<PhotoEs> photoEsPage = photoEsClientRepository.findPhotoEsByShareGroupIdAndFaceTag(shareGroupId, memberId, pageable);
+            photoEsList.addAll(photoEsPage.getContent());
+            isLastPage = photoEsPage.isLast();
+
+            // 다음 페이지로 이동
+            pageable = pageable.next();
+        }
+
+        List<String> photUrlList = photoEsList.stream()
+                .map(PhotoEs::getUrl)
+                .collect(Collectors.toList());
+
+        return photoConverter.toPhotoDownloadUrlListInfo(photUrlList);
     }
 
     @Override
@@ -230,9 +265,9 @@ public class PhotoServiceImpl implements PhotoService {
 
     private void deletePhoto(String photoName) {
         // S3에서 원본 및 변환된 이미지 삭제
-        s3Template.deleteObject(bucketName, RAW_PATH_PREFIX + "/" + photoName);
-        s3Template.deleteObject(bucketName, W200_PATH_PREFIX + "/" + photoConverter.convertExtension(photoName));
-        s3Template.deleteObject(bucketName, W400_PATH_PREFIX + "/" + photoConverter.convertExtension(photoName));
+        s3Template.deleteObject(BUCKET_NAME, RAW_PATH_PREFIX + "/" + photoName);
+        s3Template.deleteObject(BUCKET_NAME, W200_PATH_PREFIX + "/" + photoConverter.convertExtension(photoName));
+        s3Template.deleteObject(BUCKET_NAME, W400_PATH_PREFIX + "/" + photoConverter.convertExtension(photoName));
     }
 
     // 해당 공유 그룹이 존재하는지 확인 & 멤버가 해당 공유 그룹에 속해있는지 확인

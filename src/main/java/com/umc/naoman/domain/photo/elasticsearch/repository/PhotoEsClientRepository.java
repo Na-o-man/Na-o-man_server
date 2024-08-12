@@ -182,11 +182,11 @@ public class PhotoEsClientRepository {
     }
 
     //특정 회원의 얼굴이 태그된 사진 삭제 -> 해당 사진에서 감지된 얼굴벡터도 함께 삭제  return : 삭제된 사진의 rdsId
-    public List<Long> deletePhotoEsByFaceTag(Long memberId){
+    public List<Long> deletePhotoEsByFaceTag(Long memberId) {
         SearchResponse<PhotoEs> response = null;
         List<Long> rdsIdList = new ArrayList<>();
         List<String> photoNameList = new ArrayList<>();
-        try{
+        try {
             response = elasticsearchClient.search(s -> s
                             .index("photos_es")
                             .from(0)
