@@ -270,7 +270,7 @@ public class PhotoServiceImpl implements PhotoService {
             throw new BusinessException(PHOTO_NOT_FOUND);
         }
 
-        // 각 사진에 대해 S3에서 객체 삭제 및 데이터베이스에서 삭제
+        // 각 사진에 대해 S3에서 객체 삭제
         for (Photo photo : photoList) {
             deletePhoto(photo.getName());
         }
@@ -285,6 +285,20 @@ public class PhotoServiceImpl implements PhotoService {
 
         return photoList; // 삭제된 사진 목록 반환
     }
+
+    @Override
+    @Transactional
+    public void deletePhotoEsByFaceTag(Long memberId) {
+        List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByFaceTag(memberId);
+        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
+        photoRepository.deleteAllByPhotoIdList(photoIdList);
+
+        for (Photo photo : photoList) {
+            deletePhoto(photo.getName());
+        }
+    }
+
+
 
     private void deletePhoto(String photoName) {
         // S3에서 원본 및 변환된 이미지 삭제
