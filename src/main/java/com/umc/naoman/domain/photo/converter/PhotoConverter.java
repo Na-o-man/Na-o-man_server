@@ -1,7 +1,6 @@
 package com.umc.naoman.domain.photo.converter;
 
 import com.umc.naoman.domain.member.entity.Member;
-import com.umc.naoman.domain.photo.dto.PhotoResponse;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PagedPhotoInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDeleteInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoDownloadUrlListInfo;
@@ -9,7 +8,6 @@ import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoUploadInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlListInfo;
-import com.umc.naoman.domain.photo.dto.PhotoResponse.SamplePhotoUploadInfo;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
