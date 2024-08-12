@@ -3,6 +3,7 @@ package com.umc.naoman.domain.shareGroup.converter;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupRequest;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse.PagedShareGroupInfo;
+import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse.PagedShareGroupNameInfo;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse.ShareGroupDetailInfo;
 import com.umc.naoman.domain.shareGroup.dto.ShareGroupResponse.ShareGroupInfo;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
@@ -94,6 +95,31 @@ public class ShareGroupConverter {
                 .totalElements(shareGroupList.getTotalElements())
                 .isFirst(shareGroupList.isFirst())
                 .isLast(shareGroupList.isLast())
+                .build();
+    }
+
+    // 그룹 이름 DTO
+    public ShareGroupResponse.ShareGroupNameInfo toShareGroupNameInfo(ShareGroup shareGroup) {
+        return ShareGroupResponse.ShareGroupNameInfo.builder()
+                .shareGroupId(shareGroup.getId())
+                .name(shareGroup.getName())
+                .build();
+    }
+
+    // 내가 참여한 공유 그룹 이름 목록 반환 DTO
+    public PagedShareGroupNameInfo toPagedShareGroupNameInfo(Page<ShareGroup> shareGroupNameList) {
+        // 각 공유 그룹에 대한 상세 정보를 가져오기 (DetailInfo response 재사용)
+        List<ShareGroupResponse.ShareGroupNameInfo> shareGroupNameInfoList = shareGroupNameList
+                .stream()
+                .map(this::toShareGroupNameInfo)
+                .toList();
+
+        return PagedShareGroupNameInfo.builder()
+                .shareGroupNameInfoList(shareGroupNameInfoList) // 만든 info 리스트
+                .page(shareGroupNameList.getNumber())
+                .totalElements(shareGroupNameList.getTotalElements())
+                .isFirst(shareGroupNameList.isFirst())
+                .isLast(shareGroupNameList.isLast())
                 .build();
     }
 }
