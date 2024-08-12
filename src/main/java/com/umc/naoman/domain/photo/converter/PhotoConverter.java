@@ -8,7 +8,6 @@ import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PhotoUploadInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlListInfo;
-import com.umc.naoman.domain.photo.dto.PhotoResponse.SamplePhotoUploadInfo;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
@@ -116,13 +115,9 @@ public class PhotoConverter {
                 .build();
     }
 
-    public PhotoDownloadUrlListInfo toPhotoDownloadUrlListInfo(List<Photo> photoList) {
-        List<String> photoDownloadUrlList = photoList.stream()
-                .map(Photo::getUrl)
-                .collect(Collectors.toList());
-
+    public PhotoDownloadUrlListInfo toPhotoDownloadUrlListInfo(List<String> photoUrlList) {
         return PhotoDownloadUrlListInfo.builder()
-                .photoDownloadUrlList(photoDownloadUrlList)
+                .photoDownloadUrlList(photoUrlList)
                 .build();
     }
 }
