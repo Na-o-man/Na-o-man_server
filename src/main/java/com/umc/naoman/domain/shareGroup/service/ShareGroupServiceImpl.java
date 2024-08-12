@@ -57,6 +57,7 @@ public class ShareGroupServiceImpl implements ShareGroupService {
                     .name(memberName)
                     .role(role) // 역할 설정
                     .shareGroup(savedShareGroup)
+                    .image(i == 0 ? member.getImage() : null) // 공유그룹장의 프로필 이미지
                     .joinedAt(i == 0 ? LocalDateTime.now() : null) // 첫 번째 멤버만 joinedAt 설정
                     .member(i == 0 ? member : null) // 첫 번째 멤버에만 현재 사용자의 member 설정
                     .build();
