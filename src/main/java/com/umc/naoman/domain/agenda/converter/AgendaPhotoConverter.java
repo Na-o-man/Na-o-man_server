@@ -20,7 +20,7 @@ public class AgendaPhotoConverter {
         return AgendaPhotoResponse.AgendaPhotoInfo
                 .builder()
                 .agendaPhotoId(agendaPhoto.getId())
-                .url(agendaPhoto.getPhoto().getUrl())
+                .url(agendaPhoto.getPhoto() != null ? agendaPhoto.getPhoto().getUrl() : null)
                 .build();
     }
 }

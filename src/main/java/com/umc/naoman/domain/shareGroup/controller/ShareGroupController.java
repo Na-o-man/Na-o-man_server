@@ -68,6 +68,12 @@ public class ShareGroupController {
             @Parameter(name = "inviteCode", description = "참여하려는 공유그룹의 초대 코드")
     })
     public ResultResponse<ShareGroupResponse.ShareGroupDetailInfo> getShareGroupByInviteCode(@RequestParam String inviteCode) {
+
+        // 만약 inviteCode가 URL 형태라면, 마지막 슬래시 이후의 부분만 추출
+        if (inviteCode.contains("/")) {
+            inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
+        }
+
         ShareGroup shareGroup = shareGroupService.findShareGroup(inviteCode);
         List<Profile> profileList = shareGroupService.findProfileListByShareGroupId(shareGroup.getId());
 
@@ -99,6 +105,20 @@ public class ShareGroupController {
         ShareGroup shareGroup = shareGroupService.getInviteInfo(shareGroupId, member);
         return ResultResponse.of(ShareGroupResultCode.GET_INVITE_CODE,
                 shareGroupConverter.toInviteInfo(shareGroup));
+    }
+
+    @GetMapping("/my/shareGroupNameList") //안건 뷰에서 공유 그룹 목록을 알기 위해 호출하는 API
+    @Operation(summary = "내가 참여한 공유그룹 이름의 목록 조회", description = "내가 참여한 공유그룹 이름의 목록을 페이징 처리하여 조회하는 API입니다. 안건 목록 뷰에서 사용해 주세요.")
+    @Parameters(value = {
+            @Parameter(name = "page", description = "조회할 페이지를 입력해 주세요.(0번부터 시작)"),
+            @Parameter(name = "size", description = "한 페이지에 나타낼 공유그룹 이름 개수를 입력해주세요.")
+    })
+    public ResultResponse<ShareGroupResponse.PagedShareGroupNameInfo> getMyShareGroupNameList(@LoginMember Member member,
+                                                                                      @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+                                                                                      @Parameter(hidden = true) Pageable pageable) {
+        Page<ShareGroup> shareGroupList = shareGroupService.getMyShareGroupList(member, pageable);
+        return ResultResponse.of(ShareGroupResultCode.SHARE_GROUP_INFO_LIST,
+                shareGroupConverter.toPagedShareGroupNameInfo(shareGroupList));
     }
 
     @PostMapping("/join")
