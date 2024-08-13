@@ -126,7 +126,7 @@ public class PhotoServiceImpl implements PhotoService {
                 .toList();
 
         List<String> samplePhotoNameList = samplePhotoList.stream()
-                .map(samplePhoto -> samplePhoto.getName())
+                .map(SamplePhoto::getName)
                 .toList();
 
         // Elasticsearch에 sample_face_vector를 저장하기 위한 트리거 실행
