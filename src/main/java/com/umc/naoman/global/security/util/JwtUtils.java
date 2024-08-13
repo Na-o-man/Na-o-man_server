@@ -37,39 +37,13 @@ public class JwtUtils {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), SIGNATURE_ALGORITHM);
     }
 
-    public String getEmail(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get(PAYLOAD_EMAIL_KEY, String.class);
-    }
-
-    public Claims getPayload(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
-
-    public Boolean isExpired(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration().before(new Date());
-    }
-
-    public String createJwt(String email, String role, Long seconds) {
+    public String createJwt(Long memberId, String role, Long seconds) {
         final LocalDateTime now = LocalDateTime.now();
         final Date issuedDate = localDateTimeToDate(now);
         final Date expiredDate = localDateTimeToDate(now.plusSeconds(seconds));
 
         return Jwts.builder()
-                .claim(PAYLOAD_EMAIL_KEY, email)
+                .claim(PAYLOAD_MEMBER_ID_KEY, memberId.toString()) // String 타입으로 세팅
                 .claim(PAYLOAD_ROLE_KEY, role)
                 .issuedAt(issuedDate)
                 .expiration(expiredDate)
@@ -94,12 +68,39 @@ public class JwtUtils {
                 .compact();
     }
 
+    public Claims getPayload(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    // Long 타입이지만 JWT 내부에는 String으로 담겨 있다.
+    public String getMemberId(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get(PAYLOAD_MEMBER_ID_KEY, String.class);
+    }
+
+    public Boolean isExpired(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration().before(new Date());
+    }
+
     public Authentication getAuthentication(String token) {
         // 나ㅇ만 서비스는 현재 Member 엔티티에게 권한이 존재하지 않으므로 authorities는 빈 리스트 처리
         final List<SimpleGrantedAuthority> authorities = Collections.emptyList();
 
         // 사용자 정의로 구현한 MemberDetails 사용
-        final MemberDetails principal = memberDetailsService.loadUserByUsername(getEmail(token));
+        final MemberDetails principal = memberDetailsService.loadUserByUsername(getMemberId(token));
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
