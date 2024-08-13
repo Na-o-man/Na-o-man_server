@@ -70,16 +70,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
 
         // 로그인 성공 처리를 위해 access token, refresh token 발급
-        String accessToken = jwtUtils.createJwt(member.getEmail(), role, ACCESS_TOKEN_VALIDITY_IN_SECONDS);
+        String accessToken = jwtUtils.createJwt(member.getId(), role, ACCESS_TOKEN_VALIDITY_IN_SECONDS);
         CookieUtils.addCookie(response, ACCESS_TOKEN_KEY, accessToken, ACCESS_TOKEN_VALIDITY_IN_SECONDS.intValue());
 
-        String refreshToken = jwtUtils.createJwt(member.getEmail(), role, REFRESH_TOKEN_VALIDITY_IN_SECONDS);
+        String refreshToken = jwtUtils.createJwt(member.getId(), role, REFRESH_TOKEN_VALIDITY_IN_SECONDS);
         refreshTokenService.saveRefreshToken(member.getId(), refreshToken);
         CookieUtils.addCookie(response, REFRESH_TOKEN_KEY, refreshToken, REFRESH_TOKEN_VALIDITY_IN_SECONDS.intValue());
 
         clearAuthenticationAttributes(request, response);
-        // 프론트엔드 홈 화면으로 리다이렉션
-        response.sendRedirect(FRONTEND_BASE_URL);
+        response.sendRedirect(FRONTEND_BASE_URL); // 홈 화면으로 리다이렉션
     }
 
     private void handleMemberSignup(HttpServletRequest request, HttpServletResponse response, OAuthAttribute oAuthAttribute)
@@ -89,8 +88,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         CookieUtils.addCookie(response, TEMP_MEMBER_INFO_KEY, tempMemberInfo, TEMP_MEMBER_INFO_VALIDITY_IN_SECONDS.intValue());
 
         clearAuthenticationAttributes(request, response);
-        // 약관 동의 화면으로 리다이렉션
-        response.sendRedirect(FRONTEND_BASE_URL + FRONTEND_AGREEMENT_PATH);
+        response.sendRedirect(FRONTEND_BASE_URL + FRONTEND_AGREEMENT_PATH); // 약관 동의 화면으로 리다이렉션
     }
 
     private void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
