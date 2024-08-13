@@ -7,6 +7,7 @@ import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.json.JsonData;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.global.error.BusinessException;
@@ -21,7 +22,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
@@ -263,6 +266,39 @@ public class PhotoEsClientRepository {
         //삭제된 사진에서 감지된 얼굴 벡터 삭제
         faceVectorClientRepository.deleteFaceVectorsByPhotoName(photoNameList);
         return rdsIdList;
+    }
+
+    //특정 사진에 특정 맴버 다운로드 태그 추가
+    public void addDownloadTag(List<PhotoEs> photoEs, Long memberId){
+        List<FieldValue> fieldValueList = photoEs.stream()
+                .map(photo -> FieldValue.of(photo.getName()))
+                .toList();
+        String routing = photoEs.get(0).getShareGroupId().toString();
+        Map<String, JsonData> params = new HashMap<>();
+        params.put("memberId", JsonData.of(memberId));
+        try {
+            elasticsearchClient.updateByQuery(u -> u
+                    .index("photos_es")
+                    .routing(routing)
+                    .query(q -> q
+                            .terms(t -> t
+                                    .field("name")
+                                    .terms(te -> te.value(fieldValueList))
+                            )
+                    )
+                    .script(s -> s
+                            .inline(i->i
+                                    .source("if (!ctx._source.downloadTag.contains(params.memberId)) { " +
+                                            "ctx._source.downloadTag.add(params.memberId); }")
+                                    .lang("painless")
+                                    .params(params)
+                            )
+
+                    )
+            );
+        } catch (IOException e) {
+            throw new BusinessException(ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION, e);
+        }
     }
 
     String esTimeFormat(LocalDateTime localDateTime) {
