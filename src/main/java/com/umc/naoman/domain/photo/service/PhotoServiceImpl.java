@@ -126,7 +126,7 @@ public class PhotoServiceImpl implements PhotoService {
                 .toList();
 
         List<String> samplePhotoNameList = samplePhotoList.stream()
-                .map(samplePhoto -> samplePhoto.getName())
+                .map(SamplePhoto::getName)
                 .toList();
 
         // Elasticsearch에 sample_face_vector를 저장하기 위한 트리거 실행
@@ -205,6 +205,9 @@ public class PhotoServiceImpl implements PhotoService {
                 .map(Photo::getUrl)
                 .collect(Collectors.toList());
 
+        // 사진 다운로드 이력 추가
+        photoEsClientRepository.addDownloadTag(photoUrlList, member.getId());
+
         return photoConverter.toPhotoDownloadUrlListInfo(photoUrlList);
     }
 
@@ -226,11 +229,14 @@ public class PhotoServiceImpl implements PhotoService {
             pageable = pageable.next();
         }
 
-        List<String> photUrlList = photoEsList.stream()
+        List<String> photoUrlList = photoEsList.stream()
                 .map(PhotoEs::getUrl)
                 .collect(Collectors.toList());
 
-        return photoConverter.toPhotoDownloadUrlListInfo(photUrlList);
+        // 사진 다운로드 이력 추가
+        photoEsClientRepository.addDownloadTag(photoUrlList, member.getId());
+
+        return photoConverter.toPhotoDownloadUrlListInfo(photoUrlList);
     }
 
     @Override
@@ -250,11 +256,14 @@ public class PhotoServiceImpl implements PhotoService {
             pageable = pageable.next();
         }
 
-        List<String> photUrlList = photoEsList.stream()
+        List<String> photoUrlList = photoEsList.stream()
                 .map(PhotoEs::getUrl)
                 .collect(Collectors.toList());
 
-        return photoConverter.toPhotoDownloadUrlListInfo(photUrlList);
+        // 사진 다운로드 이력 추가
+        photoEsClientRepository.addDownloadTag(photoUrlList, member.getId());
+
+        return photoConverter.toPhotoDownloadUrlListInfo(photoUrlList);
     }
 
     @Override
