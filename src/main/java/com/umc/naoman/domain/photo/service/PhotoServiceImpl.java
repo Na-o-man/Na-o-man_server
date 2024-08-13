@@ -270,7 +270,7 @@ public class PhotoServiceImpl implements PhotoService {
             throw new BusinessException(PHOTO_NOT_FOUND);
         }
 
-        // 각 사진에 대해 S3에서 객체 삭제 및 데이터베이스에서 삭제
+        // 각 사진에 대해 S3에서 객체 삭제
         for (Photo photo : photoList) {
             deletePhoto(photo.getName());
         }
@@ -283,7 +283,42 @@ public class PhotoServiceImpl implements PhotoService {
         photoRepository.deleteAllByPhotoIdList(photoIdList);
         photoEsClientRepository.deletePhotoEsByRdsId(photoIdList, request.getShareGroupId());
 
-        return photoList; // 삭제된 사진 목록 반환
+        // 삭제된 사진 목록 반환
+        return photoList;
+    }
+
+    @Override
+    @Transactional
+    public void deletePhotoListByFaceTag(Long memberId) {
+        // Elasticsearch 사진 데이터 삭제
+        List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByFaceTag(memberId);
+
+        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
+
+        // S3 버킷 사진 데이터 삭제
+        for (Photo photo : photoList) {
+            deletePhoto(photo.getName());
+        }
+
+        // RDBMS 사진 데이터 삭제
+        photoRepository.deleteAllByPhotoIdList(photoIdList);
+    }
+
+    @Override
+    @Transactional
+    public void deletePhotoListByShareGroupId(Long shareGroupId) {
+        // Elasticsearch 사진 데이터 삭제
+        List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByShareGroupId(shareGroupId);
+
+        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
+
+        // S3 버킷 사진 데이터 삭제
+        for (Photo photo : photoList) {
+            deletePhoto(photo.getName());
+        }
+
+        // RDBMS 사진 데이터 삭제
+        photoRepository.deleteAllByPhotoIdList(photoIdList);
     }
 
     private void deletePhoto(String photoName) {
