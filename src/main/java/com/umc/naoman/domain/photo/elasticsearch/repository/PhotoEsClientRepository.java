@@ -269,20 +269,18 @@ public class PhotoEsClientRepository {
     }
 
     //특정 사진에 특정 맴버 다운로드 태그 추가
-    public void addDownloadTag(List<PhotoEs> photoEs, Long memberId){
-        List<FieldValue> fieldValueList = photoEs.stream()
-                .map(photo -> FieldValue.of(photo.getName()))
+    public void addDownloadTag(List<String> photoUrlList, Long memberId){
+        List<FieldValue> fieldValueList = photoUrlList.stream()
+                .map(FieldValue::of)
                 .toList();
-        String routing = photoEs.get(0).getShareGroupId().toString();
         Map<String, JsonData> params = new HashMap<>();
         params.put("memberId", JsonData.of(memberId));
         try {
             elasticsearchClient.updateByQuery(u -> u
                     .index("photos_es")
-                    .routing(routing)
                     .query(q -> q
                             .terms(t -> t
-                                    .field("name")
+                                    .field("url")
                                     .terms(te -> te.value(fieldValueList))
                             )
                     )
