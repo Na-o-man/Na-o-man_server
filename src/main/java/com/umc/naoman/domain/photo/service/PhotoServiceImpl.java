@@ -292,9 +292,9 @@ public class PhotoServiceImpl implements PhotoService {
     public void deletePhotoByFaceTag(Long memberId) {
         // Elasticsearch 사진 데이터 삭제
         List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByFaceTag(memberId);
-        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
 
         // RDBMS 사진 데이터 삭제
+        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
         photoRepository.deleteAllByPhotoIdList(photoIdList);
 
         // S3 버킷 사진 데이터 삭제
@@ -308,9 +308,9 @@ public class PhotoServiceImpl implements PhotoService {
     public void deletePhotoByShareGroupId(Long shareGroupId) {
         // Elasticsearch 사진 데이터 삭제
         List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByShareGroupId(shareGroupId);
-        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
 
         // RDBMS 사진 데이터 삭제
+        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
         photoRepository.deleteAllByPhotoIdList(photoIdList);
 
         // S3 버킷 사진 데이터 삭제
