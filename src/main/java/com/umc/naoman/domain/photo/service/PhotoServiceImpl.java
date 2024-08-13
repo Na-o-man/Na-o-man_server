@@ -289,34 +289,36 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional
-    public void deletePhotoByFaceTag(Long memberId) {
+    public void deletePhotoListByFaceTag(Long memberId) {
         // Elasticsearch 사진 데이터 삭제
         List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByFaceTag(memberId);
 
-        // RDBMS 사진 데이터 삭제
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
-        photoRepository.deleteAllByPhotoIdList(photoIdList);
 
         // S3 버킷 사진 데이터 삭제
         for (Photo photo : photoList) {
             deletePhoto(photo.getName());
         }
+
+        // RDBMS 사진 데이터 삭제
+        photoRepository.deleteAllByPhotoIdList(photoIdList);
     }
 
     @Override
     @Transactional
-    public void deletePhotoByShareGroupId(Long shareGroupId) {
+    public void deletePhotoListByShareGroupId(Long shareGroupId) {
         // Elasticsearch 사진 데이터 삭제
         List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByShareGroupId(shareGroupId);
 
-        // RDBMS 사진 데이터 삭제
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
-        photoRepository.deleteAllByPhotoIdList(photoIdList);
 
         // S3 버킷 사진 데이터 삭제
         for (Photo photo : photoList) {
             deletePhoto(photo.getName());
         }
+
+        // RDBMS 사진 데이터 삭제
+        photoRepository.deleteAllByPhotoIdList(photoIdList);
     }
 
     private void deletePhoto(String photoName) {
