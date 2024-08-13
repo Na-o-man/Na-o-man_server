@@ -283,16 +283,21 @@ public class PhotoServiceImpl implements PhotoService {
         photoRepository.deleteAllByPhotoIdList(photoIdList);
         photoEsClientRepository.deletePhotoEsByRdsId(photoIdList, request.getShareGroupId());
 
-        return photoList; // 삭제된 사진 목록 반환
+        // 삭제된 사진 목록 반환
+        return photoList;
     }
 
     @Override
     @Transactional
-    public void deletePhotoEsByFaceTag(Long memberId) {
+    public void deletePhotoByFaceTag(Long memberId) {
+        // Elasticsearch 사진 데이터 삭제
         List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByFaceTag(memberId);
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
+
+        // RDBMS 사진 데이터 삭제
         photoRepository.deleteAllByPhotoIdList(photoIdList);
 
+        // S3 버킷 사진 데이터 삭제
         for (Photo photo : photoList) {
             deletePhoto(photo.getName());
         }
@@ -300,11 +305,15 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional
-    public void deletePhotoEsByShareGroupIdList(List<Long> shareGroupIdList) {
-        List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByShareGroupIdList(shareGroupIdList);
+    public void deletePhotoByShareGroupId(Long shareGroupId) {
+        // Elasticsearch 사진 데이터 삭제
+        List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByShareGroupId(shareGroupId);
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
+
+        // RDBMS 사진 데이터 삭제
         photoRepository.deleteAllByPhotoIdList(photoIdList);
 
+        // S3 버킷 사진 데이터 삭제
         for (Photo photo : photoList) {
             deletePhoto(photo.getName());
         }

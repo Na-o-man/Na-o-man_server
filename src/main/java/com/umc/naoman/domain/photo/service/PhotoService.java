@@ -26,11 +26,11 @@ public interface PhotoService {
 
     List<Photo> deletePhotoList(PhotoRequest.PhotoDeletedRequest request, Member member);
 
-    // 특정 공유 그룹의 모든 사진을 삭제하는 함수
-    void deletePhotoEsByShareGroupIdList(List<Long> shareGroupIdList);
-
     // 사진 목록에서 특정 회원의 사진을 삭제하는 함수
-    void deletePhotoEsByFaceTag(Long memberId);
+    void deletePhotoByFaceTag(Long memberId);
+
+    // 특정 공유 그룹의 모든 사진을 삭제하는 함수
+    void deletePhotoByShareGroupId(Long shareGroupIdList);
 
     Photo findPhoto(Long photoId);
 
