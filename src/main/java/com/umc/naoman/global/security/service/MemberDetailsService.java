@@ -18,10 +18,16 @@ import org.springframework.stereotype.Service;
 public class MemberDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
+    /**
+     *
+     * @param username 회원을 식별하기 위한 데이터. PK 값인 memberId
+     * @return
+     * @throws UsernameNotFoundException
+     */
     @Override
     public MemberDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일을 가진 회원이 존재하지 않습니다."));
+        Member member = memberRepository.findById(Long.parseLong(username)) // 전달된 memberId를 Long 타입으로 변환
+                .orElseThrow(() -> new UsernameNotFoundException("해당 memberId를 가진 회원이 존재하지 않습니다."));
 
         return new MemberDetails(member);
     }

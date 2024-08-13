@@ -57,27 +57,27 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberConverter.toEntity(request);
         memberRepository.save(member);
 
+        Long memberId = member.getId();
         // 회원가입 완료 후 로그인 처리를 위해 access token, refresh token 발급
         // 별도 권한 정책이 없으므로 default 처리
         String role = "ROLE_DEFAULT";
-        String email = member.getEmail();
-        Long memberId = member.getId();
-        String accessToken = jwtUtils.createJwt(email, role, ACCESS_TOKEN_VALIDITY_IN_SECONDS);
-        String refreshToken = jwtUtils.createJwt(email, role, REFRESH_TOKEN_VALIDITY_IN_SECONDS);
-        refreshTokenService.saveRefreshToken(memberId, refreshToken);
-        return memberConverter.toLoginInfo(memberId, accessToken, refreshToken);
+
+        return createJwtAndGetLoginInfo(memberId, role);
     }
 
 
     @Override
     public LoginInfo login(LoginRequest request) {
         Member member = findMember(request.getSocialType(), request.getAuthId());
-
         Long memberId = member.getId();
-        String email = member.getEmail();
         String role = "ROLE_DEFAULT";
-        String accessToken = jwtUtils.createJwt(email, role, ACCESS_TOKEN_VALIDITY_IN_SECONDS);
-        String refreshToken = jwtUtils.createJwt(email, role, REFRESH_TOKEN_VALIDITY_IN_SECONDS);
+
+        return createJwtAndGetLoginInfo(memberId, role);
+    }
+
+    private LoginInfo createJwtAndGetLoginInfo(Long memberId, String role) {
+        String accessToken = jwtUtils.createJwt(memberId, role, ACCESS_TOKEN_VALIDITY_IN_SECONDS);
+        String refreshToken = jwtUtils.createJwt(memberId, role, REFRESH_TOKEN_VALIDITY_IN_SECONDS);
         refreshTokenService.saveRefreshToken(memberId, refreshToken);
 
         return memberConverter.toLoginInfo(memberId, accessToken, refreshToken);
@@ -113,7 +113,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member findMember(SocialType socialType, String authId) {
-        return memberRepository.findByAuthIdAndSocialType(authId, socialType)
+        return memberRepository.findBySocialTypeAndAuthId(socialType, authId)
                 .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_AUTH_ID_AND_SOCIAL_TYPE));
     }
 }
