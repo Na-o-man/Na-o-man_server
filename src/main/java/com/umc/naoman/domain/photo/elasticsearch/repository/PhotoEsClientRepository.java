@@ -226,10 +226,7 @@ public class PhotoEsClientRepository {
     }
 
     //특정 공유 그룹의 사진 삭제 -> 해당 사진에서 감지된 얼굴벡터도 함께 샥제 return : 삭제된 사진의 rdsId
-    public List<Long> deletePhotoEsByShareGroupIdList(List<Long> shareGroupIdList) {
-        List<FieldValue> fieldValueShareGroupList = shareGroupIdList.stream()
-                .map(FieldValue::of)
-                .toList();
+    public List<Long> deletePhotoEsByShareGroupId(Long shareGroupId) {
         SearchResponse<PhotoEs> response = null;
         List<Long> rdsIdList = new ArrayList<>();
         List<String> photoNameList = new ArrayList<>();
@@ -239,18 +236,18 @@ public class PhotoEsClientRepository {
                             .from(0)
                             .size(5000)
                             .query(q -> q
-                                    .terms(t -> t
+                                    .term(t -> t
                                             .field("shareGroupId")
-                                            .terms(te -> te.value(fieldValueShareGroupList))
+                                            .value(FieldValue.of(shareGroupId))
                                     )
                             ),
                     PhotoEs.class);
             elasticsearchClient.deleteByQuery(d -> d
                     .index("photos_es")
                     .query(q -> q
-                            .terms(t -> t
+                            .term(t -> t
                                     .field("shareGroupId")
-                                    .terms(te -> te.value(fieldValueShareGroupList))
+                                    .value(FieldValue.of(shareGroupId))
                             )
                     )
             );
