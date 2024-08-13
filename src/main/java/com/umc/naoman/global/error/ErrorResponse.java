@@ -15,7 +15,8 @@ public class ErrorResponse {
     private final int status;
     private final String code;
     private final String message;
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    // @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    // 매핑할 값이 없으면 안드로이드 쪽에서 별도로 구현해야 하기 때문에 위 어노테이션 주석 처리
     private final List<ValidationError> data;
 
 
