@@ -18,6 +18,7 @@ import com.umc.naoman.domain.photo.dto.PhotoResponse.PreSignedUrlInfo;
 import com.umc.naoman.domain.photo.dto.PhotoResponse.SamplePhotoUploadInfo;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.elasticsearch.repository.PhotoEsClientRepository;
+import com.umc.naoman.domain.photo.elasticsearch.repository.SampleFaceVectorClientRepository;
 import com.umc.naoman.domain.photo.entity.Photo;
 import com.umc.naoman.domain.photo.entity.SamplePhoto;
 import com.umc.naoman.domain.photo.repository.PhotoRepository;
@@ -52,6 +53,7 @@ public class PhotoServiceImpl implements PhotoService {
     private final PhotoRepository photoRepository;
     private final SamplePhotoRepository samplePhotoRepository;
     private final PhotoEsClientRepository photoEsClientRepository;
+    private final SampleFaceVectorClientRepository sampleFaceVectorClientRepository;
     private final PhotoConverter photoConverter;
     private final SamplePhotoConverter samplePhotoConverter;
     private final AmazonS3 amazonS3;
@@ -328,6 +330,16 @@ public class PhotoServiceImpl implements PhotoService {
 
         // RDBMS 사진 데이터 삭제
         photoRepository.deleteAllByPhotoIdList(photoIdList);
+    }
+
+    @Override
+    @Transactional
+    public void deleteSamplePhotoList(Member member) {
+        // 엔티티 삭제 (hard delete)
+        samplePhotoRepository.deleteByMemberId(member.getId());
+
+        // ElasticSearch 데이터 삭제
+        sampleFaceVectorClientRepository.deleteSampleFaceVectorByMemberId(member.getId());
     }
 
     private void deletePhoto(String photoName) {
