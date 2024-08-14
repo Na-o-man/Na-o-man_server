@@ -14,6 +14,10 @@ import com.umc.naoman.domain.member.entity.SocialType;
 import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.member.service.redis.RefreshTokenService;
 import com.umc.naoman.domain.photo.service.PhotoService;
+import com.umc.naoman.domain.shareGroup.entity.Profile;
+import com.umc.naoman.domain.shareGroup.entity.Role;
+import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
+import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.security.util.JwtUtils;
 import io.jsonwebtoken.Claims;
@@ -21,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.umc.naoman.global.error.code.MemberErrorCode.*;
 
@@ -32,6 +38,8 @@ public class MemberServiceImpl implements MemberService {
     private final PhotoService photoService;
     private final MemberRepository memberRepository;
     private final MemberConverter memberConverter;
+    private final ShareGroupService shareGroupService;
+
     private final JwtUtils jwtUtils;
     @Value("${jwt.access-token-validity-in-seconds}")
     private Long ACCESS_TOKEN_VALIDITY_IN_SECONDS;
@@ -69,7 +77,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public LoginInfo login(LoginRequest request) {
         Member member = findMember(request.getSocialType(), request.getAuthId());
+
         Long memberId = member.getId();
+        String email = member.getEmail();
         String role = "ROLE_DEFAULT";
 
         return createJwtAndGetLoginInfo(memberId, role);
@@ -115,5 +125,21 @@ public class MemberServiceImpl implements MemberService {
     public Member findMember(SocialType socialType, String authId) {
         return memberRepository.findBySocialTypeAndAuthId(socialType, authId)
                 .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_AUTH_ID_AND_SOCIAL_TYPE));
+    }
+
+    @Override
+    public Member deleteMember(Long memberId) {
+        Member member = findMember(memberId);
+        List<Profile> profileListByMemberId = shareGroupService.findProfileListByMemberId(memberId);
+        for (Profile profile : profileListByMemberId) {
+            if (profile.getRole().equals(Role.CREATOR)) {
+                ShareGroup shareGroup = shareGroupService.findShareGroup(profile.getId());
+                shareGroupService.deleteShareGroup(profile);
+            } else { // creator가 아닌 경우
+
+            }
+        }
+        member.delete();
+        return member;
     }
 }

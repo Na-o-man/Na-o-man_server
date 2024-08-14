@@ -77,4 +77,19 @@ public class MemberController {
     public ResultResponse<HasSamplePhoto> hasSamplePhoto(@LoginMember Member member) {
         return ResultResponse.of(CHECK_HAS_SAMPLE_PHOTO, memberService.hasSamplePhoto(member));
     }
+
+    @DeleteMapping
+    @Operation(summary = "회원 탈퇴 API", description = "[request]\n" +
+            "[response]\n 탈퇴 memberId, 탈퇴 시간")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SM007", description = "회원 탈퇴 성공."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse
+                    (responseCode = "EM001", description = "해당 memberId를 가진 회원이 존재하지 않습니다.",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    public ResultResponse<MemberResponse.deleteMemberInfo> deleteMember(@LoginMember Member member){
+        return ResultResponse.of(MemberResultCode.DELETE_MEMBER, memberConverter.toDeleteMemberInfo(member));
+
+    }
+
 }

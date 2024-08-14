@@ -21,5 +21,5 @@ public interface MemberService {
     MemberId getMyMemberId(Member member);
     Member findMember(Long memberId);
     Member findMember(SocialType socialType, String authId);
-
+    Member deleteMember(Long memberId);
 }

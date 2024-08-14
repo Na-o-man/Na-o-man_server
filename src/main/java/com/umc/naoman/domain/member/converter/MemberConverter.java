@@ -71,4 +71,10 @@ public class MemberConverter {
                 .build();
     }
 
+    public MemberResponse.deleteMemberInfo toDeleteMemberInfo(Member member) {
+        return MemberResponse.deleteMemberInfo.builder()
+                .memberId(member.getId())
+                .deletedAt(member.getDeletedAt())
+                .build();
+    }
 }
