@@ -12,6 +12,7 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Component;
+
 @Component
 public class MemberConverter {
     public Member toEntity(SignupRequest request) {
@@ -46,6 +47,7 @@ public class MemberConverter {
 
     public MemberInfo toMemberInfo(Member member) {
         return MemberInfo.builder()
+                .memberId(member.getId())
                 .name(member.getName())
                 .email(member.getEmail())
                 .image(member.getImage())
