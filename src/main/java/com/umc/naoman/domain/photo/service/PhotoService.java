@@ -32,6 +32,8 @@ public interface PhotoService {
     // 특정 공유 그룹의 모든 사진을 삭제하는 함수
     void deletePhotoListByShareGroupId(Long shareGroupId);
 
+    void deleteSamplePhotoList(Member member);
+
     Photo findPhoto(Long photoId);
 
     boolean hasSamplePhoto(Member member);

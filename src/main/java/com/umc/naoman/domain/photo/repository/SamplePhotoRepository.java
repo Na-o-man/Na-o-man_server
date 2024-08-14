@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SamplePhotoRepository extends JpaRepository<SamplePhoto, Long> {
     boolean existsByMemberId(Long memberId);
+    void deleteByMemberId(Long memberId);
 }
