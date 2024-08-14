@@ -122,8 +122,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member deleteMember(Member member) {
         Long memberId = member.getId();
-        List<Profile> profileListByMemberId = shareGroupService.findProfileListByMemberId(memberId);
-        for (Profile profile : profileListByMemberId) {
+        List<Profile> profileList = shareGroupService.findProfileListByMemberId(memberId);
+        for (Profile profile : profileList) {
             Long shareGroupId = profile.getShareGroup().getId();
             if (profile.getRole() == Role.CREATOR) {
                 // 특정 공유 그룹의 사진을 모두 삭제
