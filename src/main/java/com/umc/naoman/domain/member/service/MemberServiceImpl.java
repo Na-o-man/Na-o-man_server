@@ -72,11 +72,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public LoginInfo login(LoginRequest request) {
         Member member = findMember(request.getSocialType(), request.getAuthId());
-
         Long memberId = member.getId();
-        String email = member.getEmail();
         String role = "ROLE_DEFAULT";
-
         return createJwtAndGetLoginInfo(memberId, role);
     }
 
