@@ -83,14 +83,15 @@ public class MemberController {
     @Operation(summary = "회원 탈퇴 API", description = "[request]\n" +
             "[response]\n 탈퇴 memberId, 탈퇴 시간")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SM007", description = "회원 탈퇴 성공."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse
-                    (responseCode = "EM001", description = "해당 memberId를 가진 회원이 존재하지 않습니다.",
+            @ApiResponse(responseCode = "SM007", description = "회원 탈퇴 성공."),
+            @ApiResponse(responseCode = "EM001", description = "해당 memberId를 가진 회원이 존재하지 않습니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "EG008", description = "공유 그룹을 삭제할 권한이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
-    public ResultResponse<MemberResponse.deleteMemberInfo> deleteMember(@LoginMember Member member){
-        return ResultResponse.of(MemberResultCode.DELETE_MEMBER, memberConverter.toDeleteMemberInfo(member));
-
+    public ResultResponse<MemberResponse.DeleteMemberInfo> deleteMember(@LoginMember Member member){
+        Member deleteMember = memberService.deleteMember(member);
+        return ResultResponse.of(MemberResultCode.DELETE_MEMBER, memberConverter.toDeleteMemberInfo(deleteMember));
     }
 
 }

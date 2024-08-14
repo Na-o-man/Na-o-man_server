@@ -49,7 +49,7 @@ public abstract class MemberResponse {
     @Builder
     @Getter
     @AllArgsConstructor
-    public static class deleteMemberInfo {
+    public static class DeleteMemberInfo {
         private Long memberId;
         @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDateTime deletedAt;

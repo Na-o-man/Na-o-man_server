@@ -4,11 +4,7 @@ import com.umc.naoman.domain.member.converter.MemberConverter;
 import com.umc.naoman.domain.member.dto.MemberRequest.LoginRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.MarketingAgreedRequest;
 import com.umc.naoman.domain.member.dto.MemberRequest.SignupRequest;
-import com.umc.naoman.domain.member.dto.MemberResponse.CheckMemberRegistration;
-import com.umc.naoman.domain.member.dto.MemberResponse.HasSamplePhoto;
-import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
-import com.umc.naoman.domain.member.dto.MemberResponse.MemberId;
-import com.umc.naoman.domain.member.dto.MemberResponse.MemberInfo;
+import com.umc.naoman.domain.member.dto.MemberResponse.*;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
 import com.umc.naoman.domain.member.repository.MemberRepository;
@@ -16,7 +12,6 @@ import com.umc.naoman.domain.member.service.redis.RefreshTokenService;
 import com.umc.naoman.domain.photo.service.PhotoService;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.Role;
-import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.security.util.JwtUtils;
@@ -128,17 +123,22 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member deleteMember(Long memberId) {
-        Member member = findMember(memberId);
+    public Member deleteMember(Member member) {
+        Long memberId = member.getId();
         List<Profile> profileListByMemberId = shareGroupService.findProfileListByMemberId(memberId);
         for (Profile profile : profileListByMemberId) {
-            if (profile.getRole().equals(Role.CREATOR)) {
-                ShareGroup shareGroup = shareGroupService.findShareGroup(profile.getId());
+            Long shareGroupId = profile.getShareGroup().getId();
+            if (profile.getRole() == Role.CREATOR) {
+                // 특정 공유 그룹의 사진을 모두 삭제
+                photoService.deletePhotoListByShareGroupId(shareGroupId);
                 shareGroupService.deleteShareGroup(profile);
             } else { // creator가 아닌 경우
-
+                photoService.deletePhotoListByFaceTag(memberId);
+                profile.delete();
             }
         }
+        // 회원 샘플 사진 삭제
+        photoService.deleteSamplePhotoList(member);
         member.delete();
         return member;
     }
