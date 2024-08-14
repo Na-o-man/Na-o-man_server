@@ -12,6 +12,7 @@ import com.umc.naoman.domain.member.service.redis.RefreshTokenService;
 import com.umc.naoman.domain.photo.service.PhotoService;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.Role;
+import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.security.util.JwtUtils;
@@ -128,7 +129,8 @@ public class MemberServiceImpl implements MemberService {
             if (profile.getRole() == Role.CREATOR) {
                 // 특정 공유 그룹의 사진을 모두 삭제
                 photoService.deletePhotoListByShareGroupId(shareGroupId);
-                shareGroupService.deleteShareGroup(profile);
+                // 공유 그룹 삭제
+                profile.getShareGroup().delete();
             } else { // creator가 아닌 경우
                 photoService.deletePhotoListByFaceTag(memberId);
                 profile.delete();

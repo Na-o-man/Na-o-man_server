@@ -86,8 +86,6 @@ public class MemberController {
             @ApiResponse(responseCode = "SM007", description = "회원 탈퇴 성공."),
             @ApiResponse(responseCode = "EM001", description = "해당 memberId를 가진 회원이 존재하지 않습니다.",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "EG008", description = "공유 그룹을 삭제할 권한이 없습니다.",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
     public ResultResponse<MemberResponse.DeleteMemberInfo> deleteMember(@LoginMember Member member){
         Member deleteMember = memberService.deleteMember(member);
