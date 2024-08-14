@@ -7,6 +7,7 @@ import com.umc.naoman.domain.member.dto.MemberResponse.LoginInfo;
 import com.umc.naoman.domain.member.dto.MemberResponse.MarketingAgreed;
 import com.umc.naoman.domain.member.dto.MemberResponse.MemberId;
 import com.umc.naoman.domain.member.dto.MemberResponse.MemberInfo;
+import com.umc.naoman.domain.member.dto.MemberResponse;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
 import io.jsonwebtoken.Claims;
@@ -71,4 +72,10 @@ public class MemberConverter {
                 .build();
     }
 
+    public MemberResponse.DeleteMemberInfo toDeleteMemberInfo(Member member) {
+        return MemberResponse.DeleteMemberInfo.builder()
+                .memberId(member.getId())
+                .deletedAt(member.getDeletedAt())
+                .build();
+    }
 }

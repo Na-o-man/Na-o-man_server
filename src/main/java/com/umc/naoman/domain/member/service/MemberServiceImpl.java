@@ -14,6 +14,9 @@ import com.umc.naoman.domain.member.entity.SocialType;
 import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.member.service.redis.RefreshTokenService;
 import com.umc.naoman.domain.photo.service.PhotoService;
+import com.umc.naoman.domain.shareGroup.entity.Profile;
+import com.umc.naoman.domain.shareGroup.entity.Role;
+import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import com.umc.naoman.global.security.util.JwtUtils;
 import io.jsonwebtoken.Claims;
@@ -21,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.umc.naoman.global.error.code.MemberErrorCode.*;
 
@@ -32,6 +37,8 @@ public class MemberServiceImpl implements MemberService {
     private final PhotoService photoService;
     private final MemberRepository memberRepository;
     private final MemberConverter memberConverter;
+    private final ShareGroupService shareGroupService;
+
     private final JwtUtils jwtUtils;
     @Value("${jwt.access-token-validity-in-seconds}")
     private Long ACCESS_TOKEN_VALIDITY_IN_SECONDS;
@@ -71,7 +78,6 @@ public class MemberServiceImpl implements MemberService {
         Member member = findMember(request.getSocialType(), request.getAuthId());
         Long memberId = member.getId();
         String role = "ROLE_DEFAULT";
-
         return createJwtAndGetLoginInfo(memberId, role);
     }
 
@@ -115,5 +121,27 @@ public class MemberServiceImpl implements MemberService {
     public Member findMember(SocialType socialType, String authId) {
         return memberRepository.findBySocialTypeAndAuthId(socialType, authId)
                 .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND_BY_AUTH_ID_AND_SOCIAL_TYPE));
+    }
+
+    @Override
+    public Member deleteMember(Member member) {
+        Long memberId = member.getId();
+        List<Profile> profileList = shareGroupService.findProfileListByMemberId(memberId);
+        for (Profile profile : profileList) {
+            Long shareGroupId = profile.getShareGroup().getId();
+            if (profile.getRole() == Role.CREATOR) {
+                // 특정 공유 그룹의 사진을 모두 삭제
+                photoService.deletePhotoListByShareGroupId(shareGroupId);
+                // 공유 그룹 삭제
+                profile.getShareGroup().delete();
+            } else { // creator가 아닌 경우
+                photoService.deletePhotoListByFaceTag(memberId);
+                profile.delete();
+            }
+        }
+        // 회원 샘플 사진 삭제
+        photoService.deleteSamplePhotoList(member);
+        member.delete();
+        return member;
     }
 }
