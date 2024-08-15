@@ -89,7 +89,7 @@ public class PhotoEsClientRepository {
         } catch (IOException e) {
             throw new BusinessException(ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION, e);
         }
-        return toPagePhotoEs(response.hits().hits(), pageable);
+        return toPagePhotoEs(response.hits().hits(), pageable, response.hits().total().value());
     }
 
     //특정 공유 그룹의 얼굴이 태그된 사진 검색
@@ -127,7 +127,7 @@ public class PhotoEsClientRepository {
             throw new BusinessException(ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION, e);
         }
 
-        return toPagePhotoEs(response.hits().hits(), pageable);
+        return toPagePhotoEs(response.hits().hits(), pageable,response.hits().total().value());
     }
 
     //특정 공유 그룹의 얼굴이 태그되지 않은 사진 검색
@@ -164,7 +164,7 @@ public class PhotoEsClientRepository {
             throw new BusinessException(ElasticsearchErrorCode.ELASTICSEARCH_IOEXCEPTION, e);
         }
 
-        return toPagePhotoEs(response.hits().hits(), pageable);
+        return toPagePhotoEs(response.hits().hits(), pageable,response.hits().total().value());
     }
 
     // rdsId로 ES에서 사진 삭제
@@ -304,9 +304,11 @@ public class PhotoEsClientRepository {
         return localDateTime.format(dateTimeFormatter);
     }
 
-    private Page<PhotoEs> toPagePhotoEs(List<Hit<PhotoEs>> hits, Pageable pageable) {
-        List<PhotoEs> photoEsList = hits.stream().map(Hit::source).collect(Collectors.toList());
-        return new PageImpl<>(photoEsList, pageable, hits.size());
+    private Page<PhotoEs> toPagePhotoEs(List<Hit<PhotoEs>> hits, Pageable pageable, long total) {
+        List<PhotoEs> photoEsList = hits.stream()
+                                        .map(Hit::source)
+                                        .collect(Collectors.toList());
+        return new PageImpl<>(photoEsList, pageable, total);
     }
 
     private int getFrom(Pageable pageable) {
