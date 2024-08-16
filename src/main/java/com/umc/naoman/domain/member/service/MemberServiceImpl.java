@@ -124,6 +124,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public Member deleteMember(Member member) {
         Long memberId = member.getId();
         List<Profile> profileList = shareGroupService.findProfileListByMemberId(memberId);
