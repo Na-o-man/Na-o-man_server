@@ -143,6 +143,7 @@ public class MemberServiceImpl implements MemberService {
         // 회원 샘플 사진 삭제
         photoService.deleteSamplePhotoList(member);
         member.delete();
+        memberRepository.save(member);
         return member;
     }
 }
