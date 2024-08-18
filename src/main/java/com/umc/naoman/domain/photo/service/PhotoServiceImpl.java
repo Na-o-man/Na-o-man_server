@@ -152,9 +152,10 @@ public class PhotoServiceImpl implements PhotoService {
      * 공유 그룹과 프로필을 검증 - select 쿼리 2
      * 공유 그룹 get - 1차 캐시에서 가져옴. 쿼리 0
      * S3에 사진이 있는지 검증 - 쿼리는 안나가지만, 시간이 소요됨
-     * Photo 엔티티 생성 수 save - 사진 개수만큼 쿼리 n
+     * Photo 엔티티 생성 후 save - 사진 개수만큼 쿼리 n
      * ElasticSearch에 photos_es 벌크 insert - 쿼리 1(또는 0)
      * 해당 공유 그룹의 프로필 목록 조회 - select 쿼리 1
+     * => (1개의 쿼리 기본으로 나감) 회원 엔티티 select하기 위해. |||| n + 3
      *
      * @param request
      * @param member
@@ -166,10 +167,14 @@ public class PhotoServiceImpl implements PhotoService {
         validateShareGroupAndProfile(request.getShareGroupId(), member);
         ShareGroup shareGroup = shareGroupService.findShareGroup(request.getShareGroupId());
 
+        long startTime = System.currentTimeMillis();
         // 사진 URL 리스트를 기반으로 사진 엔티티를 생성하고 DB에 저장
         List<Photo> photoList = request.getPhotoUrlList().stream()
                 .map(photoUrl -> checkAndSavePhotoInDB(photoUrl, extractPhotoNameFromUrl(photoUrl), shareGroup))
                 .toList();
+        long finishTime = System.currentTimeMillis();
+        log.info("저장한 사진 개수: {} 장", photoList.size());
+        log.info("해당 사진 목록을 DB에 저장하는 데 걸린 시간: {} ms", finishTime - startTime);
 
         // Elasticsearch 벌크 저장
         photoEsClientRepository.savePhotoBulk(photoList);
