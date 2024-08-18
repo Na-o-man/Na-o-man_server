@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -44,6 +45,7 @@ import static com.umc.naoman.global.result.code.PhotoResultCode.*;
 
 @RestController
 @RequestMapping("/photos")
+@Slf4j
 @RequiredArgsConstructor
 @Tag(name = "03. 사진 관련 API", description = "사진 업로드, 조회, 삭제, 다운로드를 처리하는 API입니다.")
 public class PhotoController {
@@ -56,7 +58,10 @@ public class PhotoController {
     @Operation(summary = "Presigned URL 요청 API", description = "Presigned URL을 요청하는 API입니다.")
     public ResultResponse<PreSignedUrlListInfo> getPreSignedUrlList(@Valid @RequestBody PreSignedUrlRequest request,
                                                                     @LoginMember Member member) {
+        long startTime = System.currentTimeMillis();
         List<PreSignedUrlInfo> preSignedUrlList = photoService.getPreSignedUrlList(request, member);
+        long finishTime = System.currentTimeMillis();
+        log.info("PhotoServiceImpl.getPreSignedUrlList() 수행 시간: {} ms", finishTime - startTime);
         return ResultResponse.of(CREATE_PRESIGNED_URL, photoConverter.toPreSignedUrlListInfo(preSignedUrlList));
     }
 
@@ -71,7 +76,10 @@ public class PhotoController {
     @Operation(summary = "사진 업로드 API", description = "Presigned URL을 통해 업로드한 사진을 데이터베이스에 저장하는 API입니다.")
     public ResultResponse<PhotoUploadInfo> uploadPhotoList(@Valid @RequestBody PhotoUploadRequest request,
                                                            @LoginMember Member member) {
+        long startTime = System.currentTimeMillis();
         PhotoUploadInfo photoUploadInfo = photoService.uploadPhotoList(request, member);
+        long finishTime = System.currentTimeMillis();
+        log.info("PhotoServiceImpl.uploadPhotoList() 수행 시간: {} ms", finishTime - startTime);
         return ResultResponse.of(UPLOAD_PHOTO, photoUploadInfo);
     }
 
@@ -131,7 +139,10 @@ public class PhotoController {
     public ResultResponse<PhotoDownloadUrlListInfo> getPhotoDownloadUrlList(@RequestParam List<Long> photoIdList,
                                                                             @RequestParam Long shareGroupId,
                                                                             @LoginMember Member member) {
+        long startTime = System.currentTimeMillis();
         PhotoDownloadUrlListInfo photoDownloadUrlList = photoService.getPhotoDownloadUrlList(photoIdList, shareGroupId, member);
+        long finishTime = System.currentTimeMillis();
+        log.info("PhotoServiceImpl.getPhotoDownloadUrlList() 수행 시간: {} ms", finishTime - startTime);
         return ResultResponse.of(DOWNLOAD_PHOTO, photoDownloadUrlList);
     }
 
@@ -144,7 +155,10 @@ public class PhotoController {
     public ResultResponse<PhotoDownloadUrlListInfo> getPhotoDownloadUrlListByProfile(@RequestParam Long shareGroupId,
                                                                                      @RequestParam Long profileId,
                                                                                      @LoginMember Member member) {
+        long startTime = System.currentTimeMillis();
         PhotoResponse.PhotoDownloadUrlListInfo photoDownloadUrlList = photoService.getPhotoDownloadUrlListByProfile(shareGroupId, profileId, member);
+        long finishTime = System.currentTimeMillis();
+        log.info("PhotoServiceImpl.getPhotoDownloadUrlListByProfile() 수행 시간: {} ms", finishTime - startTime);
         return ResultResponse.of(DOWNLOAD_PHOTO, photoDownloadUrlList);
     }
 
