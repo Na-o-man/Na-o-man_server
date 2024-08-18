@@ -12,9 +12,11 @@ import java.io.Serializable;
 import java.util.Base64;
 
 public class CookieUtils {
+    private static final String COOKIE_DOMAIN = ".naoman.site";
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
+                .domain(COOKIE_DOMAIN)
                 .maxAge(maxAge)
                 .httpOnly(false)
                 .secure(true)
