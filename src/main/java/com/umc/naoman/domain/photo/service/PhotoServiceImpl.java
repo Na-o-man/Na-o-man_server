@@ -28,6 +28,7 @@ import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
 import io.awspring.cloud.s3.S3Template;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +47,7 @@ import static com.umc.naoman.global.error.code.S3ErrorCode.PHOTO_NOT_FOUND_S3;
 
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 @RequiredArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
     private final ShareGroupService shareGroupService;
@@ -146,6 +148,18 @@ public class PhotoServiceImpl implements PhotoService {
         return samplePhotoRepository.save(samplePhoto);
     }
 
+    /**
+     * 공유 그룹과 프로필을 검증 - select 쿼리 2
+     * 공유 그룹 get - 1차 캐시에서 가져옴. 쿼리 0
+     * S3에 사진이 있는지 검증 - 쿼리는 안나가지만, 시간이 소요됨
+     * Photo 엔티티 생성 수 save - 사진 개수만큼 쿼리 n
+     * ElasticSearch에 photos_es 벌크 insert - 쿼리 1(또는 0)
+     * 해당 공유 그룹의 프로필 목록 조회 - select 쿼리 1
+     *
+     * @param request
+     * @param member
+     * @return
+     */
     @Override
     @Transactional
     public PhotoUploadInfo uploadPhotoList(PhotoUploadRequest request, Member member) {
@@ -179,9 +193,12 @@ public class PhotoServiceImpl implements PhotoService {
 
     // S3에 객체의 존재 여부 확인 및 DB에 사진을 저장하고 객체를 반환하는 메서드
     private Photo checkAndSavePhotoInDB(String photoUrl, String photoName, ShareGroup shareGroup) {
+        long startTime = System.currentTimeMillis();
         if (!amazonS3.doesObjectExist(BUCKET_NAME, RAW_PATH_PREFIX + "/" + photoName)) {
             throw new BusinessException(PHOTO_NOT_FOUND_S3);
         }
+        long finishTime = System.currentTimeMillis();
+        log.info("amazonS3.doesObjectExists() 수행 시간: {} ms", finishTime - startTime);
 
         Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
         return photoRepository.save(photo); // 저장된 Photo 객체 반환
