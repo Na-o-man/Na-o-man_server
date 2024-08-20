@@ -39,7 +39,7 @@ public abstract class AgendaResponse {
         private List<AgendaDetailInfo> agendaDetailInfoList;
         private int totalPages;
         private long totalElements; // 해당 조건에 부합하는 요소의 총 개수
-        private boolean isFirst; // 첫 페이지 여부
-        private boolean isLast; // 마지막 페이지 여부
+        private Boolean isFirst; // 첫 페이지 여부
+        private Boolean isLast; // 마지막 페이지 여부
     }
 }

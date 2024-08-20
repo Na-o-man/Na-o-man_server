@@ -40,4 +40,8 @@ public class AgendaPhoto extends BaseTimeEntity {
         }
         super.delete();
     }
+
+    public void nullifyPhoto() {
+        this.photo = null;
+    }
 }

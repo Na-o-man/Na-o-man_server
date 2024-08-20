@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.umc.naoman.domain.agenda.service.AgendaPhotoService;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.converter.PhotoConverter;
 import com.umc.naoman.domain.photo.converter.SamplePhotoConverter;
@@ -51,6 +52,7 @@ import static com.umc.naoman.global.error.code.S3ErrorCode.PHOTO_NOT_FOUND_S3;
 @RequiredArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
     private final ShareGroupService shareGroupService;
+    private final AgendaPhotoService agendaPhotoService;
     private final FaceDetectionService faceDetectionService;
     private final PhotoRepository photoRepository;
     private final SamplePhotoRepository samplePhotoRepository;
@@ -346,8 +348,10 @@ public class PhotoServiceImpl implements PhotoService {
         // Elasticsearch 사진 데이터 삭제
         List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByShareGroupId(shareGroupId);
 
-        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
+        // 삭제하려는 사진들 중 안건 후보로 등록된 것들에 대하여, 해당 사진들의 참조를 삭제
+        agendaPhotoService.nullifyPhotoInAgendaPhotoList(photoIdList);
 
+        List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
         // S3 버킷 사진 데이터 삭제
         for (Photo photo : photoList) {
             deletePhoto(photo.getName());
@@ -380,6 +384,7 @@ public class PhotoServiceImpl implements PhotoService {
         shareGroupService.findProfile(shareGroupId, member.getId());
     }
 
+    /*
     @Override
     public Photo findPhoto(Long photoId) {
         return photoRepository.findById(photoId)
@@ -390,4 +395,5 @@ public class PhotoServiceImpl implements PhotoService {
     public boolean hasSamplePhoto(Member member) {
         return samplePhotoRepository.existsByMemberId(member.getId());
     }
+    */
 }

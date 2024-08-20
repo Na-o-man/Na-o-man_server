@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AgendaServiceImpl implements AgendaService {
-    private final AgendaRepository agendaRepository;
     private final ShareGroupService shareGroupService;
     private final AgendaPhotoService agendaPhotoService;
+    private final AgendaRepository agendaRepository;
     private final AgendaConverter agendaConverter;
 
     @Override
