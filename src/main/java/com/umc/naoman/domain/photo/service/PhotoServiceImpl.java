@@ -330,9 +330,10 @@ public class PhotoServiceImpl implements PhotoService {
     public void deletePhotoListByFaceTag(Long memberId) {
         // Elasticsearch 사진 데이터 삭제
         List<Long> photoIdList = photoEsClientRepository.deletePhotoEsByFaceTag(memberId);
+        // 삭제하려는 사진들 중 안건 후보로 등록된 것들에 대하여, 해당 사진들의 참조를 삭제
+        agendaPhotoService.nullifyPhotoInAgendaPhotoList(photoIdList);
 
         List<Photo> photoList = photoRepository.findByIdIn(photoIdList);
-
         // S3 버킷 사진 데이터 삭제
         for (Photo photo : photoList) {
             deletePhoto(photo.getName());
