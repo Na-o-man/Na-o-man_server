@@ -11,4 +11,5 @@ public interface AgendaPhotoService {
     AgendaPhoto findAgendaPhoto(Long agendaPhotoId);
     List<AgendaPhoto> findAgendaPhotoList(Long agendaId);
     List<AgendaPhoto> findAgendaPhotoListByPhotoId(Long photoId);
+    void nullifyPhotoInAgendaPhotoList(List<Long> photoIdList);
 }

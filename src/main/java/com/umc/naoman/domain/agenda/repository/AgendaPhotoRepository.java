@@ -2,6 +2,7 @@ package com.umc.naoman.domain.agenda.repository;
 
 import com.umc.naoman.domain.agenda.entity.AgendaPhoto;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,4 +11,5 @@ import java.util.List;
 public interface AgendaPhotoRepository extends JpaRepository<AgendaPhoto, Long> {
     List<AgendaPhoto> findByAgendaId(Long agendaId);
     List<AgendaPhoto> findByPhotoId(Long photoId);
+    List<AgendaPhoto> findByPhotoIdIn(List<Long> photoIdList);
 }

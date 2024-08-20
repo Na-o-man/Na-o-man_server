@@ -13,6 +13,7 @@ import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.member.entity.SocialType;
 import com.umc.naoman.domain.member.repository.MemberRepository;
 import com.umc.naoman.domain.member.service.redis.RefreshTokenService;
+import com.umc.naoman.domain.photo.service.PhotoQueryService;
 import com.umc.naoman.domain.photo.service.PhotoService;
 import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.Role;
@@ -35,6 +36,7 @@ import static com.umc.naoman.global.error.code.MemberErrorCode.*;
 public class MemberServiceImpl implements MemberService {
     private final RefreshTokenService refreshTokenService;
     private final PhotoService photoService;
+    private final PhotoQueryService photoQueryService;
     private final MemberRepository memberRepository;
     private final MemberConverter memberConverter;
     private final ShareGroupService shareGroupService;
@@ -97,7 +99,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public HasSamplePhoto hasSamplePhoto(Member member) {
-        boolean hasSamplePhoto = photoService.hasSamplePhoto(member);
+        boolean hasSamplePhoto = photoQueryService.hasSamplePhoto(member);
         return memberConverter.toHasSamplePhoto(hasSamplePhoto);
     }
 

@@ -34,7 +34,7 @@ public interface PhotoService {
 
     void deleteSamplePhotoList(Member member);
 
-    Photo findPhoto(Long photoId);
+//    Photo findPhoto(Long photoId);
 
-    boolean hasSamplePhoto(Member member);
+//    boolean hasSamplePhoto(Member member);
 }
