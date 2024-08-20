@@ -9,6 +9,7 @@ import com.umc.naoman.domain.photo.service.PhotoQueryService;
 import com.umc.naoman.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -53,5 +54,6 @@ public class AgendaPhotoServiceImpl implements AgendaPhotoService {
         List<AgendaPhoto> agendaPhotoList = agendaPhotoRepository.findByPhotoIdIn(photoIdList);
         agendaPhotoList
                 .forEach(AgendaPhoto::nullifyPhoto);
+        agendaPhotoRepository.flush();
     }
 }
