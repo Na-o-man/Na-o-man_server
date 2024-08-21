@@ -29,7 +29,7 @@ public class PhotoEsServiceImpl implements PhotoEsService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Page<PhotoEs> getAllPhotoEsListByShareGroupId(Long shareGroupId, Member member, Pageable pageable) {
         validateShareGroupAndProfile(shareGroupId, member);
         Page<PhotoEs> photoEsList = photoEsClientRepository.findPhotoEsByShareGroupId(shareGroupId, pageable);
