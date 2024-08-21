@@ -3,12 +3,15 @@ package com.umc.naoman.domain.photo.elasticsearch.service;
 import com.umc.naoman.domain.member.entity.Member;
 import com.umc.naoman.domain.photo.elasticsearch.document.PhotoEs;
 import com.umc.naoman.domain.photo.elasticsearch.repository.PhotoEsClientRepository;
+import com.umc.naoman.domain.shareGroup.entity.ShareGroup;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +32,17 @@ public class PhotoEsServiceImpl implements PhotoEsService {
     @Transactional(readOnly = true)
     public Page<PhotoEs> getAllPhotoEsListByShareGroupId(Long shareGroupId, Member member, Pageable pageable) {
         validateShareGroupAndProfile(shareGroupId, member);
-        return photoEsClientRepository.findPhotoEsByShareGroupId(shareGroupId, pageable);
+        Page<PhotoEs> photoEsList = photoEsClientRepository.findPhotoEsByShareGroupId(shareGroupId, pageable);
+
+        final ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
+        if (shareGroup.getImage() == null) {
+            photoEsList.stream()
+                    .filter(photoEs -> photoEs.getFaceTag().size() >= shareGroup.getMemberCount())
+                    .findFirst()
+                    .ifPresent(photoEs -> shareGroup.updateImage(photoEs.getUrl()));
+        }
+
+        return photoEsList;
     }
 
     @Override

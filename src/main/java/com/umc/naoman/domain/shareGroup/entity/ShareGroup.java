@@ -53,4 +53,8 @@ public class ShareGroup extends BaseTimeEntity {
         }
         super.delete();
     }
+
+    public void updateImage(String image) {
+        this.image = image;
+    }
 }
