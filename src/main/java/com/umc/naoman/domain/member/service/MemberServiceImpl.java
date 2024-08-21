@@ -19,8 +19,10 @@ import com.umc.naoman.domain.shareGroup.entity.Profile;
 import com.umc.naoman.domain.shareGroup.entity.Role;
 import com.umc.naoman.domain.shareGroup.service.ShareGroupService;
 import com.umc.naoman.global.error.BusinessException;
+import com.umc.naoman.global.security.util.CookieUtils;
 import com.umc.naoman.global.security.util.JwtUtils;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -49,11 +51,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request) {
+    public LoginInfo signup(String tempMemberInfo, MarketingAgreedRequest request, HttpServletResponse response) {
         Claims payload = jwtUtils.getPayload(tempMemberInfo);
         SignupRequest signupRequest = memberConverter.toSignupRequest(payload, request.getMarketingAgreed());
 
-        return signup(signupRequest);
+        LoginInfo loginInfo = signup(signupRequest);
+        CookieUtils.addCookie(response, "access-token", loginInfo.getAccessToken(), ACCESS_TOKEN_VALIDITY_IN_SECONDS.intValue());
+        CookieUtils.addCookie(response, "refresh-token", loginInfo.getRefreshToken(), REFRESH_TOKEN_VALIDITY_IN_SECONDS.intValue());
+        return loginInfo;
     }
 
     @Override

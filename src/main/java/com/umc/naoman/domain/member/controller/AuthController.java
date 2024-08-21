@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
@@ -43,12 +44,13 @@ public class AuthController {
                     hidden = true, in = ParameterIn.COOKIE)
     })
     public ResultResponse<LoginInfo> signup(@CookieValue(value = "temp-member-info", required = false) Cookie tempMemberInfoCookie,
-                                            @Valid @RequestBody MarketingAgreedRequest request) {
+                                            @Valid @RequestBody MarketingAgreedRequest request,
+                                            HttpServletResponse response) {
         // 추후에 핸들러 처리로 바꿀까 생각 중
         if (tempMemberInfoCookie == null) {
             throw new BusinessException(TEMP_MEMBER_INFO_COOKIE_NOT_FOUND);
         }
-        return ResultResponse.of(SIGNUP, memberService.signup(tempMemberInfoCookie.getValue(), request));
+        return ResultResponse.of(SIGNUP, memberService.signup(tempMemberInfoCookie.getValue(), request, response));
     }
 
     @PostMapping("/signup/android")
