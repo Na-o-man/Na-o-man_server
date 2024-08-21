@@ -37,7 +37,7 @@ public class PhotoEsServiceImpl implements PhotoEsService {
         final ShareGroup shareGroup = shareGroupService.findShareGroup(shareGroupId);
         if (shareGroup.getImage() == null) {
             photoEsList.stream()
-                    .filter(photoEs -> photoEs.getFaceTag().size() >= shareGroup.getMemberCount())
+                    .filter(photoEs -> photoEs.getFaceTag().size() >= shareGroup.getMemberCount() / 2)
                     .findFirst()
                     .ifPresent(photoEs -> shareGroup.updateImage(photoEs.getUrl()));
         }
