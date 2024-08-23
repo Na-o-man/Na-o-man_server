@@ -11,9 +11,11 @@ import java.util.List;
 
 @Repository
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
-    List<Photo> findByIdInAndShareGroupId(List<Long> photoIdList, Long shareGroupId);
-
     List<Photo> findByIdIn(List<Long> photoIdList);
+
+    List<Photo> findByShareGroupId(Long ShareGroupId);
+
+    List<Photo> findByIdInAndShareGroupId(List<Long> photoIdList, Long shareGroupId);
 
     @Modifying
     @Query("DELETE FROM Photo p WHERE p.id IN :photoIdList")

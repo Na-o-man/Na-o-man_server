@@ -147,6 +147,17 @@ public class PhotoController {
     }
 
     @GetMapping("/download/all")
+    @Operation(summary = "특정 공유그룹의 사진 전체 다운로드 API", description = "사용자가 속한 공유그룹의 전체 사진을 다운로드할 주소를 받는 API입니다. 해당 공유그룹에 속해있는 회원만 다운로드 요청할 수 있습니다.")
+    @Parameters(value = {
+            @Parameter(name = "shareGroupId", description = "다운로드할 사진이 있는 공유그룹의 아이디를 입력해주세요."),
+    })
+    public ResultResponse<PhotoDownloadUrlListInfo> getPhotoDownloadUrlListByShareGroup(@RequestParam Long shareGroupId,
+                                                                                        @LoginMember Member member) {
+        PhotoResponse.PhotoDownloadUrlListInfo photoDownloadUrlList = photoService.getPhotoDownloadUrlListByShareGroup(shareGroupId, member);
+        return ResultResponse.of(DOWNLOAD_PHOTO, photoDownloadUrlList);
+    }
+
+    @GetMapping("/download/album")
     @Operation(summary = "특정 앨범 사진 전체 다운로드 API", description = "선택한 앨범에 속한 사진을 다운로드할 주소를 받는 API입니다. 해당 공유그룹에 속해있는 회원만 다운로드 요청할 수 있습니다.")
     @Parameters(value = {
             @Parameter(name = "shareGroupId", description = "다운로드할 사진이 있는 공유그룹의 아이디를 입력해주세요."),
