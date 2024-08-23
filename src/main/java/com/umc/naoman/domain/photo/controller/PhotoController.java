@@ -157,7 +157,6 @@ public class PhotoController {
         return ResultResponse.of(DOWNLOAD_PHOTO, photoDownloadUrlList);
     }
 
-
     @GetMapping("/download/album")
     @Operation(summary = "특정 앨범 사진 전체 다운로드 API", description = "선택한 앨범에 속한 사진을 다운로드할 주소를 받는 API입니다. 해당 공유그룹에 속해있는 회원만 다운로드 요청할 수 있습니다.")
     @Parameters(value = {
