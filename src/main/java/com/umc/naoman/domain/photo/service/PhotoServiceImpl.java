@@ -243,12 +243,25 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public PhotoDownloadUrlListInfo getPhotoDownloadUrlListByShareGroup(Long shareGroupId, Member member) {
         validateShareGroupAndProfile(shareGroupId, member);
-        List<Photo> photoList = photoRepository.findByShareGroupId(shareGroupId);
 
-        List<String> photoUrlList = photoList.stream()
-                .map(Photo::getUrl)
+        List<PhotoEs> photoEsList = new ArrayList<>();
+        Pageable pageable = Pageable.ofSize(5000);
+        boolean isLastPage = false;
+
+        while (!isLastPage) {
+            Page<PhotoEs> photoEsPage = photoEsClientRepository.findPhotoEsByShareGroupId(shareGroupId, pageable);
+            photoEsList.addAll(photoEsPage.getContent());
+            isLastPage = photoEsPage.isLast();
+
+            // 다음 페이지로 이동
+            pageable = pageable.next();
+        }
+
+        List<String> photoUrlList = photoEsList.stream()
+                .map(PhotoEs::getUrl)
                 .collect(Collectors.toList());
 
+        // 사진 다운로드 이력 추가
         photoEsClientRepository.addDownloadTag(photoUrlList, member.getId());
 
         return photoConverter.toPhotoDownloadUrlListInfo(photoUrlList);
