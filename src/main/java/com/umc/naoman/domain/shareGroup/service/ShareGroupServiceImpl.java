@@ -85,6 +85,11 @@ public class ShareGroupServiceImpl implements ShareGroupService {
             throw new BusinessException(ShareGroupErrorCode.INVALID_PROFILE_FOR_GROUP);
         }
 
+        //공유그룹에 해당 profile로 참여한 회원이 이미 있으면
+        if (profile.getMember() != null) {
+            throw new BusinessException(ShareGroupErrorCode.MEMBER_ALREADY_EXIST);
+        }
+
         //해당 멤버(본인)을 선택한 profile에 세팅, 저장
         profile.setInfo(member);
         profileRepository.save(profile);

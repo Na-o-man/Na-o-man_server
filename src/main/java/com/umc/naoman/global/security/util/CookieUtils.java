@@ -12,15 +12,16 @@ import java.io.Serializable;
 import java.util.Base64;
 
 public class CookieUtils {
-    private static final String COOKIE_DOMAIN = ".naoman.site";
+//    private static final String COOKIE_DOMAIN = ".naoman.site";
+    private static final String COOKIE_DOMAIN = "localhost";
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
                 .domain(COOKIE_DOMAIN)
                 .maxAge(maxAge)
                 .httpOnly(false)
-                .secure(true)
-                .sameSite("None")
+//                .secure(true)
+//                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
