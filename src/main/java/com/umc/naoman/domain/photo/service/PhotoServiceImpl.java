@@ -241,6 +241,20 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
+    public PhotoDownloadUrlListInfo getPhotoDownloadUrlListByShareGroup(Long shareGroupId, Member member) {
+        validateShareGroupAndProfile(shareGroupId, member);
+        List<Photo> photoList = photoRepository.findByShareGroupId(shareGroupId);
+
+        List<String> photoUrlList = photoList.stream()
+                .map(Photo::getUrl)
+                .collect(Collectors.toList());
+
+        photoEsClientRepository.addDownloadTag(photoUrlList, member.getId());
+
+        return photoConverter.toPhotoDownloadUrlListInfo(photoUrlList);
+    }
+
+    @Override
     public PhotoDownloadUrlListInfo getPhotoDownloadUrlListByProfile(Long shareGroupId, Long profileId, Member member) {
         validateShareGroupAndProfile(shareGroupId, member);
         Long memberId = shareGroupService.findProfile(profileId).getMember().getId();
