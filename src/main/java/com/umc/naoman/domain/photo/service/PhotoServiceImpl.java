@@ -157,8 +157,6 @@ public class PhotoServiceImpl implements PhotoService {
      * Photo 엔티티 생성 후 save - 사진 개수만큼 쿼리 n
      * ElasticSearch에 photos_es 벌크 insert - 쿼리 1(또는 0)
      * 해당 공유 그룹의 프로필 목록 조회 - select 쿼리 1
-     * => (1개의 쿼리 기본으로 나감) 회원 엔티티 select하기 위해. |||| n + 3
-     *
      * @param request
      * @param member
      * @return
@@ -172,9 +170,14 @@ public class PhotoServiceImpl implements PhotoService {
         long startTime = System.currentTimeMillis();
         // 사진 URL 리스트를 기반으로 사진 엔티티를 생성하고 DB에 저장
         List<Photo> photoList = request.getPhotoUrlList().stream()
+                .map(photoUrl -> checkAndSavePhotoInDB(photoUrl, extractPhotoNameFromUrl(photoUrl), shareGroup))
+                .toList();
+        /*
+        List<Photo> photoList = request.getPhotoUrlList().stream()
                 .map(photoUrl -> checkAndCreatePhoto(photoUrl, extractPhotoNameFromUrl(photoUrl), shareGroup))
                 .toList();
         photoRepository.saveAll(photoList);
+         */
         long finishTime = System.currentTimeMillis();
         log.info("저장한 사진 개수: {} 장", photoList.size());
         log.info("해당 사진 목록을 DB에 저장하는 데 걸린 시간: {} ms", finishTime - startTime);
@@ -200,18 +203,24 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     // S3에 객체의 존재 여부 확인 및 DB에 사진을 저장하고 객체를 반환하는 메서드
-//    private Photo checkAndSavePhotoInDB(String photoUrl, String photoName, ShareGroup shareGroup) {
     private Photo checkAndCreatePhoto(String photoUrl, String photoName, ShareGroup shareGroup) {
         long startTime = System.currentTimeMillis();
         if (!amazonS3.doesObjectExist(BUCKET_NAME, RAW_PATH_PREFIX + "/" + photoName)) {
             throw new BusinessException(PHOTO_NOT_FOUND_S3);
         }
         long finishTime = System.currentTimeMillis();
-        log.info("amazonS3.doesObjectExists() 수행 시간: {} ms", finishTime - startTime);
+//        log.info("amazonS3.doesObjectExists() 수행 시간: {} ms", finishTime - startTime);
 
         return photoConverter.toEntity(photoUrl, photoName, shareGroup);
-//        Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
-//        return photoRepository.save(photo); // 저장된 Photo 객체 반환
+    }
+
+    private Photo checkAndSavePhotoInDB(String photoUrl, String photoName, ShareGroup shareGroup) {
+        if (!amazonS3.doesObjectExist(BUCKET_NAME, RAW_PATH_PREFIX + "/" + photoName)) {
+            throw new BusinessException(PHOTO_NOT_FOUND_S3);
+        }
+
+        Photo photo = photoConverter.toEntity(photoUrl, photoName, shareGroup);
+        return photoRepository.save(photo); // 저장된 Photo 객체 반환
     }
 
     // 사진 URL에서 사진 이름을 추출하는 메서드
