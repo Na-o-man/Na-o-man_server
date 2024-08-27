@@ -79,7 +79,7 @@ public class PhotoController {
         long startTime = System.currentTimeMillis();
         PhotoUploadInfo photoUploadInfo = photoService.uploadPhotoList(request, member);
         long finishTime = System.currentTimeMillis();
-        log.info("PhotoServiceImpl.uploadPhotoList() 수행 시간: {} ms", finishTime - startTime);
+        // log.info("PhotoServiceImpl.uploadPhotoList() 수행 시간: {} ms", finishTime - startTime);
         return ResultResponse.of(UPLOAD_PHOTO, photoUploadInfo);
     }
 
