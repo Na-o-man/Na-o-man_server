@@ -170,14 +170,9 @@ public class PhotoServiceImpl implements PhotoService {
         long startTime = System.currentTimeMillis();
         // 사진 URL 리스트를 기반으로 사진 엔티티를 생성하고 DB에 저장
         List<Photo> photoList = request.getPhotoUrlList().stream()
-                .map(photoUrl -> checkAndSavePhotoInDB(photoUrl, extractPhotoNameFromUrl(photoUrl), shareGroup))
-                .toList();
-        /*
-        List<Photo> photoList = request.getPhotoUrlList().stream()
                 .map(photoUrl -> checkAndCreatePhoto(photoUrl, extractPhotoNameFromUrl(photoUrl), shareGroup))
                 .toList();
         photoRepository.saveAll(photoList);
-         */
         long finishTime = System.currentTimeMillis();
         log.info("저장한 사진 개수: {} 장", photoList.size());
         log.info("해당 사진 목록을 DB에 저장하는 데 걸린 시간: {} ms", finishTime - startTime);
